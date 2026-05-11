@@ -6,6 +6,24 @@ TELEMETRY <%= target_name %> TELEMETRY BIG_ENDIAN "Channelized Telemetry Packet"
   APPEND_ITEM CHANNELS -32 BLOCK
   ITEM FPRIME_CRC32 -32 32 UINT
 
+TELEMETRY <%= target_name %> EVENT BIG_ENDIAN "Channelized Telemetry Packet"
+  APPEND_ITEM FPRIME_SYNC 32 UINT
+  APPEND_ITEM FPRIME_SIZE 32 UINT
+  APPEND_ID_ITEM FPRIME_PACKET_ID 32 UINT 2
+  APPEND_ITEM FPRIME_EVENT_ID 32 UINT
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM FPRIME_EVENT_DATA -32 BLOCK
+  ITEM FPRIME_CRC32 -32 32 UINT
+  ITEM FPRIME_EVENT_MESSAGE 0 0 DERIVED
+    READ_CONVERSION fprime_event_conversion.py
+
 TELEMETRY <%= target_name %> ServerDeployment.rateGroup3.RgMaxTime BIG_ENDIAN "Max execution time rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1024
@@ -18,6 +36,7 @@ TELEMETRY <%= target_name %> ServerDeployment.rateGroup3.RgMaxTime BIG_ENDIAN "M
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -33,6 +52,7 @@ TELEMETRY <%= target_name %> ServerDeployment.bufferManager.NoBuffs BIG_ENDIAN "
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM NoBuffs 32 UINT "The number of requests that couldn't return a buffer"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -93,6 +113,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_09 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_09 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -138,6 +159,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_01 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_01 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -153,6 +175,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_11 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_11 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -183,6 +206,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_02 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_02 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -198,6 +222,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_06 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_06 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -213,6 +238,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_00 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_00 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -273,6 +299,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.MEMORY_USED BIG_EN
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM MEMORY_USED 64 UINT "System memory used in KB"
+    FORMAT_STRING "%d KB"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -288,6 +315,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_15 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_15 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -303,6 +331,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_10 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_10 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -318,6 +347,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_05 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_05 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -333,6 +363,7 @@ TELEMETRY <%= target_name %> ServerDeployment.rateGroup1.RgMaxTime BIG_ENDIAN "M
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -348,6 +379,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_12 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_12 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -363,6 +395,7 @@ TELEMETRY <%= target_name %> ServerDeployment.bufferManager.EmptyBuffs BIG_ENDIA
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM EmptyBuffs 32 UINT "The number of empty buffers returned"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -423,6 +456,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.NON_VOLATILE_TOTAL
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM NON_VOLATILE_TOTAL 64 UINT "System non-volatile available in KB"
+    FORMAT_STRING "%d KB"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -483,6 +517,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_04 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_04 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -498,6 +533,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.MEMORY_TOTAL BIG_E
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM MEMORY_TOTAL 64 UINT "Total system memory in KB"
+    FORMAT_STRING "%d KB"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -543,6 +579,7 @@ TELEMETRY <%= target_name %> ServerDeployment.rateGroup2.RgMaxTime BIG_ENDIAN "M
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -558,6 +595,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_13 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_13 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -588,6 +626,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.NON_VOLATILE_FREE 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM NON_VOLATILE_FREE 64 UINT "System non-volatile available in KB"
+    FORMAT_STRING "%d KB"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -603,6 +642,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_08 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_08 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -618,6 +658,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_03 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_03 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -648,6 +689,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_07 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_07 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -693,6 +735,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU BIG_ENDIAN "Sy
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
@@ -753,6 +796,7 @@ TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_14 BIG_ENDIAN 
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_14 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 

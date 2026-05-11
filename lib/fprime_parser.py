@@ -1,6 +1,17 @@
 import json
+import os
 import pprint
 import re
+import sys
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <target_name> <path_to_Dictionary.json>", file=sys.stderr)
+    sys.exit(1)
+
+target_name = sys.argv[1]
+json_path = sys.argv[2]
+
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def flatten_type(t, types):
@@ -85,7 +96,7 @@ def format_limits_line(limits, value_type):
 
 
 data = None
-with open("/Users/ryanmelt/Development/fprime/MyProject/build-artifacts/Darwin/ServerDeployment/dict/ServerDeploymentTopologyDictionary.json") as file:
+with open(json_path) as file:
     data = json.load(file)
 
 framework_version = data["metadata"]["frameworkVersion"]
@@ -101,7 +112,9 @@ events = data["events"]
 channels = data["telemetryChannels"]
 
 first = True
-with open('../targets/FPRIME/cmd_tlm/cmd.txt', 'w') as f:
+cmd_path = os.path.join(base_dir, 'targets', target_name, 'cmd_tlm', 'cmd.txt')
+os.makedirs(os.path.dirname(cmd_path), exist_ok=True)
+with open(cmd_path, 'w') as f:
     for command in commands:
         if first:
             first = False
@@ -165,7 +178,9 @@ with open('../targets/FPRIME/cmd_tlm/cmd.txt', 'w') as f:
                 raise RuntimeError(f"Unhandled element kind {type_kind}")
         print("  APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0", file=f)
 
-with open('../targets/FPRIME/cmd_tlm/tlm.txt', 'w') as f:
+tlm_path = os.path.join(base_dir, 'targets', target_name, 'cmd_tlm', 'tlm.txt')
+os.makedirs(os.path.dirname(tlm_path), exist_ok=True)
+with open(tlm_path, 'w') as f:
     print(f"TELEMETRY <%= target_name %> TELEMETRY BIG_ENDIAN \"Channelized Telemetry Packet\"", file=f)
     print("  SUBPACKETIZER fprime_subpacketizer.py", file=f)
     print("  APPEND_ITEM FPRIME_SYNC 32 UINT", file=f)    
@@ -364,5 +379,7 @@ class FprimeEventConversion(Conversion):
             return f"Error formatting event {{event['name']}} (id={{event_id}}): {{exc}}"
 '''
 
-with open('../targets/FPRIME/lib/fprime_event_conversion.py', 'w') as f:
+conversion_path = os.path.join(base_dir, 'targets', target_name, 'lib', 'fprime_event_conversion.py')
+os.makedirs(os.path.dirname(conversion_path), exist_ok=True)
+with open(conversion_path, 'w') as f:
     f.write(CONVERSION_TEMPLATE.format(events=events_repr))

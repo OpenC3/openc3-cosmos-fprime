@@ -1,4 +1,4 @@
-COMMAND <%= target_name %> ServerDeployment.fileManager.RemoveDirectory BIG_ENDIAN "Remove a directory, which must be empty"
+COMMAND FPRIME ServerDeployment.fileManager.RemoveDirectory BIG_ENDIAN "Remove a directory, which must be empty"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -6,7 +6,7 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.RemoveDirectory BIG_ENDI
   APPEND_PARAMETER dirName 2048 STRING "" "The directory to remove"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.AppendFile BIG_ENDIAN "Append 1 file's contents to the end of another."
+COMMAND FPRIME ServerDeployment.fileManager.AppendFile BIG_ENDIAN "Append 1 file's contents to the end of another."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -15,28 +15,28 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.AppendFile BIG_ENDIAN "A
   APPEND_PARAMETER target 2048 STRING "" "The name of the file to append to"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.eventLogger.DUMP_FILTER_STATE BIG_ENDIAN "Dump the filter states via events"
+COMMAND FPRIME ServerDeployment.eventLogger.DUMP_FILTER_STATE BIG_ENDIAN "Dump the filter states via events"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 2819 2819 2819
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileDownlink.Cancel BIG_ENDIAN "Cancel the downlink in progress, if any"
+COMMAND FPRIME ServerDeployment.fileDownlink.Cancel BIG_ENDIAN "Cancel the downlink in progress, if any"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 2049 2049 2049
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_CLEAR_TRACKING BIG_ENDIAN "Clear command tracking info to recover from components not returning status"
+COMMAND FPRIME ServerDeployment.cmdDisp.CMD_CLEAR_TRACKING BIG_ENDIAN "Clear command tracking info to recover from components not returning status"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1283 1283 1283
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.RemoveFile BIG_ENDIAN "Remove a file"
+COMMAND FPRIME ServerDeployment.fileManager.RemoveFile BIG_ENDIAN "Remove a file"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -47,7 +47,7 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.RemoveFile BIG_ENDIAN "R
     STATE TRUE 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_NO_OP_STRING BIG_ENDIAN "No-op string command"
+COMMAND FPRIME ServerDeployment.cmdDisp.CMD_NO_OP_STRING BIG_ENDIAN "No-op string command"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -55,7 +55,7 @@ COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_NO_OP_STRING BIG_ENDIAN 
   APPEND_PARAMETER arg1 320 STRING "" "The String command argument"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.ShellCommand BIG_ENDIAN "Perform a Linux shell command and write the output to a log file."
+COMMAND FPRIME ServerDeployment.fileManager.ShellCommand BIG_ENDIAN "Perform a Linux shell command and write the output to a log file."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -64,7 +64,7 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.ShellCommand BIG_ENDIAN 
   APPEND_PARAMETER logFileName 2048 STRING "" "The name of the log file"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.health.HLTH_ENABLE BIG_ENDIAN "A command to enable or disable health checks"
+COMMAND FPRIME ServerDeployment.health.HLTH_ENABLE BIG_ENDIAN "A command to enable or disable health checks"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -74,21 +74,21 @@ COMMAND <%= target_name %> ServerDeployment.health.HLTH_ENABLE BIG_ENDIAN "A com
     STATE ENABLED 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_CANCEL BIG_ENDIAN "Cancel a command sequence"
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_CANCEL BIG_ENDIAN "Cancel a command sequence"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1538 1538 1538
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.prmDb.PRM_SAVE_FILE BIG_ENDIAN "Command to save parameter image to file. Uses file name passed to constructor"
+COMMAND FPRIME ServerDeployment.prmDb.PRM_SAVE_FILE BIG_ENDIAN "Command to save parameter image to file. Uses file name passed to constructor"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 3328 3328 3328
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_VALIDATE BIG_ENDIAN "Validate a command sequence file"
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_VALIDATE BIG_ENDIAN "Validate a command sequence file"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -96,21 +96,21 @@ COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_VALIDATE BIG_ENDIAN "Valid
   APPEND_PARAMETER fileName 1920 STRING "" "The name of the sequence file"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_AUTO BIG_ENDIAN "Set the run mode to AUTO."
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_AUTO BIG_ENDIAN "Set the run mode to AUTO."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1541 1541 1541
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_STEP BIG_ENDIAN "Perform one step in a command sequence. Valid only if CmdSequencer is in MANUAL run mode."
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_STEP BIG_ENDIAN "Perform one step in a command sequence. Valid only if CmdSequencer is in MANUAL run mode."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1540 1540 1540
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.CreateDirectory BIG_ENDIAN "Create a directory"
+COMMAND FPRIME ServerDeployment.fileManager.CreateDirectory BIG_ENDIAN "Create a directory"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -118,14 +118,14 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.CreateDirectory BIG_ENDI
   APPEND_PARAMETER dirName 2048 STRING "" "The directory to create"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_START BIG_ENDIAN "Start running a command sequence"
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_START BIG_ENDIAN "Start running a command sequence"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1539 1539 1539
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileDownlink.SendFile BIG_ENDIAN "Read a named file off the disk. Divide it into packets and send the packets for transmission to the ground."
+COMMAND FPRIME ServerDeployment.fileDownlink.SendFile BIG_ENDIAN "Read a named file off the disk. Divide it into packets and send the packets for transmission to the ground."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -134,7 +134,7 @@ COMMAND <%= target_name %> ServerDeployment.fileDownlink.SendFile BIG_ENDIAN "Re
   APPEND_PARAMETER destFileName 800 STRING "" "The name of the destination file on the ground"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.systemResources.ENABLE BIG_ENDIAN "A command to enable or disable system resource telemetry"
+COMMAND FPRIME ServerDeployment.systemResources.ENABLE BIG_ENDIAN "A command to enable or disable system resource telemetry"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -144,7 +144,7 @@ COMMAND <%= target_name %> ServerDeployment.systemResources.ENABLE BIG_ENDIAN "A
     STATE ENABLED 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_TEST_CMD_1 BIG_ENDIAN "No-op command"
+COMMAND FPRIME ServerDeployment.cmdDisp.CMD_TEST_CMD_1 BIG_ENDIAN "No-op command"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -154,14 +154,14 @@ COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_TEST_CMD_1 BIG_ENDIAN "N
   APPEND_PARAMETER arg3 8 UINT MIN MAX 0 "The U8 command argument"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_MANUAL BIG_ENDIAN "Set the run mode to MANUAL."
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_MANUAL BIG_ENDIAN "Set the run mode to MANUAL."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1542 1542 1542
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.eventLogger.SET_EVENT_FILTER BIG_ENDIAN "Set filter for reporting events. Events are not stored in component."
+COMMAND FPRIME ServerDeployment.eventLogger.SET_EVENT_FILTER BIG_ENDIAN "Set filter for reporting events. Events are not stored in component."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -178,7 +178,7 @@ COMMAND <%= target_name %> ServerDeployment.eventLogger.SET_EVENT_FILTER BIG_END
     STATE DISABLED 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.health.HLTH_CHNG_PING BIG_ENDIAN "Change ping value"
+COMMAND FPRIME ServerDeployment.health.HLTH_CHNG_PING BIG_ENDIAN "Change ping value"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -188,14 +188,14 @@ COMMAND <%= target_name %> ServerDeployment.health.HLTH_CHNG_PING BIG_ENDIAN "Ch
   APPEND_PARAMETER fatalValue 32 UINT MIN MAX 0 "Ping fatal threshold"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_JOIN_WAIT BIG_ENDIAN "Wait for sequences that are running to finish. Allow user to run multiple seq files in SEQ_NO_BLOCK mode then wait for them to finish before allowing more seq run request."
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_JOIN_WAIT BIG_ENDIAN "Wait for sequences that are running to finish. Allow user to run multiple seq files in SEQ_NO_BLOCK mode then wait for them to finish before allowing more seq run request."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1543 1543 1543
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_RUN BIG_ENDIAN "Run a command sequence file"
+COMMAND FPRIME ServerDeployment.cmdSeq.CS_RUN BIG_ENDIAN "Run a command sequence file"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -206,7 +206,7 @@ COMMAND <%= target_name %> ServerDeployment.cmdSeq.CS_RUN BIG_ENDIAN "Run a comm
     STATE NO_BLOCK 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.eventLogger.SET_ID_FILTER BIG_ENDIAN "Filter a particular ID"
+COMMAND FPRIME ServerDeployment.eventLogger.SET_ID_FILTER BIG_ENDIAN "Filter a particular ID"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -217,7 +217,7 @@ COMMAND <%= target_name %> ServerDeployment.eventLogger.SET_ID_FILTER BIG_ENDIAN
     STATE DISABLED 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.FileSize BIG_ENDIAN ""
+COMMAND FPRIME ServerDeployment.fileManager.FileSize BIG_ENDIAN ""
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -225,7 +225,7 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.FileSize BIG_ENDIAN ""
   APPEND_PARAMETER fileName 2048 STRING "" "The file to get the size of"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileManager.MoveFile BIG_ENDIAN "Move a file"
+COMMAND FPRIME ServerDeployment.fileManager.MoveFile BIG_ENDIAN "Move a file"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -234,14 +234,14 @@ COMMAND <%= target_name %> ServerDeployment.fileManager.MoveFile BIG_ENDIAN "Mov
   APPEND_PARAMETER destFileName 2048 STRING "" "The destination file name"
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.cmdDisp.CMD_NO_OP BIG_ENDIAN "No-op command"
+COMMAND FPRIME ServerDeployment.cmdDisp.CMD_NO_OP BIG_ENDIAN "No-op command"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 1280 1280 1280
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.health.HLTH_PING_ENABLE BIG_ENDIAN "Ignore a particular ping entry"
+COMMAND FPRIME ServerDeployment.health.HLTH_PING_ENABLE BIG_ENDIAN "Ignore a particular ping entry"
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0
@@ -252,7 +252,7 @@ COMMAND <%= target_name %> ServerDeployment.health.HLTH_PING_ENABLE BIG_ENDIAN "
     STATE ENABLED 1
   APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0
 
-COMMAND <%= target_name %> ServerDeployment.fileDownlink.SendPartial BIG_ENDIAN "Read a named file off the disk from a starting position. Divide it into packets and send the packets for transmission to the ground."
+COMMAND FPRIME ServerDeployment.fileDownlink.SendPartial BIG_ENDIAN "Read a named file off the disk from a starting position. Divide it into packets and send the packets for transmission to the ground."
   APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0
   APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0
   APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0

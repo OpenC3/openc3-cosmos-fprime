@@ -1,0 +1,772 @@
+TELEMETRY <%= target_name %> TELEMETRY BIG_ENDIAN "Channelized Telemetry Packet"
+  SUBPACKETIZER fprime_subpacketizer.py
+  APPEND_ITEM FPRIME_SYNC 32 UINT
+  APPEND_ITEM FPRIME_SIZE 32 UINT
+  APPEND_ID_ITEM FPRIME_PACKET_ID 32 UINT 1
+  APPEND_ITEM CHANNELS -32 BLOCK
+  ITEM FPRIME_CRC32 -32 32 UINT
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup3.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1024
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.bufferManager.NoBuffs BIG_ENDIAN "The number of requests that couldn't return a buffer"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 17411
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM NoBuffs 32 UINT "The number of requests that couldn't return a buffer"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.bufferManager.HiBuffs BIG_ENDIAN "The high water mark of allocated buffers"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 17410
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM HiBuffs 32 UINT "The high water mark of allocated buffers"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileUplink.FilesReceived BIG_ENDIAN "The total number of complete files received"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2560
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM FilesReceived 32 UINT "The total number of complete files received"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdDisp.CommandErrors BIG_ENDIAN "Number of command errors"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1281
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CommandErrors 32 UINT "Number of command errors"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_09 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18958
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_09 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup1.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 513
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgCycleSlips 32 UINT "Cycle slips for rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdSeq.CS_LoadCommands BIG_ENDIAN "The number of Load commands executed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1536
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CS_LoadCommands 32 UINT "The number of Load commands executed"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_01 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18950
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_01 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_11 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18960
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_11 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.comQueue.buffQueueDepth BIG_ENDIAN "Depth of queues of Fw::Buffer type"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1793
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM buffQueueDepth 32 UINT 32 "Depth of queues of Fw::Buffer type"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_02 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18951
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_02 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_06 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18955
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_06 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_00 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18949
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_00 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.comQueue.comQueueDepth BIG_ENDIAN "Depth of queues of Fw::ComBuffer type"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1792
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM comQueueDepth 32 UINT 64 "Depth of queues of Fw::ComBuffer type"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileUplink.Warnings BIG_ENDIAN "The total number of warnings issued"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2562
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Warnings 32 UINT "The total number of warnings issued"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileDownlink.PacketsSent BIG_ENDIAN "The total number of packets sent"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2049
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PacketsSent 32 UINT "The total number of packets sent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.MEMORY_USED BIG_ENDIAN "System memory used in KB"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18945
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM MEMORY_USED 64 UINT "System memory used in KB"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_15 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18964
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_15 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_10 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18959
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_10 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_05 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18954
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_05 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup1.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 512
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_12 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18961
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_12 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.bufferManager.EmptyBuffs BIG_ENDIAN "The number of empty buffers returned"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 17412
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM EmptyBuffs 32 UINT "The number of empty buffers returned"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdSeq.CS_SequencesCompleted BIG_ENDIAN "The number of sequences completed."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1540
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CS_SequencesCompleted 32 UINT "The number of sequences completed."
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.blockDrv.BD_Cycles BIG_ENDIAN "Driver cycle count"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 256
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM BD_Cycles 32 UINT "Driver cycle count"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileUplink.PacketsReceived BIG_ENDIAN "The total number of packets received"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2561
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PacketsReceived 32 UINT "The total number of packets received"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.NON_VOLATILE_TOTAL BIG_ENDIAN "System non-volatile available in KB"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18946
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM NON_VOLATILE_TOTAL 64 UINT "System non-volatile available in KB"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileManager.CommandsExecuted BIG_ENDIAN "The total number of commands successfully executed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2304
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CommandsExecuted 32 UINT "The total number of commands successfully executed"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdSeq.CS_CommandsExecuted BIG_ENDIAN "The number of commands executed across all sequences."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1539
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CS_CommandsExecuted 32 UINT "The number of commands executed across all sequences."
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileDownlink.FilesSent BIG_ENDIAN "The total number of files sent"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2048
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM FilesSent 32 UINT "The total number of files sent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_04 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18953
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_04 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.MEMORY_TOTAL BIG_ENDIAN "Total system memory in KB"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18944
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM MEMORY_TOTAL 64 UINT "Total system memory in KB"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.health.PingLateWarnings BIG_ENDIAN "Number of overrun warnings"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 8192
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PingLateWarnings 32 UINT "Number of overrun warnings"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup2.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 769
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgCycleSlips 32 UINT "Cycle slips for rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup2.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 768
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgMaxTime 32 UINT "Max execution time rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_13 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18962
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_13 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.rateGroup3.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1025
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM RgCycleSlips 32 UINT "Cycle slips for rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.NON_VOLATILE_FREE BIG_ENDIAN "System non-volatile available in KB"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18947
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM NON_VOLATILE_FREE 64 UINT "System non-volatile available in KB"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_08 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18957
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_08 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_03 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18952
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_03 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdSeq.CS_Errors BIG_ENDIAN "The number of errors that have occurred"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1538
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CS_Errors 32 UINT "The number of errors that have occurred"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_07 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18956
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_07 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.bufferManager.TotalBuffs BIG_ENDIAN "The total buffers allocated"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 17408
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM TotalBuffs 32 UINT "The total buffers allocated"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileManager.Errors BIG_ENDIAN "The total number of errors"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2305
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Errors 32 UINT "The total number of errors"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18948
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdDisp.CommandsDispatched BIG_ENDIAN "Number of commands dispatched"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1280
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CommandsDispatched 32 UINT "Number of commands dispatched"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.fileDownlink.Warnings BIG_ENDIAN "The total number of warnings"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 2050
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Warnings 32 UINT "The total number of warnings"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.bufferManager.CurrBuffs BIG_ENDIAN "The current number of allocated buffers"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 17409
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CurrBuffs 32 UINT "The current number of allocated buffers"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.systemResources.CPU_14 BIG_ENDIAN "System's CPU Percentage"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 18963
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CPU_14 32 FLOAT "System's CPU Percentage"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> ServerDeployment.cmdSeq.CS_CancelCommands BIG_ENDIAN "The number of Cancel commands executed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 1537
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CS_CancelCommands 32 UINT "The number of Cancel commands executed"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC

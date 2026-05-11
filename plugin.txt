@@ -1,0 +1,10 @@
+# Set VARIABLEs here to allow variation in your plugin
+
+VARIABLE fprime_target_name FPRIME
+
+TARGET FPRIME <%= fprime_target_name %>
+INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface.py host.docker.internal 50000 50000 10.0 None None
+  MAP_TARGET <%= fprime_target_name %>
+  PROTOCOL WRITE openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
+  PROTOCOL READ_WRITE openc3/interfaces/protocols/length_protocol.py 32 32 12 1 BIG_ENDIAN 0 0xDEADBEEF None True
+  PROTOCOL READ openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN

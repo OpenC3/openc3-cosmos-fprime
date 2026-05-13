@@ -29,7 +29,7 @@ jobs:
     - name: Run tests
       run: |
         echo "## 🧪 Python Specs Coverage" > pytest_output.txt
-        .venv/bin/python -m coverage run -m pytest test/ 2>&1 | tee -a pytest_output.txt
+        .venv/bin/python -m coverage run -m pytest tests/ 2>&1 | tee -a pytest_output.txt
         .venv/bin/python -m coverage report 2>&1 | tee -a pytest_output.txt
 
     - name: Post coverage comment

@@ -1,3 +1,9 @@
+# Copyright 2026 OpenC3, Inc.
+# All Rights Reserved.
+#
+# This file is licensed under the MIT license. 
+# See LICENSE.md file in the project root for details.
+
 from openc3.subpacketizers.subpacketizer import Subpacketizer
 from openc3.system.system import System
 

@@ -1,10 +1,22 @@
-# Set VARIABLEs here to allow variation in your plugin
-
 VARIABLE fprime_target_name FPRIME
+VARIABLE fprime_hostname host.docker.internal
+VARIABLE fprime_port 50000
+VARIABLE fprime_headers SPACE_PACKET
+  VARIABLE_DESCRIPTION "SPACE_PACKET = FPRIME 4.x CCSDS Space Packets and TC/TM Framing. FPRIME = FPRIME 3.x headers and framing"
+  VARIABLE_STATE SPACE_PACKET
+  VARIABLE_STATE FPRIME
+VARIABLE fprime_scid 0x44
 
 TARGET FPRIME <%= fprime_target_name %>
-INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface.py host.docker.internal 50000 50000 10.0 None None
+INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface.py <%= fprime_hostname %> <%= fprime_port %> <%= fprime_port %> 10.0 None None
   MAP_TARGET <%= fprime_target_name %>
+<% if fprime_headers == 'FPRIME' %>
   PROTOCOL WRITE openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
   PROTOCOL READ_WRITE openc3/interfaces/protocols/length_protocol.py 32 32 12 1 BIG_ENDIAN 0 0xDEADBEEF None True
   PROTOCOL READ openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
+<% else %>
+  PROTOCOL WRITE ccsds_tctf_protocol.py False True 1 <%= fprime_scid %> 0x1
+  PROTOCOL WRITE ccsds_seqcnt_protocol.py
+  PROTOCOl WRITE openc3/interfaces/protocols/length_protocol.py 32 16 7 1 BIG_ENDIAN 0 None None True
+  PROTOCOL READ ccsds_tmtf_protocol.py <%= fprime_scid %> 1024 False 0 None True True
+<% end %>

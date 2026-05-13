@@ -1,0 +1,39 @@
+name: OpenC3 Python Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  python-unit-test:
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_UNIT_TEST: true
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      with:
+        enable-cache: true
+        python-version: "3.12"
+
+    - name: Setup venv
+      run: uv venv .venv
+
+    - name: Install test dependencies
+      run: uv pip install --python .venv/bin/python pytest coverage openc3
+
+    - name: Run tests
+      run: |
+        echo "## 🧪 Python Specs Coverage" > pytest_output.txt
+        ../.venv/bin/python -m coverage run -m pytest test/ 2>&1 | tee -a pytest_output.txt
+        ../.venv/bin/python -m coverage report 2>&1 | tee -a pytest_output.txt
+
+    - name: Post coverage comment
+      uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
+      with:
+        header: python-unit-tests
+        path: pytest_output.txt

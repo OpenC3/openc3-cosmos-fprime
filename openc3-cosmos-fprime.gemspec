@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
     'openc3_store_keywords' => 'FPrime',
     "openc3_store_title" => 'FPrime',
     'source_code_uri' => 'https://github.com/OpenC3/openc3-cosmos-fprime',
-    'openc3_cosmos_minimum_version' => '7.1.0'
+    'openc3_cosmos_minimum_version' => '7.1.1'
   }
 
   if ENV['VERSION']
@@ -26,5 +26,5 @@ Gem::Specification.new do |s|
     time = Time.now.strftime("%Y%m%d%H%M%S")
     s.version = '0.0.0' + ".#{time}"
   end
-  s.files = Dir.glob("{targets,lib,tools,microservices}/**/*") + %w(Rakefile README.md LICENSE.txt plugin.txt requirements.txt)
+  s.files = Dir.glob("{targets,lib,tools,microservices}/**/*") + %w(Rakefile README.md LICENSE.md plugin.txt requirements.txt)
 end

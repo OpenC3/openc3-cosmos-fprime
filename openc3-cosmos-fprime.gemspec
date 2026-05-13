@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
     'openc3_store_keywords' => 'FPrime',
     "openc3_store_title" => 'FPrime',
     'source_code_uri' => 'https://github.com/OpenC3/openc3-cosmos-fprime',
-    'openc3_cosmos_minimum_version' => '7.1.1'
+    'openc3_cosmos_minimum_version' => '6.10.4'
   }
 
   if ENV['VERSION']

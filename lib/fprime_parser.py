@@ -160,7 +160,7 @@ def _emit_array_line(f, keyword, name, t, types, annotation, emit_element):
     elif elem_kind == "bool":
         print(f"  {keyword} {name} {size} UINT {total} \"{annotation}\"", file=f)
         print(f"    STATE FALSE 0", file=f)
-        print(f"    STATE TRUE 1", file=f)
+        print(f"    STATE TRUE 0xFF", file=f)
     else:
         raise RuntimeError(f"Unhandled array element kind {elem_kind}")
 
@@ -206,9 +206,9 @@ def emit_command_param(f, name, t, types, annotation):
         print(f"  APPEND_PARAMETER {name} {t['size']} FLOAT MIN MAX 0 \"{annotation}\"", file=f)
         return
     if kind == "bool":
-        print(f"  APPEND_PARAMETER {name} {t['size']} UINT 0 1 0 \"{annotation}\"", file=f)
+        print(f"  APPEND_PARAMETER {name} {t['size']} UINT 0 0xFF 0 \"{annotation}\"", file=f)
         print(f"    STATE FALSE 0", file=f)
-        print(f"    STATE TRUE 1", file=f)
+        print(f"    STATE TRUE 0xFF", file=f)
         return
     raise RuntimeError(f"Unhandled type kind {kind}")
 
@@ -337,7 +337,7 @@ def emit_channel_value(f, name, t, types, annotation):
     if kind == "bool":
         print(f"  APPEND_ITEM {name} {t['size']} UINT \"{annotation}\"", file=f)
         print(f"    STATE FALSE 0", file=f)
-        print(f"    STATE TRUE 1", file=f)
+        print(f"    STATE TRUE 0xFF", file=f)
         return
     raise RuntimeError(f"Unhandled type kind {kind}")
 

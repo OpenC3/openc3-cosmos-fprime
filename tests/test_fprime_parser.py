@@ -521,7 +521,10 @@ class TestCommands:
         assert _cmd(config, "CMD_I16").get_item("VAL").data_type == "INT"
         assert _cmd(config, "CMD_F64").get_item("VAL").data_type == "FLOAT"
         assert _cmd(config, "CMD_STR").get_item("VAL").data_type == "STRING"
-        assert _cmd(config, "CMD_BOOL").get_item("VAL").states == {"FALSE": 0, "TRUE": 1}
+        # F Prime serializes true as 0xFF and rejects any other non-zero value
+        item = _cmd(config, "CMD_BOOL").get_item("VAL")
+        assert item.states == {"FALSE": 0, "TRUE": 0xFF}
+        assert item.maximum == 0xFF
 
     def test_enum_param_uses_default(self, config):
         item = _cmd(config, "CMD_ENUM").get_item("VAL")
@@ -669,6 +672,11 @@ class TestTelemetry:
         packet.buffer = struct.pack(">IHBIIH", 0x306, 0, 0, 1, 2, 2) + b"hi"
         assert packet.read("TLMSTR") == "hi"
         assert "received with actual packet length" not in capsys.readouterr().out
+
+    def test_bool_channel_true_is_0xff(self, config):
+        packet = _tlm(config, "TLMBOOL").clone()
+        packet.buffer = struct.pack(">IHBIIB", 0x305, 0, 0, 1, 2, 0xFF)
+        assert packet.read("TLMBOOL") == "TRUE"
 
     def test_format_string(self, config):
         assert _tlm(config, "LIMITED").get_item("LIMITED").format_string == "%.2f"

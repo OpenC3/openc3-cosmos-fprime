@@ -108,6 +108,9 @@ def flatten_type(t, types):
             flat_members = []
             for mname, m in members:
                 flat = flatten_type(m["type"], types)
+                if "size" in m:
+                    # FPP member array, e.g. `vals: [3] U32`
+                    flat = {"kind": "array", "size": m["size"], "elementType": flat}
                 flat["name"] = mname
                 flat_members.append(flat)
             return {"kind": "struct", "members": flat_members}
@@ -171,7 +174,13 @@ def emit_command_param(f, name, t, types, annotation):
             return
         if rkind == "struct":
             for mname, m in sorted(resolved["members"].items(), key=lambda kv: kv[1]["index"]):
-                emit_command_param(f, f"{name}_{mname}", m["type"], types, m.get("annotation", ""))
+                member_name = f"{name}_{mname}"
+                if "size" in m:
+                    # FPP member array, e.g. `vals: [3] U32`
+                    member_array = {"size": m["size"], "elementType": m["type"]}
+                    _emit_array_line(f, "APPEND_ARRAY_PARAMETER", member_name, member_array, types, m.get("annotation", ""), emit_command_param)
+                else:
+                    emit_command_param(f, member_name, m["type"], types, m.get("annotation", ""))
             return
         if rkind == "enum":
             states = {c["name"]: c["value"] for c in resolved["enumeratedConstants"]}
@@ -218,7 +227,13 @@ def emit_channel_value(f, name, t, types, annotation):
             return
         if rkind == "struct":
             for mname, m in sorted(resolved["members"].items(), key=lambda kv: kv[1]["index"]):
-                emit_channel_value(f, f"{name}_{mname}", m["type"], types, m.get("annotation", ""))
+                member_name = f"{name}_{mname}"
+                if "size" in m:
+                    # FPP member array, e.g. `vals: [3] U32`
+                    member_array = {"size": m["size"], "elementType": m["type"]}
+                    _emit_array_line(f, "APPEND_ARRAY_ITEM", member_name, member_array, types, m.get("annotation", ""), emit_channel_value)
+                else:
+                    emit_channel_value(f, member_name, m["type"], types, m.get("annotation", ""))
             return
         if rkind == "enum":
             states = {c["name"]: c["value"] for c in resolved["enumeratedConstants"]}

@@ -91,6 +91,15 @@ TYPE_DEFINITIONS = [
     {"kind": "array", "qualifiedName": "Ns.PointArr", "size": 2, "elementType": ref("Ns.Point")},
     {"kind": "array", "qualifiedName": "Ns.Grid", "size": 2, "elementType": ref("Ns.U32Arr")},
     {
+        # FPP member arrays: `vals: [3] U16` and `pts: [2] Ns.Point`
+        "kind": "struct",
+        "qualifiedName": "Ns.MemberArr",
+        "members": {
+            "vals": {"type": u(16), "index": 0, "size": 3},
+            "pts": {"type": ref("Ns.Point"), "index": 1, "size": 2},
+        },
+    },
+    {
         "kind": "struct",
         "qualifiedName": "Ns.Config",
         "members": {
@@ -174,6 +183,7 @@ CASES = [
     ("STRUCT_ARR", ref("Ns.PointArr")),
     ("NESTED_ARR", ref("Ns.Grid")),
     ("STRUCT_WITH_ARR", ref("Ns.Config")),
+    ("STRUCT_MEMBER_ARR", ref("Ns.MemberArr")),
     ("SECTION_CONFIGS", ref("Svc.TlmPacketizer.SectionConfigs")),
     ("SECTION_ENABLED", ref("Svc.TlmPacketizer.SectionEnabled")),
 ]
@@ -202,6 +212,7 @@ CASE_CMD_BITS = {
     "STRUCT_ARR": 128,
     "NESTED_ARR": 192,
     "STRUCT_WITH_ARR": 8 + 96,
+    "STRUCT_MEMBER_ARR": 3 * 16 + 2 * 64,
     "SECTION_CONFIGS": 4 * (8 + 8 + 32 + 32 + 32),
     "SECTION_ENABLED": 8,
 }
@@ -562,6 +573,11 @@ class TestCommands:
         assert _param_names(packet) == ["VAL_MODE", "VAL_VALS"]
         assert packet.get_item("VAL_VALS").array_size == 96
 
+    def test_struct_member_array_param(self, config):
+        packet = _cmd(config, "CMD_STRUCT_MEMBER_ARR")
+        assert _param_names(packet) == ["VAL_VALS", "VAL_PTS_0_X", "VAL_PTS_0_Y", "VAL_PTS_1_X", "VAL_PTS_1_Y"]
+        assert packet.get_item("VAL_VALS").array_size == 48
+
     def test_tlm_packetizer_section_configs(self, config):
         packet = _cmd(config, "CMD_SECTION_CONFIGS")
         fields = ["ENABLED", "FORCEENABLED", "RATELOGIC", "MIN", "MAX"]
@@ -619,6 +635,12 @@ class TestTelemetry:
     def test_struct_array_channel_expanded(self, config):
         prefix = "TLMSTRUCT_ARR"
         assert _param_names(_tlm(config, prefix)) == [f"{prefix}_0_X", f"{prefix}_0_Y", f"{prefix}_1_X", f"{prefix}_1_Y"]
+
+    def test_struct_member_array_channel(self, config):
+        prefix = "TLMSTRUCT_MEMBER_ARR"
+        packet = _tlm(config, prefix)
+        assert _param_names(packet) == [f"{prefix}_VALS"] + [f"{prefix}_PTS_{n}_{c}" for n in range(2) for c in "XY"]
+        assert packet.get_item(f"{prefix}_VALS").array_size == 48
 
     def test_nested_array_channel_expanded(self, config):
         packet = _tlm(config, "TLMNESTED_ARR")
@@ -726,6 +748,16 @@ class TestDpDictionary:
         assert records[0x702]["type"]["kind"] == "struct"
         assert [m["name"] for m in records[0x702]["type"]["members"]] == ["x", "y"]
         assert records[0x704]["type"] == {"kind": "string", "size": 20}
+
+    def test_struct_member_array_record_type(self, tmp_path):
+        d = _build_dictionary()
+        d["records"].append({"name": "Ns.comp.MemberArrRecord", "type": ref("Ns.MemberArr"), "array": False, "id": 0x705})
+        assert _run(tmp_path, dictionary=d).returncode == 0
+        members = _load_generated(tmp_path, "fprime_dp_dictionary.py").RECORDS[0x705]["type"]["members"]
+        assert members[0] == {
+            "kind": "array", "size": 3, "elementType": {"kind": "integer", "size": 16, "signed": False}, "name": "vals"
+        }
+        assert members[1]["kind"] == "array" and members[1]["elementType"]["kind"] == "struct"
 
     def test_containers(self, generated):
         containers = _load_generated(generated, "fprime_dp_dictionary.py").CONTAINERS

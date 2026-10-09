@@ -594,8 +594,12 @@ class TestTelemetry:
 
     def test_string_channel_is_variable_length(self, config):
         packet = _tlm(config, "TLMSTR")
-        assert packet.get_item("TLMSTR_LENGTH").bit_size == 32
+        assert packet.get_item("TLMSTR_LENGTH").bit_size == 16
         assert packet.get_item("TLMSTR").variable_bit_size is not None
+
+    def test_string_channel_length_follows_size_store(self, generated_v44):
+        packet = _load_config(generated_v44).telemetry[TARGET]["NS.COMP.TLMSTR"]
+        assert packet.get_item("TLMSTR_LENGTH").bit_size == 64
 
     def test_enum_channel_states(self, config):
         assert _tlm(config, "TLMENUM").get_item("TLMENUM").states == {"OFF": 0, "ON": 1}
@@ -662,7 +666,12 @@ class TestEventConversion:
         assert self._call(module, 0x600, b"") == "Hello"
 
     def test_scalars(self, module):
-        data = struct.pack(">HbfBI", 513, -3, 1.25, 1, 2) + b"hi"
+        data = struct.pack(">HbfBH", 513, -3, 1.25, 1, 2) + b"hi"
+        assert self._call(module, 0x601, data) == "a=513 b=-3 c=1.2 d=True e=hi"
+
+    def test_scalars_v44_string_length(self, generated_v44):
+        module = _load_event_conversion(generated_v44)
+        data = struct.pack(">HbfBQ", 513, -3, 1.25, 1, 2) + b"hi"
         assert self._call(module, 0x601, data) == "a=513 b=-3 c=1.2 d=True e=hi"
 
     def test_enum_alias_array_and_struct(self, module):

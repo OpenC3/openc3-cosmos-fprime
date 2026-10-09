@@ -204,3 +204,21 @@ def test_interface_drains_synthesized_packets_before_new_data():
     assert [unframe("SPACE_PACKET", b)[0] for b in synthesized] == [5, 5, 5]
     assert buffers[-1] == later
     assert "Dp_1.json" in protocol.stored
+
+
+def test_synthesized_packets_precede_packets_cached_upstream():
+    """END and later packets arriving in one read: the length protocol hands them
+    out one at a time, but the DP packets must still come right after END."""
+    from openc3.interfaces.protocols.length_protocol import LengthProtocol
+
+    file_frames = [frame("FPRIME", 3, raw) for raw in fx.file_transfer("/dp/Dp_1.fdp", _fdp())]
+    later = [frame("FPRIME", 1, b"\x00\x00\x00\x01later"), frame("FPRIME", 1, b"\x00\x00\x00\x02again")]
+    interface = ScriptedInterface(file_frames[:-1] + [file_frames[-1] + b"".join(later)])
+    interface.add_protocol(LengthProtocol, [32, 32, 12, 1, "BIG_ENDIAN", 0, "0xDEADBEEF", None, True], "READ")
+    interface.add_protocol(Recording, ["FPRIME", "FSW"], "READ")
+    buffers = []
+    while (packet := interface.read()) is not None:
+        buffers.append(bytes(packet.buffer))
+    assert buffers[: len(file_frames)] == file_frames
+    assert [unframe("FPRIME", b)[0] for b in buffers[len(file_frames):-2]] == [5, 5, 5]
+    assert buffers[-2:] == later

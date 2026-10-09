@@ -12,7 +12,10 @@ written to the logs bucket under <scope>/<bucket_folder>/<target>/<name>.
 Finished .fdp files are decoded with the generated fprime_dp_dictionary module:
 a <name>.json is written beside the file and DP_HEADER / DP.<record> packets are
 queued. The interface asks every protocol for cached data (a blank read) before
-reading new bytes, so queued packets come out right after the file's END packet.
+reading new bytes, so queued packets drain right after the file's END packet.
+Protocols earlier in the chain may also hold cached packets (e.g. several packets
+in one TM frame) and hand them over first; while anything is queued, those join
+the back of the queue so output order always matches the order packets arrived.
 """
 
 import importlib
@@ -51,13 +54,18 @@ class FprimeFileDownlinkProtocol(Protocol):
     def read_data(self, data, extra=None):
         if len(data) == 0:
             if self.queue:
-                return (self.queue.pop(0), extra)
+                return self.queue.pop(0)
             return super().read_data(data, extra)
+        pending = len(self.queue)
         try:
             self._handle(data)
         except Exception as error:
             Logger.error(f"{self.target_name}: file downlink: {error}")
-        return (data, extra)
+        if pending == 0:
+            return (data, extra)
+        # Earlier synthesized packets go first; this packet goes ahead of any it just produced
+        self.queue.insert(pending, (data, extra))
+        return self.queue.pop(0)
 
     def bucket_key(self, name):
         return f"{OPENC3_SCOPE}/{self.bucket_folder}/{self.target_name}/{name}"
@@ -94,7 +102,7 @@ class FprimeFileDownlinkProtocol(Protocol):
         if decoded.error:
             Logger.warn(f"{self.target_name}: {name} decoded with error: {decoded.error}")
         if decoded.header is not None:
-            self.queue.extend(build_dp_packets(self.headers, decoded, name))
+            self.queue.extend((packet, None) for packet in build_dp_packets(self.headers, decoded, name))
 
     def _load_dictionary(self):
         if self._dictionary is None:

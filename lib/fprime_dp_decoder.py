@@ -145,6 +145,34 @@ def decode_records(payload, widths, records):
     return decoded
 
 
+COMPRESSION_RECORD_SUFFIX = ".CompressionRecord"
+UNCOMPRESSED, ZLIB_DEFLATE = 0, 1
+
+
+def decompress_records(records):
+    """Join DpCompressProc records (U8 arrays: algorithm U8 + payload) into the original record stream."""
+    out = bytearray()
+    for record in records:
+        body = bytes(record.value)
+        if not body:
+            raise ValueError(f"empty compression record {record.name}")
+        algorithm, payload = body[0], body[1:]
+        if algorithm == UNCOMPRESSED:
+            out += payload
+        elif algorithm == ZLIB_DEFLATE:
+            try:
+                out += zlib.decompress(payload)
+            except zlib.error as error:
+                raise ValueError(f"cannot decompress {record.name}: {error}") from error
+        else:
+            raise ValueError(f"unsupported compression algorithm {algorithm} in {record.name}")
+    return bytes(out)
+
+
+def _is_compressed(records):
+    return bool(records) and all(r.array and r.name.endswith(COMPRESSION_RECORD_SUFFIX) for r in records)
+
+
 def decode_dp(data, widths, records):
     data = bytes(data)
     size = header_size(widths)
@@ -187,6 +215,19 @@ def decode_dp(data, widths, records):
     except RecordDecodeError as error:
         result.records = error.records
         result.error = str(error)
+        return result
+    if _is_compressed(result.records):
+        try:
+            inner = decompress_records(result.records)
+        except ValueError as error:
+            result.error = str(error)
+            return result
+        result.compressed = True
+        try:
+            result.records = decode_records(inner, widths, records)
+        except RecordDecodeError as error:
+            result.records = error.records
+            result.error = str(error)
     return result
 
 

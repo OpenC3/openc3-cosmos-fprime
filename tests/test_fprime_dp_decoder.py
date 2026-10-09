@@ -132,3 +132,43 @@ def test_to_json_without_header():
     decoded = decode_dp(b"", fx.V3_WIDTHS, fx.RECORDS)
     doc = json.loads(decoded_to_json(decoded, "bad.fdp"))
     assert doc["header"] is None and doc["container"] is None and doc["error"]
+
+
+class TestCompression:
+    def _inner(self, w):
+        return fx.u32_record(w, 42) + fx.string_record(w, "zipped")
+
+    @pytest.mark.parametrize("algorithm", [0, 1])
+    def test_decompresses(self, algorithm):
+        w = fx.V4_4_WIDTHS
+        inner = self._inner(w)
+        data = fx.compression_record(w, inner[:5], algorithm) + fx.compression_record(w, inner[5:], algorithm)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert decoded.compressed and decoded.ok
+        assert [r.value for r in decoded.records] == [42, "zipped"]
+        assert decoded.records[1].raw == fx.uint(64, 6) + b"zipped"
+
+    def test_unknown_algorithm(self):
+        w = fx.V3_WIDTHS
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, b"xx", algorithm=9)), w, fx.RECORDS)
+        assert "algorithm 9" in decoded.error and not decoded.compressed
+        assert decoded.records[0].name.endswith(".CompressionRecord")
+
+    def test_corrupt_zlib(self):
+        w = fx.V3_WIDTHS
+        body = bytes([1]) + b"not zlib"
+        data = fx.record(w, 0x105, fx.uint(16, len(body)) + body)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert "decompress" in decoded.error
+
+    def test_mixed_records_left_alone(self):
+        w = fx.V3_WIDTHS
+        data = fx.compression_record(w, self._inner(w)) + fx.u32_record(w, 1)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert not decoded.compressed and len(decoded.records) == 2 and decoded.error is None
+
+    def test_bad_inner_record_keeps_earlier(self):
+        w = fx.V3_WIDTHS
+        inner = fx.u32_record(w, 42) + fx.record(w, 0x999, b"")
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, inner)), w, fx.RECORDS)
+        assert decoded.compressed and [r.value for r in decoded.records] == [42] and "unknown record" in decoded.error

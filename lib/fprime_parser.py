@@ -212,10 +212,87 @@ def emit_command_param(f, name, t, types, annotation):
         return
     raise RuntimeError(f"Unhandled type kind {kind}")
 
-def emit_variable_string(f, name, max_bytes, length_bits, annotation=""):
+def emit_variable_string(f, name, length_bits, annotation=""):
+    # COSMOS variable sized items must be declared with a bit size of 0;
+    # a non-zero size is counted in the packet's defined length
     print(f"  APPEND_ITEM {name}_LENGTH {length_bits} UINT", file=f)
-    print(f"  APPEND_ITEM {name} {max_bytes * 8} STRING \"{annotation}\"", file=f)
+    print(f"  APPEND_ITEM {name} 0 STRING \"{annotation}\"", file=f)
     print(f"    VARIABLE_BIT_SIZE {name}_LENGTH 8 0", file=f)
+
+FW_PACKET_FILE = 3
+FW_PACKET_DP = 5
+
+def clean_annotation(text):
+    return text.replace('\n', ' ').replace('\r', '')
+
+def emit_tlm_header(f, descriptor):
+    if headers == "FPRIME":
+        print("  APPEND_ITEM FPRIME_SYNC 32 UINT", file=f)
+        print("  APPEND_ITEM FPRIME_SIZE 32 UINT", file=f)
+        print(f"  APPEND_ID_ITEM FPRIME_PACKET_ID 32 UINT {descriptor}", file=f)
+    else:
+        print("  APPEND_ITEM CCSDS_VERSION 3 UINT", file=f)
+        print("  APPEND_ITEM CCSDS_TYPE 1 UINT", file=f)
+        print("  APPEND_ITEM CCSDS_SHF 1 UINT", file=f)
+        print(f"  APPEND_ID_ITEM CCSDS_APID 11 UINT {descriptor}", file=f)
+        print("  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT", file=f)
+        print("  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT", file=f)
+        print("  APPEND_ITEM CCSDS_LENGTH 16 UINT", file=f)
+        print("  APPEND_ITEM FPRIME_APID 16 UINT", file=f)
+
+def emit_tlm_trailer(f):
+    if headers == "FPRIME":
+        print("  ITEM FPRIME_CRC32 -32 32 UINT", file=f)
+        # Always follows the payload at runtime, but COSMOS can't know that when
+        # the payload is fixed size or ends in a variable sized item
+        print("    OVERLAP", file=f)
+
+def rest_of_packet_bits():
+    """Bit size for an item that fills the rest of the packet (before the FPRIME CRC)."""
+    return -32 if headers == "FPRIME" else 0
+
+def emit_time_items(f):
+    print("  APPEND_ITEM FPRIME_TIMEBASE 16 UINT", file=f)
+    print("    STATE TB_NONE 0 # No time base has been established", file=f)
+    print("    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time", file=f)
+    print("    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running", file=f)
+    print("    STATE TB_DONT_CARE 0xFFFF", file=f)
+    print("  APPEND_ITEM FPRIME_CONTEXT 8 UINT", file=f)
+    print("  APPEND_ITEM FPRIME_TIME_SEC 32 UINT", file=f)
+    print("  APPEND_ITEM FPRIME_TIME_USEC 32 UINT", file=f)
+
+def emit_packet_time(f):
+    print("  ITEM PACKET_TIME 0 0 DERIVED \"Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC\"", file=f)
+    print("    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC", file=f)
+
+def emit_bool_flag(f, name, description):
+    print(f"  APPEND_ITEM {name} 8 UINT \"{description}\"", file=f)
+    print("    STATE FALSE 0", file=f)
+    print("    STATE TRUE 1", file=f)
+
+def emit_container_id(f):
+    print("  APPEND_ITEM CONTAINER_ID 32 UINT \"Data product container ID\"", file=f)
+    for container in containers:
+        print(f"    STATE \"{container['name']}\" {container['id']}", file=f)
+
+def emit_record_value(f, record):
+    annotation = clean_annotation(record.get("annotation", ""))
+    if not record.get("array", False):
+        emit_channel_value(f, "VALUE", record["type"], types, annotation)
+        return
+    print(f"  APPEND_ITEM COUNT {widths['size_store']} UINT \"Number of array elements\"", file=f)
+    elem = record["type"]
+    while elem["kind"] == "qualifiedIdentifier" and types[elem["name"]]["kind"] == "alias":
+        elem = types[elem["name"]]["underlyingType"]
+    if elem["kind"] in ("integer", "float", "bool"):
+        if elem["kind"] == "float":
+            data_type = "FLOAT"
+        else:
+            data_type = "INT" if elem.get("signed") else "UINT"
+        print(f"  APPEND_ARRAY_ITEM VALUE {elem['size']} {data_type} 0 \"{annotation}\"", file=f)
+        print(f"    VARIABLE_BIT_SIZE COUNT {elem['size']} 0", file=f)
+    else:
+        print(f"  APPEND_ITEM VALUE {rest_of_packet_bits()} BLOCK \"{annotation} (raw elements; decoded values are in the .json file)\"", file=f)
 
 def emit_channel_value(f, name, t, types, annotation):
     kind = t["kind"]
@@ -248,7 +325,7 @@ def emit_channel_value(f, name, t, types, annotation):
             return
         raise RuntimeError(f"Unhandled typeDefinition kind {rkind}")
     if kind == "string":
-        emit_variable_string(f, name, t["size"], widths["size_store"], annotation)
+        emit_variable_string(f, name, widths["size_store"], annotation)
         return
     if kind == "integer":
         ts = "INT" if t["signed"] else "UINT"
@@ -353,46 +430,14 @@ with open(tlm_path, 'w') as f:
     print(file=f)
     print(f"TELEMETRY <%= target_name %> TELEMETRY BIG_ENDIAN \"Channelized Telemetry Packet\"", file=f)
     print("  SUBPACKETIZER fprime_subpacketizer.py", file=f)
-    if headers == "FPRIME":
-        print("  APPEND_ITEM FPRIME_SYNC 32 UINT", file=f)    
-        print("  APPEND_ITEM FPRIME_SIZE 32 UINT", file=f)
-        print("  APPEND_ID_ITEM FPRIME_PACKET_ID 32 UINT 1", file=f)    
-        print("  APPEND_ITEM CHANNELS -32 BLOCK", file=f)
-        print("  ITEM FPRIME_CRC32 -32 32 UINT", file=f)
-    else:
-        print("  APPEND_ITEM CCSDS_VERSION 3 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_TYPE 1 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_SHF 1 UINT", file=f)
-        print("  APPEND_ID_ITEM CCSDS_APID 11 UINT 1", file=f)
-        print("  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_LENGTH 16 UINT", file=f)
-        print("  APPEND_ITEM FPRIME_APID 16 UINT", file=f)
-        print("  APPEND_ITEM CHANNELS 0 BLOCK", file=f)
+    emit_tlm_header(f, 1)
+    print(f"  APPEND_ITEM CHANNELS {rest_of_packet_bits()} BLOCK", file=f)
+    emit_tlm_trailer(f)
     print(file=f)
     print(f"TELEMETRY <%= target_name %> EVENT BIG_ENDIAN \"Event Packet\"", file=f)
-    if headers == "FPRIME":
-        print("  APPEND_ITEM FPRIME_SYNC 32 UINT", file=f)    
-        print("  APPEND_ITEM FPRIME_SIZE 32 UINT", file=f)
-        print("  APPEND_ID_ITEM FPRIME_PACKET_ID 32 UINT 2", file=f)       
-    else:
-        print("  APPEND_ITEM CCSDS_VERSION 3 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_TYPE 1 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_SHF 1 UINT", file=f)
-        print("  APPEND_ID_ITEM CCSDS_APID 11 UINT 2", file=f)
-        print("  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT", file=f)
-        print("  APPEND_ITEM CCSDS_LENGTH 16 UINT", file=f)
-        print("  APPEND_ITEM FPRIME_APID 16 UINT", file=f)
+    emit_tlm_header(f, 2)
     print("  APPEND_ITEM FPRIME_EVENT_ID 32 UINT", file=f)
-    print("  APPEND_ITEM FPRIME_TIMEBASE 16 UINT", file=f)
-    print("    STATE TB_NONE 0 # No time base has been established", file=f)
-    print("    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time", file=f)
-    print("    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running", file=f)
-    print("    STATE TB_DONT_CARE 0xFFFF", file=f)
-    print("  APPEND_ITEM FPRIME_CONTEXT 8 UINT", file=f)
-    print("  APPEND_ITEM FPRIME_TIME_SEC 32 UINT", file=f)
-    print("  APPEND_ITEM FPRIME_TIME_USEC 32 UINT", file=f)
+    emit_time_items(f)
     if headers == "FPRIME":
         print("  APPEND_ITEM FPRIME_EVENT_DATA -32 BLOCK", file=f)
         print("  ITEM FPRIME_CRC32 -32 32 UINT", file=f)
@@ -403,17 +448,10 @@ with open(tlm_path, 'w') as f:
 
     for channel in channels:
         print(file=f)
-        print(f"TELEMETRY <%= target_name %> {channel["name"]} BIG_ENDIAN \"{channel.get("annotation", "").replace('\n', ' ').replace('\r', '')}\"", file=f)
+        print(f"TELEMETRY <%= target_name %> {channel["name"]} BIG_ENDIAN \"{clean_annotation(channel.get("annotation", ""))}\"", file=f)
         print("  SUBPACKET", file=f)
         print(f"  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT {channel['id']}", file=f)
-        print("  APPEND_ITEM FPRIME_TIMEBASE 16 UINT", file=f)
-        print("    STATE TB_NONE 0 # No time base has been established", file=f)
-        print("    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time", file=f)
-        print("    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running", file=f)
-        print("    STATE TB_DONT_CARE 0xFFFF", file=f)
-        print("  APPEND_ITEM FPRIME_CONTEXT 8 UINT", file=f)
-        print("  APPEND_ITEM FPRIME_TIME_SEC 32 UINT", file=f)
-        print("  APPEND_ITEM FPRIME_TIME_USEC 32 UINT", file=f)
+        emit_time_items(f)
 
         channel_name = channel["name"].split(".")[-1]
         emit_channel_value(f, channel_name, channel["type"], types, channel.get("annotation", ""))
@@ -422,8 +460,67 @@ with open(tlm_path, 'w') as f:
             print(f"    FORMAT_STRING \"{convert_fprime_format(channel['format'], value_type['kind'])}\"", file=f)
         if value_type is not None and value_type["kind"] in ("integer", "float") and "limits" in channel:
             print(f"    {format_limits_line(channel['limits'], value_type)}", file=f)
-        print("  ITEM PACKET_TIME 0 0 DERIVED \"Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC\"", file=f)
-        print("    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC", file=f)
+        emit_packet_time(f)
+
+    file_packets = [
+        ("FILE_START", 0, "F Prime file downlink START packet"),
+        ("FILE_DATA", 1, "F Prime file downlink DATA packet"),
+        ("FILE_END", 2, "F Prime file downlink END packet"),
+        ("FILE_CANCEL", 3, "F Prime file downlink CANCEL packet"),
+    ]
+    for name, file_type, description in file_packets:
+        print(file=f)
+        print(f"TELEMETRY <%= target_name %> {name} BIG_ENDIAN \"{description}\"", file=f)
+        emit_tlm_header(f, FW_PACKET_FILE)
+        print(f"  APPEND_ID_ITEM FILE_TYPE 8 UINT {file_type}", file=f)
+        print("  APPEND_ITEM SEQUENCE_INDEX 32 UINT", file=f)
+        if name == "FILE_START":
+            print("  APPEND_ITEM FILE_SIZE 32 UINT \"File size in bytes\"", file=f)
+            emit_variable_string(f, "SOURCE_PATH", 8, "Source path on the spacecraft")
+            emit_variable_string(f, "DEST_PATH", 8, "Destination path")
+        elif name == "FILE_DATA":
+            print("  APPEND_ITEM BYTE_OFFSET 32 UINT", file=f)
+            print("  APPEND_ITEM DATA_SIZE 16 UINT", file=f)
+            print("  APPEND_ITEM DATA 0 BLOCK", file=f)
+            print("    VARIABLE_BIT_SIZE DATA_SIZE 8 0", file=f)
+        elif name == "FILE_END":
+            print("  APPEND_ITEM CHECKSUM 32 UINT \"CFDP checksum of the file\"", file=f)
+            print("    FORMAT_STRING \"0x%08X\"", file=f)
+        emit_tlm_trailer(f)
+
+    print(file=f)
+    print("TELEMETRY <%= target_name %> DP_HEADER BIG_ENDIAN \"Data product header, synthesized by fprime_file_downlink_protocol.py\"", file=f)
+    emit_tlm_header(f, FW_PACKET_DP)
+    print("  APPEND_ID_ITEM DP_KIND 8 UINT 0", file=f)
+    emit_container_id(f)
+    emit_time_items(f)
+    print("  APPEND_ITEM PRIORITY 32 UINT", file=f)
+    print("  APPEND_ITEM PROC_TYPES 8 UINT \"Processing type bit mask\"", file=f)
+    print("  APPEND_ITEM DP_STATE 8 UINT", file=f)
+    print("    STATE UNTRANSMITTED 0", file=f)
+    print("    STATE PARTIAL 1", file=f)
+    print("    STATE TRANSMITTED 2", file=f)
+    print("  APPEND_ITEM DATA_SIZE 64 UINT \"Record data size in bytes\"", file=f)
+    emit_bool_flag(f, "HEADER_CRC_OK", "Header hash matched")
+    emit_bool_flag(f, "DATA_CRC_OK", "Data hash matched")
+    emit_bool_flag(f, "DECODE_OK", "All records decoded")
+    print("  APPEND_ITEM RECORD_COUNT 32 UINT \"Number of records decoded\"", file=f)
+    print(f"  APPEND_ITEM USER_DATA {widths['user_data_size'] * 8} BLOCK", file=f)
+    emit_variable_string(f, "FILE_NAME", 8, "Downlinked data product file")
+    emit_packet_time(f)
+    emit_tlm_trailer(f)
+
+    for record in records:
+        print(file=f)
+        print(f"TELEMETRY <%= target_name %> DP.{record['name']} BIG_ENDIAN \"{clean_annotation(record.get('annotation', ''))}\"", file=f)
+        emit_tlm_header(f, FW_PACKET_DP)
+        print("  APPEND_ID_ITEM DP_KIND 8 UINT 1", file=f)
+        emit_container_id(f)
+        emit_time_items(f)
+        print(f"  APPEND_ID_ITEM RECORD_ID 32 UINT {record['id']}", file=f)
+        emit_record_value(f, record)
+        emit_packet_time(f)
+        emit_tlm_trailer(f)
 
 events_lookup = {}
 for e in events:

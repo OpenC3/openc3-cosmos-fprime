@@ -43,6 +43,8 @@ data products) is reassembled and written to the COSMOS logs bucket at
 - Files are reassembled in memory, up to 100 MiB by default. To change this, append the bucket folder and
   the size in bytes to the `fprime_file_downlink_protocol.py` lines in `plugin.txt`, e.g.
   `... <%= fprime_target_name %> fprime_downlink 524288000`.
+  Decoding a data product holds every value in memory too (roughly 10x the product size for large
+  arrays), so keep very large products, such as images, to a few tens of MiB or lower `max_file_size`.
 - FPrime 4 `CfdpManager` (true CFDP) transfers are not supported.
 
 ## Contributions

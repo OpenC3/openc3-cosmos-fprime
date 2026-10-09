@@ -77,6 +77,44 @@ def _int(data, offset, bits, signed=False):
     return struct.unpack_from(">" + code, data, offset)[0], offset + size
 
 
+_FLOAT_CODES = {32: "f", 64: "d"}
+
+
+def _unpack_primitives(data, offset, t, count):
+    """Unpack count integer/float/bool elements in one call; None if t isn't one of those."""
+    kind = t["kind"]
+    if kind == "integer":
+        code = _INT_CODES.get(t["size"])
+        if code is not None and not t.get("signed", False):
+            code = code.upper()
+    elif kind == "float":
+        code = _FLOAT_CODES.get(t["size"])
+    elif kind == "bool":
+        code = "B"
+    else:
+        return None
+    if code is None:
+        return None
+    size = count * struct.calcsize(code)
+    if offset + size > len(data):
+        raise ValueError(f"need {size} bytes at offset {offset} but only {len(data) - offset} remain")
+    values = list(struct.unpack_from(f">{count}{code}", data, offset))
+    if kind == "bool":
+        values = [value != 0 for value in values]
+    return values, offset + size
+
+
+def _parse_elements(data, offset, t, count, widths):
+    unpacked = _unpack_primitives(data, offset, t, count)
+    if unpacked is not None:
+        return unpacked
+    values = []
+    for _ in range(count):
+        value, offset = parse_value(data, offset, t, widths)
+        values.append(value)
+    return values, offset
+
+
 def parse_value(data, offset, t, widths):
     kind = t["kind"]
     if kind == "integer":
@@ -99,11 +137,7 @@ def parse_value(data, offset, t, widths):
             raise ValueError(f"string of {length} bytes at offset {offset} runs past the data")
         return bytes(data[offset:offset + length]).decode("utf-8", errors="replace"), offset + length
     if kind == "array":
-        values = []
-        for _ in range(t["size"]):
-            value, offset = parse_value(data, offset, t["elementType"], widths)
-            values.append(value)
-        return values, offset
+        return _parse_elements(data, offset, t["elementType"], t["size"], widths)
     if kind == "struct":
         result = {}
         for member in t["members"]:
@@ -133,10 +167,7 @@ def decode_records(payload, widths, records):
             value_start = offset
             if definition["array"]:
                 count, offset = _int(payload, offset, widths["size_store"])
-                value = []
-                for _ in range(count):
-                    element, offset = parse_value(payload, offset, definition["type"], widths)
-                    value.append(element)
+                value, offset = _parse_elements(payload, offset, definition["type"], count, widths)
             else:
                 value, offset = parse_value(payload, offset, definition["type"], widths)
         except (ValueError, struct.error) as error:
@@ -251,4 +282,6 @@ def decoded_to_json(decoded, file_name, container=None):
         "error": decoded.error,
         "records": [{"id": r.id, "name": r.name, "array": r.array, "value": r.value} for r in decoded.records],
     }
-    return json.dumps(doc, indent=2)
+    # One line per array element makes large products huge and slow to write
+    large = decoded.header is not None and decoded.header.data_size > 65536
+    return json.dumps(doc, separators=(",", ":")) if large else json.dumps(doc, indent=2)

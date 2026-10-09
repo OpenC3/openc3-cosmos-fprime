@@ -7,11 +7,12 @@
 """Tests for the F Prime data product decoder."""
 
 import json
+import struct
 
 import pytest
 
 import fprime_fixtures as fx
-from fprime_dp_decoder import decode_dp, decoded_to_json, header_size
+from fprime_dp_decoder import decode_dp, decoded_to_json, header_size, parse_value
 
 WIDTHS = {"v3": fx.V3_WIDTHS, "v4_1": fx.V4_1_WIDTHS, "v4_4": fx.V4_4_WIDTHS}
 
@@ -172,3 +173,43 @@ class TestCompression:
         inner = fx.u32_record(w, 42) + fx.record(w, 0x999, b"")
         decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, inner)), w, fx.RECORDS)
         assert decoded.compressed and [r.value for r in decoded.records] == [42] and "unknown record" in decoded.error
+
+
+class TestLargeProducts:
+    """Image-sized products must not stall the interface thread."""
+
+    def _big(self):
+        w = fx.V4_4_WIDTHS
+        return w, fx.build_fdp(w, fx.u8_array_record(w, bytes(range(256)) * 20_000) + fx.u32_record(w, 7))
+
+    def test_primitive_array_decodes_fast(self):
+        import time
+
+        w, fdp = self._big()
+        start = time.perf_counter()
+        decoded = decode_dp(fdp, w, fx.RECORDS)
+        assert time.perf_counter() - start < 0.3
+        assert decoded.ok and decoded.records[0].value[:3] == [0, 1, 2] and decoded.records[1].value == 7
+
+    def test_signed_and_float_arrays_bulk_decode_correctly(self):
+        w = fx.V4_4_WIDTHS
+        t = {"kind": "array", "size": 3, "elementType": {"kind": "integer", "size": 16, "signed": True}}
+        assert parse_value(struct.pack(">hhh", -1, 2, -3), 0, t, w) == ([-1, 2, -3], 6)
+        t = {"kind": "array", "size": 2, "elementType": {"kind": "float", "size": 64}}
+        assert parse_value(struct.pack(">dd", 1.5, -2.5), 0, t, w) == ([1.5, -2.5], 16)
+        t = {"kind": "array", "size": 2, "elementType": {"kind": "bool", "size": 8}}
+        assert parse_value(b"\xff\x00", 0, t, w) == ([True, False], 2)
+        u16_pair = {"kind": "array", "size": 2, "elementType": {"kind": "integer", "size": 16, "signed": False}}
+        with pytest.raises(ValueError):
+            parse_value(b"\x00\x01", 0, u16_pair, w)
+
+    def test_large_product_json_is_compact(self):
+        w, fdp = self._big()
+        text = decoded_to_json(decode_dp(fdp, w, fx.RECORDS), "Dp_big.fdp")
+        assert text.count("\n") < 10
+        assert json.loads(text)["records"][1]["value"] == 7
+
+    def test_small_product_json_is_indented(self):
+        w = fx.V3_WIDTHS
+        text = decoded_to_json(decode_dp(fx.build_fdp(w, fx.u32_record(w, 1)), w, fx.RECORDS), "Dp_1.fdp")
+        assert '\n  "header"' in text

@@ -21,6 +21,7 @@ from dataclasses import asdict, dataclass, field
 
 DP_DESCRIPTOR = 5
 HASH_SIZE = 4
+DEFAULT_MAX_DECOMPRESSED_SIZE = 104857600
 
 _INT_CODES = {8: "b", 16: "h", 32: "i", 64: "q"}
 
@@ -180,23 +181,32 @@ COMPRESSION_RECORD_SUFFIX = ".CompressionRecord"
 UNCOMPRESSED, ZLIB_DEFLATE = 0, 1
 
 
-def decompress_records(records):
+def decompress_records(records, max_size=DEFAULT_MAX_DECOMPRESSED_SIZE):
     """Join DpCompressProc records (U8 arrays: algorithm U8 + payload) into the original record stream."""
+    if max_size < 0:
+        raise ValueError("max_size must be nonnegative")
     out = bytearray()
     for record in records:
         body = bytes(record.value)
         if not body:
             raise ValueError(f"empty compression record {record.name}")
         algorithm, payload = body[0], body[1:]
+        remaining = max_size - len(out)
         if algorithm == UNCOMPRESSED:
-            out += payload
+            chunk = payload
         elif algorithm == ZLIB_DEFLATE:
             try:
-                out += zlib.decompress(payload)
+                inflater = zlib.decompressobj()
+                chunk = inflater.decompress(payload, remaining + 1)
             except zlib.error as error:
                 raise ValueError(f"cannot decompress {record.name}: {error}") from error
+            if len(chunk) <= remaining and not inflater.eof:
+                raise ValueError(f"cannot decompress {record.name}: incomplete zlib stream")
         else:
             raise ValueError(f"unsupported compression algorithm {algorithm} in {record.name}")
+        if len(chunk) > remaining:
+            raise ValueError(f"decompressed data exceeds max_size {max_size}")
+        out += chunk
     return bytes(out)
 
 
@@ -204,7 +214,7 @@ def _is_compressed(records):
     return bool(records) and all(r.array and r.name.endswith(COMPRESSION_RECORD_SUFFIX) for r in records)
 
 
-def decode_dp(data, widths, records):
+def decode_dp(data, widths, records, max_decompressed_size=DEFAULT_MAX_DECOMPRESSED_SIZE):
     data = bytes(data)
     size = header_size(widths)
     if len(data) < size + 2 * HASH_SIZE:
@@ -249,7 +259,7 @@ def decode_dp(data, widths, records):
         return result
     if _is_compressed(result.records):
         try:
-            inner = decompress_records(result.records)
+            inner = decompress_records(result.records, max_decompressed_size)
         except ValueError as error:
             result.error = str(error)
             return result
@@ -283,5 +293,7 @@ def decoded_to_json(decoded, file_name, container=None):
         "records": [{"id": r.id, "name": r.name, "array": r.array, "value": r.value} for r in decoded.records],
     }
     # One line per array element makes large products huge and slow to write
-    large = decoded.header is not None and decoded.header.data_size > 65536
+    large = (decoded.header is not None and decoded.header.data_size > 65536) or sum(
+        len(record.raw) for record in decoded.records
+    ) > 65536
     return json.dumps(doc, separators=(",", ":")) if large else json.dumps(doc, indent=2)

@@ -142,8 +142,9 @@ def _emit_array_line(f, keyword, name, t, types, annotation, emit_element):
     while elem["kind"] == "qualifiedIdentifier" and types[elem["name"]]["kind"] == "alias":
         elem = types[elem["name"]]["underlyingType"]
     elem_kind = elem["kind"]
-    if elem_kind == "qualifiedIdentifier":
-        # Enum, struct, or nested array elements can't be a COSMOS array item,
+    if elem_kind in ("qualifiedIdentifier", "string"):
+        # Strings need individual length prefixes; enums, structs, and nested
+        # arrays also need individual COSMOS items,
         # so emit each element as its own item(s) named NAME_0, NAME_1, ...
         for i in range(t["size"]):
             emit_element(f, f"{name}_{i}", elem, types, annotation)
@@ -155,8 +156,6 @@ def _emit_array_line(f, keyword, name, t, types, annotation, emit_element):
         print(f"  {keyword} {name} {size} {ts} {total} \"{annotation}\"", file=f)
     elif elem_kind == "float":
         print(f"  {keyword} {name} {size} FLOAT {total} \"{annotation}\"", file=f)
-    elif elem_kind == "string":
-        print(f"  {keyword} {name} {size} STRING {total} \"{annotation}\"", file=f)
     elif elem_kind == "bool":
         print(f"  {keyword} {name} {size} UINT {total} \"{annotation}\"", file=f)
         print(f"    STATE FALSE 0", file=f)
@@ -505,7 +504,8 @@ with open(tlm_path, 'w') as f:
     emit_bool_flag(f, "DATA_CRC_OK", "Data hash matched")
     emit_bool_flag(f, "DECODE_OK", "All records decoded")
     print("  APPEND_ITEM RECORD_COUNT 32 UINT \"Number of records decoded\"", file=f)
-    print(f"  APPEND_ITEM USER_DATA {widths['user_data_size'] * 8} BLOCK", file=f)
+    if widths['user_data_size']:
+        print(f"  APPEND_ITEM USER_DATA {widths['user_data_size'] * 8} BLOCK", file=f)
     emit_variable_string(f, "FILE_NAME", 8, "Downlinked data product file")
     emit_packet_time(f)
     emit_tlm_trailer(f)

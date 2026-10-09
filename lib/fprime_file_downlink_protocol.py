@@ -10,7 +10,7 @@ Must be the LAST read protocol on the interface. Every packet passes through
 unchanged. FW_PACKET_FILE packets are also reassembled; a finished file is
 written to the logs bucket under <scope>/<bucket_folder>/<target>/<name>.
 Finished .fdp files are decoded with the generated fprime_dp_dictionary module:
-a <name>.json is written beside the file and DP_HEADER / DP.<record> packets are
+decoded/<name>.json is written and DP_HEADER / DP.<record> packets are
 queued. The interface asks every protocol for cached data (a blank read) before
 reading new bytes, so queued packets drain right after the file's END packet.
 Protocols earlier in the chain may also hold cached packets (e.g. several packets
@@ -18,11 +18,13 @@ in one TM frame) and hand them over first; while anything is queued, those join
 the back of the queue so output order always matches the order packets arrived.
 """
 
-import importlib
-import posixpath
+import importlib.util
+from collections import deque
+from pathlib import Path
 
 from openc3.environment import OPENC3_LOGS_BUCKET, OPENC3_SCOPE
 from openc3.interfaces.protocols.protocol import Protocol
+from openc3.system.system import System
 from openc3.utilities.bucket import Bucket
 from openc3.utilities.logger import Logger
 
@@ -43,20 +45,24 @@ class FprimeFileDownlinkProtocol(Protocol):
         self.headers = str(headers).upper()
         self.target_name = target_name
         self.bucket_folder = bucket_folder
-        self.queue = []
+        self.queue = deque()
         self._dictionary = None
 
     def reset(self):
         super().reset()
-        self.queue = []
+        self.queue = deque()
         self.assembler.reset()
 
     def read_data(self, data, extra=None):
         if len(data) == 0:
             if self.queue:
-                return self.queue.pop(0)
+                return self.queue.popleft()
             return super().read_data(data, extra)
         pending = len(self.queue)
+        # Append incoming packets before handling them, so anything synthesized
+        # by this packet follows it without inserting into the middle of the queue.
+        if pending:
+            self.queue.append((data, extra))
         try:
             self._handle(data)
         except Exception as error:
@@ -64,8 +70,7 @@ class FprimeFileDownlinkProtocol(Protocol):
         if pending == 0:
             return (data, extra)
         # Earlier synthesized packets go first; this packet goes ahead of any it just produced
-        self.queue.insert(pending, (data, extra))
-        return self.queue.pop(0)
+        return self.queue.popleft()
 
     def bucket_key(self, name):
         return f"{OPENC3_SCOPE}/{self.bucket_folder}/{self.target_name}/{name}"
@@ -96,9 +101,10 @@ class FprimeFileDownlinkProtocol(Protocol):
         dictionary = self._load_dictionary()
         if dictionary is None:
             return
-        decoded = decode_dp(completed.data, dictionary.WIDTHS, dictionary.RECORDS)
+        decoded = decode_dp(completed.data, dictionary.WIDTHS, dictionary.RECORDS,
+                            max_decompressed_size=self.assembler.max_file_size)
         container = dictionary.CONTAINERS.get(decoded.header.container_id) if decoded.header else None
-        self.store(f"{posixpath.splitext(name)[0]}.json", decoded_to_json(decoded, name, container).encode())
+        self.store(f"decoded/{name}.json", decoded_to_json(decoded, name, container).encode())
         if decoded.error:
             Logger.warn(f"{self.target_name}: {name} decoded with error: {decoded.error}")
         if decoded.header is not None:
@@ -112,8 +118,15 @@ class FprimeFileDownlinkProtocol(Protocol):
     def _load_dictionary(self):
         if self._dictionary is None:
             try:
-                self._dictionary = importlib.import_module("fprime_dp_dictionary")
-            except ImportError:
+                target = System.targets.get(str(self.target_name).upper())
+                if target is None:
+                    raise FileNotFoundError(f"target {self.target_name} not found")
+                path = Path(target.dir) / "lib" / "fprime_dp_dictionary.py"
+                spec = importlib.util.spec_from_file_location(f"{self.target_name}_dp_dictionary", path)
+                dictionary = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(dictionary)
+                self._dictionary = dictionary
+            except (ImportError, OSError):
                 Logger.warn(f"{self.target_name}: fprime_dp_dictionary not found; regenerate the target "
                             "with fprime_parser.py to decode data products")
                 self._dictionary = False

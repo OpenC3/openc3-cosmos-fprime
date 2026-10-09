@@ -728,6 +728,40 @@ class TestEventConversion:
 
 
 class TestDpDictionary:
+    @pytest.mark.parametrize("headers", ["SPACE_PACKET", "FPRIME"])
+    def test_fixed_string_array_record_preserves_length_prefixes(self, tmp_path, headers):
+        dictionary = _v44_dictionary()
+        dictionary["typeDefinitions"].append({
+            "kind": "array", "qualifiedName": "Ns.StringPair", "size": 2, "elementType": STRING20,
+        })
+        dictionary["records"].append({
+            "name": "Ns.comp.StringPairRecord", "type": ref("Ns.StringPair"), "array": False, "id": 0x706,
+        })
+        result = _run(tmp_path, dictionary=dictionary, extra_args=(headers,))
+        assert result.returncode == 0, result.stderr
+        generated = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        widths = generated.WIDTHS
+        raw = fx.uint(widths["size_store"], 2) + b"hi" + fx.uint(widths["size_store"], 5) + b"there"
+        decoded = decode_dp(fx.build_fdp(widths, fx.record(widths, 0x706, raw)), widths, generated.RECORDS)
+        assert decoded.records[0].value == ["hi", "there"]
+        packet = _read(_load_config(tmp_path), "DP.NS.COMP.STRINGPAIRRECORD",
+                       build_dp_packets(headers, decoded, "strings.fdp")[1])
+        assert packet.read("VALUE_0") == "hi"
+        assert packet.read("VALUE_1") == "there"
+
+    @pytest.mark.parametrize("headers", ["SPACE_PACKET", "FPRIME"])
+    def test_zero_user_data_preserves_header_layout(self, tmp_path, headers):
+        dictionary = _v44_dictionary()
+        dictionary["constants"][0]["value"] = 0
+        result = _run(tmp_path, dictionary=dictionary, extra_args=(headers,))
+        assert result.returncode == 0, result.stderr
+        generated = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        decoded = decode_dp(fx.build_fdp(generated.WIDTHS, b"", container_id=0x800),
+                            generated.WIDTHS, generated.RECORDS)
+        packet = _read(_load_config(tmp_path), "DP_HEADER", build_dp_packets(headers, decoded, "empty.fdp")[0])
+        assert packet.read("FILE_NAME") == "empty.fdp"
+        assert "USER_DATA" not in packet.items
+
     def test_file_written(self, generated):
         assert (_target_dir(generated) / "lib" / "fprime_dp_dictionary.py").is_file()
 

@@ -8,11 +8,12 @@
 
 import json
 import struct
+import zlib
 
 import pytest
 
 import fprime_fixtures as fx
-from fprime_dp_decoder import decode_dp, decoded_to_json, header_size, parse_value
+from fprime_dp_decoder import DpRecord, decode_dp, decoded_to_json, decompress_records, header_size, parse_value
 
 WIDTHS = {"v3": fx.V3_WIDTHS, "v4_1": fx.V4_1_WIDTHS, "v4_4": fx.V4_4_WIDTHS}
 
@@ -175,6 +176,44 @@ class TestCompression:
         assert decoded.compressed and [r.value for r in decoded.records] == [42] and "unknown record" in decoded.error
 
 
+@pytest.mark.parametrize("algorithm", [0, 1])
+def test_cumulative_decompression_limit_and_exact_boundary(algorithm):
+    w = fx.V4_4_WIDTHS
+    inner = fx.u32_record(w, 42) + fx.string_record(w, "zipped")
+    payload = fx.compression_record(w, inner[:5], algorithm) + fx.compression_record(w, inner[5:], algorithm)
+    fdp = fx.build_fdp(w, payload)
+    assert decode_dp(fdp, w, fx.RECORDS, max_decompressed_size=len(inner)).ok
+    decoded = decode_dp(fdp, w, fx.RECORDS, max_decompressed_size=len(inner) - 1)
+    assert "exceeds max_size" in decoded.error
+
+
+def test_high_expansion_rejected_before_allocation():
+    body = b"\x01" + zlib.compress(b"\x00" * 1_000_000)
+    record = DpRecord(0x105, "inst.CompressionRecord", True, list(body), b"")
+    with pytest.raises(ValueError, match="exceeds max_size 1024"):
+        decompress_records([record], max_size=1024)
+
+
+def test_truncated_zlib_stream_rejected():
+    body = b"\x01" + zlib.compress(b"hello")[:-1]
+    record = DpRecord(0x105, "inst.CompressionRecord", True, list(body), b"")
+    with pytest.raises(ValueError, match="incomplete zlib stream"):
+        decompress_records([record])
+
+
+def test_negative_decompression_limit_rejected():
+    with pytest.raises(ValueError, match="nonnegative"):
+        decompress_records([], max_size=-1)
+
+
+def test_zero_decompression_limit():
+    empty = DpRecord(0x105, "inst.CompressionRecord", True, list(b"\x01" + zlib.compress(b"")), b"")
+    assert decompress_records([empty], max_size=0) == b""
+    nonempty = DpRecord(0x105, "inst.CompressionRecord", True, list(b"\x01" + zlib.compress(b"x")), b"")
+    with pytest.raises(ValueError, match="exceeds max_size 0"):
+        decompress_records([nonempty], max_size=0)
+
+
 class TestLargeProducts:
     """Image-sized products must not stall the interface thread."""
 
@@ -213,3 +252,12 @@ class TestLargeProducts:
         w = fx.V3_WIDTHS
         text = decoded_to_json(decode_dp(fx.build_fdp(w, fx.u32_record(w, 1)), w, fx.RECORDS), "Dp_1.fdp")
         assert '\n  "header"' in text
+
+    def test_large_compressed_product_json_is_compact(self):
+        w = fx.V4_4_WIDTHS
+        inner = fx.u8_array_record(w, b"\x00" * 100_000)
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, inner)), w, fx.RECORDS)
+        assert decoded.ok and decoded.header.data_size < 65536
+        text = decoded_to_json(decoded, "compressed.fdp")
+        assert "\n" not in text
+        assert len(json.loads(text)["records"][0]["value"]) == 100_000

@@ -68,6 +68,12 @@ class TestChecksum:
     def test_empty(self):
         assert cfdp_checksum(b"") == 0
 
+    @pytest.mark.parametrize("tail", [0, 1, 2, 3])
+    def test_chunk_boundaries(self, tail):
+        data = b"\x00\x00\x00\x01" * 32769 + b"\x01\x02\x03"[:tail]
+        expected = 32769 + (int.from_bytes(data[-tail:], "big") << (8 * (4 - tail)) if tail else 0)
+        assert cfdp_checksum(memoryview(data)) == expected
+
 
 class TestSafeFileName:
     @pytest.mark.parametrize(

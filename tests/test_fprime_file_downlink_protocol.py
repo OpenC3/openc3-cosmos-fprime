@@ -7,6 +7,7 @@
 """Tests for the F Prime file downlink / data product protocol."""
 
 import json
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -81,7 +82,7 @@ def test_data_product_stored_decoded_and_queued(headers):
     p = Recording(headers, "FSW", allow_empty_data=False)
     _send(p, headers, "/dp/Dp_00000512_1_2.fdp", _fdp())
     assert p.stored["Dp_00000512_1_2.fdp"] == _fdp()
-    doc = json.loads(p.stored["Dp_00000512_1_2.json"])
+    doc = json.loads(p.stored["decoded/Dp_00000512_1_2.fdp.json"])
     assert doc["container"] == "inst.Container"
     assert [r["value"] for r in doc["records"]] == [42, [1, 2]]
     packets = [unframe(headers, data) for data in _drain(p)]
@@ -115,7 +116,7 @@ def test_unknown_record_still_stores_and_emits_header():
     p = Recording("SPACE_PACKET", "FSW", allow_empty_data=False)
     fdp = fx.build_fdp(W, fx.u32_record(W, 1) + fx.record(W, 0x999, b""))
     _send(p, "SPACE_PACKET", "/dp/Dp_2.fdp", fdp)
-    assert "unknown record" in json.loads(p.stored["Dp_2.json"])["error"]
+    assert "unknown record" in json.loads(p.stored["decoded/Dp_2.fdp.json"])["error"]
     packets = _drain(p)
     assert len(packets) == 2  # header + the one good record
 
@@ -157,6 +158,30 @@ def test_oversize_file_rejected():
 def test_bucket_key():
     p = FprimeFileDownlinkProtocol("SPACE_PACKET", "FSW")
     assert p.bucket_key("x.fdp") == f"{OPENC3_SCOPE}/fprime_downlink/FSW/x.fdp"
+
+
+def test_dictionary_is_loaded_from_each_targets_directory(tmp_path):
+    targets = {}
+    for name, record_id in [("FIRST", 10), ("SECOND", 20)]:
+        lib = tmp_path / name / "lib"
+        lib.mkdir(parents=True)
+        (lib / "fprime_dp_dictionary.py").write_text(f"RECORDS = {{{record_id}: {name!r}}}\n")
+        targets[name] = SimpleNamespace(dir=lib.parent)
+    with patch("fprime_file_downlink_protocol.System") as system:
+        system.targets = targets
+        first = FprimeFileDownlinkProtocol(target_name="FIRST")._load_dictionary()
+        second = FprimeFileDownlinkProtocol(target_name="SECOND")._load_dictionary()
+    assert first.RECORDS == {10: "FIRST"}
+    assert second.RECORDS == {20: "SECOND"}
+
+
+def test_missing_target_dictionary_warns_once(tmp_path):
+    p = FprimeFileDownlinkProtocol(target_name="FSW")
+    with patch("fprime_file_downlink_protocol.System") as system, patch("fprime_file_downlink_protocol.Logger") as logger:
+        system.targets = {"FSW": SimpleNamespace(dir=tmp_path)}
+        assert p._load_dictionary() is None
+        assert p._load_dictionary() is None
+        logger.warn.assert_called_once()
 
 
 def test_default_store_uses_logs_bucket():
@@ -203,7 +228,7 @@ def test_interface_drains_synthesized_packets_before_new_data():
     synthesized = buffers[len(file_frames):-1]
     assert [unframe("SPACE_PACKET", b)[0] for b in synthesized] == [5, 5, 5]
     assert buffers[-1] == later
-    assert "Dp_1.json" in protocol.stored
+    assert "decoded/Dp_1.fdp.json" in protocol.stored
 
 
 def test_synthesized_packets_precede_packets_cached_upstream():
@@ -235,3 +260,41 @@ def test_oversize_record_skipped_with_warning(capsys):
     _send(p, "SPACE_PACKET", "/dp/Dp_9.fdp", fdp, chunk=4096)
     assert len(_drain(p)) == 2  # DP_HEADER + the U32 record
     assert "1 record(s) too large" in capsys.readouterr().out
+
+
+def test_decompression_uses_protocol_file_limit():
+    p = Recording("SPACE_PACKET", "FSW", max_file_size=256, allow_empty_data=False)
+    inner = fx.u8_array_record(W, b"\x00" * 1000)
+    fdp = fx.build_fdp(W, fx.compression_record(W, inner))
+    assert len(fdp) < 256
+    _send(p, "SPACE_PACKET", "/dp/big.fdp", fdp)
+    doc = json.loads(p.stored["decoded/big.fdp.json"])
+    assert "max_size 256" in doc["error"]
+    assert p.stored["big.fdp"] == fdp
+
+
+def test_generated_json_does_not_overwrite_downlinked_json():
+    p = Recording("SPACE_PACKET", "FSW", allow_empty_data=False)
+    _send(p, "SPACE_PACKET", "/dp/Dp_1.json", b"original")
+    _send(p, "SPACE_PACKET", "/dp/Dp_1.fdp", _fdp())
+    assert p.stored["Dp_1.json"] == b"original"
+    assert "decoded/Dp_1.fdp.json" in p.stored
+
+
+def test_queued_packet_precedes_its_synthesized_packets():
+    p = Recording("FPRIME", "FSW", allow_empty_data=False)
+    first = [frame("FPRIME", 3, raw) for raw in fx.file_transfer("first.fdp", _fdp())]
+    second = [frame("FPRIME", 3, raw) for raw in fx.file_transfer("second.fdp", _fdp())]
+    for packet in first:
+        assert p.read_data(packet) == (packet, None)
+    emitted = [p.read_data(packet, "upstream") for packet in second]
+    while True:
+        result = p.read_data(b"")
+        if result[0] == "STOP":
+            break
+        emitted.append(result)
+    buffers = [packet for packet, _ in emitted]
+    assert [unframe("FPRIME", packet)[0] for packet in buffers[:3]] == [5, 5, 5]
+    assert buffers[3:3 + len(second)] == second
+    assert [unframe("FPRIME", packet)[0] for packet in buffers[3 + len(second):]] == [5, 5, 5]
+    assert [extra for _, extra in emitted[3:3 + len(second)]] == ["upstream"] * len(second)

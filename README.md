@@ -32,7 +32,8 @@ data products) is reassembled and written to the COSMOS logs bucket at
 
 - Transfers with missing data are stored as `<file name>.incomplete`.
 - Data product files (`.fdp`) are decoded using the `records` and `containers` in your dictionary. A
-  `<file name>.json` with the decoded header and records is written beside each one, and a `DP_HEADER`
+  `decoded/<file name>.json` with the decoded header and records is written under the same target folder,
+  keeping generated JSON separate from downlinked files, and a `DP_HEADER`
   packet plus one `DP.<record name>` packet per record are emitted, timestamped with the container's time tag.
   `DP_HEADER` reports `HEADER_CRC_OK`, `DATA_CRC_OK` and `DECODE_OK`.
 - Compressed data products (`DpCompressProc`, FPrime 4.4+) are decompressed before decoding.
@@ -43,7 +44,8 @@ data products) is reassembled and written to the COSMOS logs bucket at
 - Files are reassembled in memory, up to 100 MiB by default. To change this, append the bucket folder and
   the size in bytes to the `fprime_file_downlink_protocol.py` lines in `plugin.txt`, e.g.
   `... <%= fprime_target_name %> fprime_downlink 524288000`.
-  Decoding a data product holds every value in memory too (roughly 10x the product size for large
+  The same limit bounds the total decompressed record stream. Decoding a data product holds every value
+  in memory too (roughly 10x the product size for large
   arrays), so keep very large products, such as images, to a few tens of MiB or lower `max_file_size`.
 - FPrime 4 `CfdpManager` (true CFDP) transfers are not supported.
 

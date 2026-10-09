@@ -77,8 +77,15 @@ def parse_file_packet(buf):
 
 def cfdp_checksum(data):
     """CFDP checksum: U32 sum of big-endian 4-byte words, last word zero padded."""
-    padded = bytes(data) + b"\x00" * (-len(data) % 4)
-    return sum(struct.unpack(f">{len(padded) // 4}I", padded)) & 0xFFFFFFFF
+    view = memoryview(data)
+    aligned = len(view) - len(view) % 4
+    checksum = 0
+    for offset in range(0, aligned, 65536):
+        chunk = view[offset:min(offset + 65536, aligned)]
+        checksum += sum(struct.unpack(f">{len(chunk) // 4}I", chunk))
+    if aligned < len(view):
+        checksum += int.from_bytes(view[aligned:], "big") << (8 * (4 - len(view[aligned:])))
+    return checksum & 0xFFFFFFFF
 
 
 def safe_file_name(path):

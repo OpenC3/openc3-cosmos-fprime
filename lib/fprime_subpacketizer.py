@@ -21,16 +21,16 @@ class FprimeSubpacketizer(Subpacketizer):
             subpacket = System.telemetry.identify(channels, target_names=[packet.target_name], subpackets=True)
 
             if subpacket:
-                # If it identified then breakout the subpacket content based on fixed size
-                # (like the FIXED protocol)
-                subpacket.buffer = channels[:subpacket.defined_length]
+                # If it identified then breakout the subpacket content based on its size
+                length = self._subpacket_length(subpacket, channels)
+                subpacket.buffer = channels[:length]
                 subpacket = subpacket.clone()
 
                 # Add to list of subpackets to return
                 packets.append(subpacket)
 
                 # Remove this subpacket from the block of data
-                channels = channels[subpacket.defined_length:]
+                channels = channels[length:]
             else:
                 # If we can't identify then just give up
                 break
@@ -40,3 +40,22 @@ class FprimeSubpacketizer(Subpacketizer):
 
         # Return the parent packet and subpackets
         return packets
+
+    @staticmethod
+    def _subpacket_length(subpacket, data):
+        """Bytes this subpacket occupies at the start of data.
+
+        defined_length counts variable sized items (e.g. strings) as 0 bits, so
+        add the size given by each one's length item.
+        """
+        if subpacket.fixed_size:
+            return subpacket.defined_length
+        # Setting the buffer recalculates the offsets of the variable sized items
+        subpacket.buffer = data
+        length = subpacket.defined_length
+        for item in subpacket.sorted_items:
+            vbs = item.variable_bit_size
+            if vbs and item.data_type != "DERIVED":
+                count = subpacket.read(vbs["length_item_name"], "RAW")
+                length += (count * vbs["length_bits_per_count"] + vbs["length_value_bit_offset"]) // 8
+        return length

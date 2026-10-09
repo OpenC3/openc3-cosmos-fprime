@@ -125,3 +125,39 @@ class TestFprimeSubpacketizer:
         kwargs = mock_system.telemetry.identify.call_args.kwargs
         assert kwargs["target_names"] == [parent_target]
         assert kwargs["subpackets"] is True
+
+
+def _string_channel(tmp_path):
+    """A string channel exactly as fprime_parser.py generates it."""
+    from openc3.packets.packet_config import PacketConfig
+
+    path = tmp_path / "tlm.txt"
+    path.write_text(
+        'TELEMETRY TGT STRCHAN BIG_ENDIAN "string channel"\n'
+        "  SUBPACKET\n"
+        "  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 7\n"
+        "  APPEND_ITEM VAL_LENGTH 16 UINT\n"
+        '  APPEND_ITEM VAL 0 STRING ""\n'
+        "    VARIABLE_BIT_SIZE VAL_LENGTH 8 0\n"
+    )
+    config = PacketConfig()
+    config.process_file(str(path), "TGT")
+    return config.telemetry["TGT"]["STRCHAN"]
+
+
+def test_variable_length_subpacket_followed_by_another(tmp_path, capsys):
+    string_channel = b"\x00\x00\x00\x07" + b"\x00\x06" + b"v4.0.0"
+    channels = string_channel + b"\xaa\xbb"
+    parent = _make_parent(channels)
+    following = _make_subpacket("SUB2", 2)
+
+    with patch("fprime_subpacketizer.System") as mock_system:
+        mock_system.telemetry.identify.side_effect = [_string_channel(tmp_path), following]
+        result = FprimeSubpacketizer().call(parent)
+
+    assert [p.packet_name for p in result[:2]] == ["STRCHAN", "SUB2"]
+    assert result[0].buffer == string_channel
+    assert result[0].read("VAL") == "v4.0.0"
+    assert result[1].buffer == b"\xaa\xbb"
+    assert mock_system.telemetry.identify.call_args_list[1].args[0] == b"\xaa\xbb"
+    assert '"level": "ERROR"' not in capsys.readouterr().out

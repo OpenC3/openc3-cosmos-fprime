@@ -207,6 +207,16 @@ CASE_CMD_BITS = {
 }
 
 
+RECORDS_JSON = [
+    {"name": "Ns.comp.U32Record", "type": u(32), "array": False, "id": 0x700, "annotation": "A U32"},
+    {"name": "Ns.comp.U8ArrayRecord", "type": u(8), "array": True, "id": 0x701},
+    {"name": "Ns.comp.PointRecord", "type": ref("Ns.Point"), "array": False, "id": 0x702},
+    {"name": "Ns.comp.PointArrayRecord", "type": ref("Ns.Point"), "array": True, "id": 0x703},
+    {"name": "Ns.comp.StrRecord", "type": STRING20, "array": False, "id": 0x704},
+]
+CONTAINERS_JSON = [{"name": "Ns.comp.Container", "id": 0x800, "defaultPriority": 10, "annotation": "c"}]
+
+
 def _build_dictionary(framework_version="v4.2.2"):
     commands = [
         {
@@ -283,6 +293,8 @@ def _build_dictionary(framework_version="v4.2.2"):
         "commands": commands,
         "events": events,
         "telemetryChannels": channels,
+        "records": copy.deepcopy(RECORDS_JSON),
+        "containers": copy.deepcopy(CONTAINERS_JSON),
     }
 
 
@@ -328,12 +340,45 @@ def _load_config(tmp_path):
     return pc
 
 
-def _load_event_conversion(tmp_path):
-    path = _target_dir(tmp_path) / "lib" / "fprime_event_conversion.py"
-    spec = importlib.util.spec_from_file_location("generated_fprime_event_conversion", path)
+def _load_generated(tmp_path, file_name):
+    path = _target_dir(tmp_path) / "lib" / file_name
+    spec = importlib.util.spec_from_file_location(f"generated_{path.stem}", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _load_event_conversion(tmp_path):
+    return _load_generated(tmp_path, "fprime_event_conversion.py")
+
+
+def _v44_dictionary():
+    """A v4.4-style dictionary: framework aliases present, FwSizeStoreType is U64."""
+    d = _build_dictionary("v4.4.1")
+    d["typeDefinitions"] += [
+        {"kind": "alias", "qualifiedName": "FwSizeStoreType", "type": ref("FwSizeType"), "underlyingType": u(64)},
+        {"kind": "alias", "qualifiedName": "FwPacketDescriptorType", "type": u(16), "underlyingType": u(16)},
+        {"kind": "alias", "qualifiedName": "FwDpIdType", "type": ref("FwIdType"), "underlyingType": u(32)},
+        {
+            "kind": "enum",
+            "qualifiedName": "Fw.DpState",
+            "representationType": u(8),
+            "enumeratedConstants": [{"name": "UNTRANSMITTED", "value": 0}],
+            "default": "Fw.DpState.UNTRANSMITTED",
+        },
+    ]
+    d["constants"] = [
+        {"kind": "constant", "qualifiedName": "Fw.DpCfg.CONTAINER_USER_DATA_SIZE", "type": u(64), "value": 16}
+    ]
+    return d
+
+
+@pytest.fixture(scope="module")
+def generated_v44(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktemp("parser_v44")
+    result = _run(tmp_path, dictionary=_v44_dictionary())
+    assert result.returncode == 0, result.stderr
+    return tmp_path
 
 
 @pytest.fixture(scope="module")
@@ -416,6 +461,7 @@ class TestGeneratedFiles:
         assert (target / "cmd_tlm" / "cmd.txt").is_file()
         assert (target / "cmd_tlm" / "tlm.txt").is_file()
         assert (target / "lib" / "fprime_event_conversion.py").is_file()
+        assert (target / "lib" / "fprime_dp_dictionary.py").is_file()
 
     def test_config_loads_without_warnings(self, config):
         assert config.warnings == []
@@ -629,3 +675,59 @@ class TestEventConversion:
 
     def test_short_data_reports_error(self, module):
         assert self._call(module, 0x601, b"\x00").startswith("Error formatting event Ns.comp.Scalars")
+
+
+class TestDpDictionary:
+    def test_file_written(self, generated):
+        assert (_target_dir(generated) / "lib" / "fprime_dp_dictionary.py").is_file()
+
+    def test_v3_default_widths(self, generated):
+        module = _load_generated(generated, "fprime_dp_dictionary.py")
+        assert module.WIDTHS == {
+            "packet_descriptor": 32,
+            "dp_id": 32,
+            "dp_priority": 32,
+            "size_store": 16,
+            "time_base": 16,
+            "time_context": 8,
+            "proc_type": 8,
+            "dp_state": 8,
+            "user_data_size": 32,
+        }
+
+    def test_widths_read_from_dictionary(self, generated_v44):
+        widths = _load_generated(generated_v44, "fprime_dp_dictionary.py").WIDTHS
+        assert widths["size_store"] == 64
+        assert widths["packet_descriptor"] == 16
+        assert widths["dp_id"] == 32
+        assert widths["dp_state"] == 8
+        assert widths["user_data_size"] == 16
+
+    def test_scalar_record(self, generated):
+        records = _load_generated(generated, "fprime_dp_dictionary.py").RECORDS
+        assert records[0x700] == {
+            "name": "Ns.comp.U32Record",
+            "array": False,
+            "type": {"kind": "integer", "size": 32, "signed": False},
+        }
+
+    def test_array_and_struct_records(self, generated):
+        records = _load_generated(generated, "fprime_dp_dictionary.py").RECORDS
+        assert records[0x701]["array"] is True
+        assert records[0x702]["type"]["kind"] == "struct"
+        assert [m["name"] for m in records[0x702]["type"]["members"]] == ["x", "y"]
+        assert records[0x704]["type"] == {"kind": "string", "size": 20}
+
+    def test_containers(self, generated):
+        containers = _load_generated(generated, "fprime_dp_dictionary.py").CONTAINERS
+        assert containers == {0x800: {"name": "Ns.comp.Container", "default_priority": 10}}
+
+    def test_dictionary_without_dp_sections(self, tmp_path):
+        d = _build_dictionary()
+        del d["records"]
+        del d["containers"]
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode == 0, result.stderr
+        module = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        assert module.RECORDS == {}
+        assert module.CONTAINERS == {}

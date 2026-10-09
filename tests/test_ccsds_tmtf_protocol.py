@@ -28,7 +28,7 @@ class TestCcsdsTmtfProtocol:
     def test_200_packets_with_idle(self):
         """Test reading 200 CCSDS packets followed by encapsulation idle."""
         ccsds_packet = b"\x00\x00\xc0\x00\x00\x01\x01\x02"
-        protocol = CcsdsTmtfProtocol(31, allow_empty_data=True)
+        protocol = CcsdsTmtfProtocol(31, allow_empty_data=False)
         num_packets = 200
         data = (
             b"\x01\xf0\x00\x00\x18\x00"
@@ -365,7 +365,7 @@ class TestCcsdsTmtfProtocol:
     def test_multiple_packets_with_crc(self):
         """Test reading multiple CCSDS packets across two CRC-protected frames."""
         ccsds_packet = b"\x00\x00\xc0\x00\x00\x01\x01\x02"
-        protocol = CcsdsTmtfProtocol(31, error_control=True, allow_empty_data=True)
+        protocol = CcsdsTmtfProtocol(31, error_control=True, allow_empty_data=False)
         randomizer = CcsdsRandomizer(CcsdsRandomizer.TM_MODE)
 
         # Two packets per frame for variety.

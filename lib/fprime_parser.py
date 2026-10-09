@@ -10,17 +10,18 @@ import pprint
 import re
 import sys
 
-if len(sys.argv) != 3:
-    print(f"Usage: {sys.argv[0]} <target_name> <path_to_Dictionary.json> [SPACE_PACKET|FPRIME]", file=sys.stderr)
+USAGE = f"Usage: {sys.argv[0]} <target_name> <path_to_Dictionary.json> [SPACE_PACKET|FPRIME]"
+if len(sys.argv) not in (3, 4):
+    print(USAGE, file=sys.stderr)
     sys.exit(1)
 
 target_name = sys.argv[1]
 json_path = sys.argv[2]
 if len(sys.argv) > 3:
-    headers = str(sys.argv[3]).upcase()
-    if headers != "SPACE_PACKET" and headers != "FRIME":
-        print(f"Usage: {sys.argv[0]} <target_name> <path_to_Dictionary.json> [SPACE_PACKET|FPRIME]", file=sys.stderr)
-        sys.exit(1)        
+    headers = sys.argv[3].upper()
+    if headers not in ("SPACE_PACKET", "FPRIME"):
+        print(USAGE, file=sys.stderr)
+        sys.exit(1)
 else:
     headers = None
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -99,11 +100,17 @@ def resolve_value_type(t, types):
         return None
     return t
 
-def _emit_array_line(f, keyword, name, t, types, annotation):
+def _emit_array_line(f, keyword, name, t, types, annotation, emit_element):
     elem = t["elementType"]
     while elem["kind"] == "qualifiedIdentifier" and types[elem["name"]]["kind"] == "alias":
         elem = types[elem["name"]]["underlyingType"]
     elem_kind = elem["kind"]
+    if elem_kind == "qualifiedIdentifier":
+        # Enum, struct, or nested array elements can't be a COSMOS array item,
+        # so emit each element as its own item(s) named NAME_0, NAME_1, ...
+        for i in range(t["size"]):
+            emit_element(f, f"{name}_{i}", elem, types, annotation)
+        return
     size = elem["size"]
     total = size * t["size"]
     if elem_kind == "integer":
@@ -142,7 +149,7 @@ def emit_command_param(f, name, t, types, annotation):
                 print(f"    STATE {key} {value}", file=f)
             return
         if rkind == "array":
-            _emit_array_line(f, "APPEND_ARRAY_PARAMETER", name, resolved, types, annotation)
+            _emit_array_line(f, "APPEND_ARRAY_PARAMETER", name, resolved, types, annotation, emit_command_param)
             return
         raise RuntimeError(f"Unhandled typeDefinition kind {rkind}")
     if kind == "string":
@@ -183,7 +190,7 @@ def emit_channel_value(f, name, t, types, annotation):
                 print(f"    STATE {key} {value}", file=f)
             return
         if rkind == "array":
-            _emit_array_line(f, "APPEND_ARRAY_ITEM", name, resolved, types, annotation)
+            _emit_array_line(f, "APPEND_ARRAY_ITEM", name, resolved, types, annotation, emit_channel_value)
             return
         raise RuntimeError(f"Unhandled typeDefinition kind {rkind}")
     if kind == "string":

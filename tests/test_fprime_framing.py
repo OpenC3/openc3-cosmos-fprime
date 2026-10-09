@@ -42,3 +42,9 @@ def test_space_packet_ignores_trailing_bytes():
 @pytest.mark.parametrize("headers, data", [("SPACE_PACKET", b"\x00" * 7), ("FPRIME", b"\x00" * 15)])
 def test_short_data_returns_none(headers, data):
     assert unframe(headers, data) is None
+
+
+def test_space_packet_too_large_raises_value_error():
+    frame("SPACE_PACKET", 5, bytes(65534))  # largest body CCSDS can describe: 2 + 65534 bytes
+    with pytest.raises(ValueError, match="too large"):
+        frame("SPACE_PACKET", 5, bytes(65535))

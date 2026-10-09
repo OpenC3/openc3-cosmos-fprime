@@ -44,5 +44,9 @@ def build_dp_packets(headers, decoded, file_name):
     packets = [frame(headers, FW_PACKET_DP, header_payload)]
     for record in decoded.records:
         payload = _common(DP_KIND_RECORD, header) + struct.pack(">I", record.id) + record.raw
-        packets.append(frame(headers, FW_PACKET_DP, payload))
+        try:
+            packets.append(frame(headers, FW_PACKET_DP, payload))
+        except ValueError:
+            # Too large to frame (SPACE_PACKET limit is 64 KiB); its values are in the .json
+            continue
     return packets

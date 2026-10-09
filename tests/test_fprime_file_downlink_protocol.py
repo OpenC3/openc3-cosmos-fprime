@@ -222,3 +222,16 @@ def test_synthesized_packets_precede_packets_cached_upstream():
     assert buffers[: len(file_frames)] == file_frames
     assert [unframe("FPRIME", b)[0] for b in buffers[len(file_frames):-2]] == [5, 5, 5]
     assert buffers[-2:] == later
+
+
+def test_oversize_record_skipped_with_warning(capsys):
+    class V44(FakeDictionary):
+        WIDTHS = fx.V4_4_WIDTHS
+
+    p = Recording("SPACE_PACKET", "FSW", allow_empty_data=False)
+    p._dictionary = V44
+    w = fx.V4_4_WIDTHS
+    fdp = fx.build_fdp(w, fx.u32_record(w, 42) + fx.u8_array_record(w, [1] * 70000))
+    _send(p, "SPACE_PACKET", "/dp/Dp_9.fdp", fdp, chunk=4096)
+    assert len(_drain(p)) == 2  # DP_HEADER + the U32 record
+    assert "1 record(s) too large" in capsys.readouterr().out

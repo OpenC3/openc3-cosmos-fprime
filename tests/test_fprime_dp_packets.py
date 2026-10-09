@@ -58,3 +58,16 @@ def test_decode_error_clears_decode_ok():
 def test_long_file_name_truncated_to_255():
     _, payload = unframe("SPACE_PACKET", build_dp_packets("SPACE_PACKET", _decoded(), "n" * 300)[0])
     assert payload[16 + 21 + 32] == 255
+
+
+def test_record_too_large_for_space_packet_is_skipped():
+    w = fx.V4_4_WIDTHS  # U64 DataSize; v3's U16 can't describe a product this big
+    data = fx.u32_record(w, 42) + fx.u8_array_record(w, [1] * 65535) + fx.u32_record(w, 43)
+    decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+    packets = build_dp_packets("SPACE_PACKET", decoded, "Dp_1.fdp")
+    _, header = unframe("SPACE_PACKET", packets[0])
+    assert struct.unpack_from(">I", header, 16 + 17)[0] == 3  # RECORD_COUNT still counts every record
+    values = [struct.unpack_from(">I", unframe("SPACE_PACKET", p)[1], 20)[0] for p in packets[1:]]
+    assert values == [42, 43]
+    # FPRIME framing has a U32 size, so nothing is skipped
+    assert len(build_dp_packets("FPRIME", decoded, "Dp_1.fdp")) == 4

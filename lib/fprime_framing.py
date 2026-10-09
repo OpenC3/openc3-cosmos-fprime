@@ -25,6 +25,8 @@ def frame(headers, descriptor, payload):
         head = struct.pack(">II", FPRIME_SYNC, len(body))
         return head + body + struct.pack(">I", zlib.crc32(head + body))
     body = struct.pack(">H", descriptor) + payload
+    if len(body) > 65536:
+        raise ValueError(f"payload of {len(payload)} bytes is too large for a CCSDS space packet")
     # version 0, type 0 (telemetry), no secondary header, unsegmented (sequence flags 3)
     return struct.pack(">HHH", descriptor & 0x07FF, 0xC000, len(body) - 1) + body
 

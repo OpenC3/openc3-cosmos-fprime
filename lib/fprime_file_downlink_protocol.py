@@ -102,7 +102,12 @@ class FprimeFileDownlinkProtocol(Protocol):
         if decoded.error:
             Logger.warn(f"{self.target_name}: {name} decoded with error: {decoded.error}")
         if decoded.header is not None:
-            self.queue.extend((packet, None) for packet in build_dp_packets(self.headers, decoded, name))
+            packets = build_dp_packets(self.headers, decoded, name)
+            skipped = len(decoded.records) - (len(packets) - 1)
+            if skipped:
+                Logger.warn(f"{self.target_name}: {name}: {skipped} record(s) too large to emit as telemetry; "
+                            "see the .json file")
+            self.queue.extend((packet, None) for packet in packets)
 
     def _load_dictionary(self):
         if self._dictionary is None:

@@ -1,0 +1,263 @@
+# Copyright 2026 OpenC3, Inc.
+# All Rights Reserved.
+#
+# This file is licensed under the MIT license.
+# See LICENSE.md file in the project root for details.
+
+"""Tests for the F Prime data product decoder."""
+
+import json
+import struct
+import zlib
+
+import pytest
+
+import fprime_fixtures as fx
+from fprime_dp_decoder import DpRecord, decode_dp, decoded_to_json, decompress_records, header_size, parse_value
+
+WIDTHS = {"v3": fx.V3_WIDTHS, "v4_1": fx.V4_1_WIDTHS, "v4_4": fx.V4_4_WIDTHS}
+
+
+def all_records(w):
+    return (
+        fx.u32_record(w, 42)
+        + fx.u8_array_record(w, [1, 2, 3])
+        + fx.string_record(w, "hi there")
+        + fx.point_record(w, 1.5, 1)
+        + fx.bool_record(w, True)
+    )
+
+
+@pytest.mark.parametrize("version, expected", [("v3", 59), ("v4_1", 57), ("v4_4", 63)])
+def test_header_size(version, expected):
+    assert header_size(WIDTHS[version]) == expected
+
+
+@pytest.mark.parametrize("version", WIDTHS)
+def test_header_fields(version):
+    w = WIDTHS[version]
+    decoded = decode_dp(fx.build_fdp(w, all_records(w), container_id=0x222, priority=3, dp_state=2), w, fx.RECORDS)
+    h = decoded.header
+    assert (h.descriptor, h.container_id, h.priority) == (5, 0x222, 3)
+    assert (h.time_base, h.time_context, h.seconds, h.useconds) == (2, 0, 1700000000, 250000)
+    assert h.user_data == bytes(range(32))
+    assert h.dp_state == 2
+    assert h.data_size == len(all_records(w))
+    assert decoded.header_crc_ok and decoded.data_crc_ok and decoded.error is None and decoded.ok
+
+
+@pytest.mark.parametrize("version", WIDTHS)
+def test_record_values(version):
+    w = WIDTHS[version]
+    decoded = decode_dp(fx.build_fdp(w, all_records(w)), w, fx.RECORDS)
+    values = {r.name: r.value for r in decoded.records}
+    assert values == {
+        "inst.U32Record": 42,
+        "inst.U8ArrayRecord": [1, 2, 3],
+        "inst.StringRecord": "hi there",
+        "inst.PointRecord": {"x": 1.5, "mode": "ON"},
+        "inst.BoolRecord": True,
+    }
+
+
+def test_raw_includes_array_count_but_not_record_id():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, fx.u8_array_record(w, [9, 8])), w, fx.RECORDS)
+    assert decoded.records[0].raw == b"\x00\x02\x09\x08"
+    assert decoded.records[0].id == 0x101 and decoded.records[0].array
+
+
+def test_bad_header_hash_skips_records():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, fx.u32_record(w, 1), corrupt_header=True), w, fx.RECORDS)
+    assert decoded.header is not None and not decoded.header_crc_ok
+    assert decoded.records == [] and "header hash" in decoded.error
+
+
+def test_bad_data_hash_still_decodes():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, fx.u32_record(w, 1), corrupt_data=True), w, fx.RECORDS)
+    assert not decoded.data_crc_ok and decoded.records[0].value == 1 and not decoded.ok
+
+
+def test_unknown_record_keeps_earlier_records():
+    w = fx.V3_WIDTHS
+    data = fx.u32_record(w, 5) + fx.record(w, 0x999, b"\x00\x01") + fx.u32_record(w, 6)
+    decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+    assert [r.value for r in decoded.records] == [5]
+    assert "unknown record id 2457" in decoded.error and not decoded.ok
+
+
+def test_truncated_record_keeps_earlier_records():
+    w = fx.V3_WIDTHS
+    data = fx.u32_record(w, 5) + fx.u32_record(w, 6)[:-2]
+    decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+    assert [r.value for r in decoded.records] == [5] and decoded.error
+
+
+def test_wrong_descriptor():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, fx.u32_record(w, 1), descriptor=3), w, fx.RECORDS)
+    assert "descriptor 3" in decoded.error and decoded.records == []
+
+
+def test_too_short_for_header():
+    decoded = decode_dp(b"\x00" * 10, fx.V3_WIDTHS, fx.RECORDS)
+    assert decoded.header is None and "too short" in decoded.error
+
+
+def test_data_size_past_end_of_file():
+    w = fx.V3_WIDTHS
+    fdp = fx.build_fdp(w, fx.u32_record(w, 1))
+    decoded = decode_dp(fdp[:-6], w, fx.RECORDS)
+    assert "exceeds" in decoded.error and decoded.records == []
+
+
+def test_empty_product():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, b""), w, fx.RECORDS)
+    assert decoded.ok and decoded.records == []
+
+
+def test_to_json():
+    w = fx.V3_WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, fx.u32_record(w, 42)), w, fx.RECORDS)
+    doc = json.loads(decoded_to_json(decoded, "Dp_1.fdp", {"name": "inst.Container", "default_priority": 7}))
+    assert doc["file"] == "Dp_1.fdp" and doc["container"] == "inst.Container"
+    assert doc["header"]["container_id"] == 0x200
+    assert doc["header"]["user_data"] == bytes(range(32)).hex()
+    assert doc["records"] == [{"id": 0x100, "name": "inst.U32Record", "array": False, "value": 42}]
+    assert doc["header_crc_ok"] and doc["data_crc_ok"] and doc["error"] is None
+
+
+def test_to_json_without_header():
+    decoded = decode_dp(b"", fx.V3_WIDTHS, fx.RECORDS)
+    doc = json.loads(decoded_to_json(decoded, "bad.fdp"))
+    assert doc["header"] is None and doc["container"] is None and doc["error"]
+
+
+class TestCompression:
+    def _inner(self, w):
+        return fx.u32_record(w, 42) + fx.string_record(w, "zipped")
+
+    @pytest.mark.parametrize("algorithm", [0, 1])
+    def test_decompresses(self, algorithm):
+        w = fx.V4_4_WIDTHS
+        inner = self._inner(w)
+        data = fx.compression_record(w, inner[:5], algorithm) + fx.compression_record(w, inner[5:], algorithm)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert decoded.compressed and decoded.ok
+        assert [r.value for r in decoded.records] == [42, "zipped"]
+        assert decoded.records[1].raw == fx.uint(64, 6) + b"zipped"
+
+    def test_unknown_algorithm(self):
+        w = fx.V3_WIDTHS
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, b"xx", algorithm=9)), w, fx.RECORDS)
+        assert "algorithm 9" in decoded.error and not decoded.compressed
+        assert decoded.records[0].name.endswith(".CompressionRecord")
+
+    def test_corrupt_zlib(self):
+        w = fx.V3_WIDTHS
+        body = bytes([1]) + b"not zlib"
+        data = fx.record(w, 0x105, fx.uint(16, len(body)) + body)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert "decompress" in decoded.error
+
+    def test_mixed_records_left_alone(self):
+        w = fx.V3_WIDTHS
+        data = fx.compression_record(w, self._inner(w)) + fx.u32_record(w, 1)
+        decoded = decode_dp(fx.build_fdp(w, data), w, fx.RECORDS)
+        assert not decoded.compressed and len(decoded.records) == 2 and decoded.error is None
+
+    def test_bad_inner_record_keeps_earlier(self):
+        w = fx.V3_WIDTHS
+        inner = fx.u32_record(w, 42) + fx.record(w, 0x999, b"")
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, inner)), w, fx.RECORDS)
+        assert decoded.compressed and [r.value for r in decoded.records] == [42] and "unknown record" in decoded.error
+
+
+@pytest.mark.parametrize("algorithm", [0, 1])
+def test_cumulative_decompression_limit_and_exact_boundary(algorithm):
+    w = fx.V4_4_WIDTHS
+    inner = fx.u32_record(w, 42) + fx.string_record(w, "zipped")
+    payload = fx.compression_record(w, inner[:5], algorithm) + fx.compression_record(w, inner[5:], algorithm)
+    fdp = fx.build_fdp(w, payload)
+    assert decode_dp(fdp, w, fx.RECORDS, max_decompressed_size=len(inner)).ok
+    decoded = decode_dp(fdp, w, fx.RECORDS, max_decompressed_size=len(inner) - 1)
+    assert "exceeds max_size" in decoded.error
+
+
+def test_high_expansion_rejected_before_allocation():
+    body = b"\x01" + zlib.compress(b"\x00" * 1_000_000)
+    record = DpRecord(0x105, "inst.CompressionRecord", True, list(body), b"")
+    with pytest.raises(ValueError, match="exceeds max_size 1024"):
+        decompress_records([record], max_size=1024)
+
+
+def test_truncated_zlib_stream_rejected():
+    body = b"\x01" + zlib.compress(b"hello")[:-1]
+    record = DpRecord(0x105, "inst.CompressionRecord", True, list(body), b"")
+    with pytest.raises(ValueError, match="incomplete zlib stream"):
+        decompress_records([record])
+
+
+def test_negative_decompression_limit_rejected():
+    with pytest.raises(ValueError, match="nonnegative"):
+        decompress_records([], max_size=-1)
+
+
+def test_zero_decompression_limit():
+    empty = DpRecord(0x105, "inst.CompressionRecord", True, list(b"\x01" + zlib.compress(b"")), b"")
+    assert decompress_records([empty], max_size=0) == b""
+    nonempty = DpRecord(0x105, "inst.CompressionRecord", True, list(b"\x01" + zlib.compress(b"x")), b"")
+    with pytest.raises(ValueError, match="exceeds max_size 0"):
+        decompress_records([nonempty], max_size=0)
+
+
+class TestLargeProducts:
+    """Image-sized products must not stall the interface thread."""
+
+    def _big(self):
+        w = fx.V4_4_WIDTHS
+        return w, fx.build_fdp(w, fx.u8_array_record(w, bytes(range(256)) * 20_000) + fx.u32_record(w, 7))
+
+    def test_primitive_array_decodes_fast(self):
+        import time
+
+        w, fdp = self._big()
+        start = time.perf_counter()
+        decoded = decode_dp(fdp, w, fx.RECORDS)
+        assert time.perf_counter() - start < 0.3
+        assert decoded.ok and decoded.records[0].value[:3] == [0, 1, 2] and decoded.records[1].value == 7
+
+    def test_signed_and_float_arrays_bulk_decode_correctly(self):
+        w = fx.V4_4_WIDTHS
+        t = {"kind": "array", "size": 3, "elementType": {"kind": "integer", "size": 16, "signed": True}}
+        assert parse_value(struct.pack(">hhh", -1, 2, -3), 0, t, w) == ([-1, 2, -3], 6)
+        t = {"kind": "array", "size": 2, "elementType": {"kind": "float", "size": 64}}
+        assert parse_value(struct.pack(">dd", 1.5, -2.5), 0, t, w) == ([1.5, -2.5], 16)
+        t = {"kind": "array", "size": 2, "elementType": {"kind": "bool", "size": 8}}
+        assert parse_value(b"\xff\x00", 0, t, w) == ([True, False], 2)
+        u16_pair = {"kind": "array", "size": 2, "elementType": {"kind": "integer", "size": 16, "signed": False}}
+        with pytest.raises(ValueError):
+            parse_value(b"\x00\x01", 0, u16_pair, w)
+
+    def test_large_product_json_is_compact(self):
+        w, fdp = self._big()
+        text = decoded_to_json(decode_dp(fdp, w, fx.RECORDS), "Dp_big.fdp")
+        assert text.count("\n") < 10
+        assert json.loads(text)["records"][1]["value"] == 7
+
+    def test_small_product_json_is_indented(self):
+        w = fx.V3_WIDTHS
+        text = decoded_to_json(decode_dp(fx.build_fdp(w, fx.u32_record(w, 1)), w, fx.RECORDS), "Dp_1.fdp")
+        assert '\n  "header"' in text
+
+    def test_large_compressed_product_json_is_compact(self):
+        w = fx.V4_4_WIDTHS
+        inner = fx.u8_array_record(w, b"\x00" * 100_000)
+        decoded = decode_dp(fx.build_fdp(w, fx.compression_record(w, inner)), w, fx.RECORDS)
+        assert decoded.ok and decoded.header.data_size < 65536
+        text = decoded_to_json(decoded, "compressed.fdp")
+        assert "\n" not in text
+        assert len(json.loads(text)["records"][0]["value"]) == 100_000

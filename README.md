@@ -23,6 +23,32 @@ Note that this plugin expects your topology should be setup as a TCP/IP Server s
 1. Fill out plugin parameters
 1. Click Install
 
+## File Downlink and Data Products
+
+Every file downlinked by the FPrime `FileDownlink` component (e.g. `SendFile`, or `DpCatalog` transmitting
+data products) is reassembled and written to the COSMOS logs bucket at
+`<SCOPE>/fprime_downlink/<TARGET>/<file name>`. Browse them with Bucket Explorer. The `FILE_START`,
+`FILE_DATA`, `FILE_END` and `FILE_CANCEL` packets are also available as telemetry.
+
+- Transfers with missing data are stored as `<file name>.incomplete`.
+- Data product files (`.fdp`) are decoded using the `records` and `containers` in your dictionary. A
+  `decoded/<file name>.json` with the decoded header and records is written under the same target folder,
+  keeping generated JSON separate from downlinked files, and a `DP_HEADER`
+  packet plus one `DP.<record name>` packet per record are emitted, timestamped with the container's time tag.
+  `DP_HEADER` reports `HEADER_CRC_OK`, `DATA_CRC_OK` and `DECODE_OK`.
+- Compressed data products (`DpCompressProc`, FPrime 4.4+) are decompressed before decoding.
+- Array records whose elements are structs, enums or strings appear in telemetry as a raw `VALUE` block;
+  the `.json` file has the decoded values.
+- Re-run `fprime_parser.py` whenever your flight dictionary changes. Record definitions and framework type
+  widths (notably `FwSizeStoreType`, which is U64 starting with FPrime 4.4) come from it.
+- Files are reassembled in memory, up to 100 MiB by default. To change this, append the bucket folder and
+  the size in bytes to the `fprime_file_downlink_protocol.py` lines in `plugin.txt`, e.g.
+  `... <%= fprime_target_name %> fprime_downlink 524288000`.
+  The same limit bounds the total decompressed record stream. Decoding a data product holds every value
+  in memory too (roughly 10x the product size for large
+  arrays), so keep very large products, such as images, to a few tens of MiB or lower `max_file_size`.
+- FPrime 4 `CfdpManager` (true CFDP) transfers are not supported.
+
 ## Contributions
 
 By submitting a Contribution, you agree to the following terms:

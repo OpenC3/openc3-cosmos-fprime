@@ -26,6 +26,11 @@ import pytest
 
 from openc3.packets.packet_config import PacketConfig
 
+import fprime_fixtures as fx
+from fprime_dp_decoder import decode_dp
+from fprime_dp_packets import build_dp_packets
+from fprime_framing import frame
+
 PARSER = Path(__file__).resolve().parent.parent / "lib" / "fprime_parser.py"
 TARGET = "FSW"
 
@@ -90,6 +95,15 @@ TYPE_DEFINITIONS = [
     {"kind": "array", "qualifiedName": "Ns.ModeAliasArr", "size": 2, "elementType": ref("Ns.ModeAlias")},
     {"kind": "array", "qualifiedName": "Ns.PointArr", "size": 2, "elementType": ref("Ns.Point")},
     {"kind": "array", "qualifiedName": "Ns.Grid", "size": 2, "elementType": ref("Ns.U32Arr")},
+    {
+        # FPP member arrays: `vals: [3] U16` and `pts: [2] Ns.Point`
+        "kind": "struct",
+        "qualifiedName": "Ns.MemberArr",
+        "members": {
+            "vals": {"type": u(16), "index": 0, "size": 3},
+            "pts": {"type": ref("Ns.Point"), "index": 1, "size": 2},
+        },
+    },
     {
         "kind": "struct",
         "qualifiedName": "Ns.Config",
@@ -174,6 +188,7 @@ CASES = [
     ("STRUCT_ARR", ref("Ns.PointArr")),
     ("NESTED_ARR", ref("Ns.Grid")),
     ("STRUCT_WITH_ARR", ref("Ns.Config")),
+    ("STRUCT_MEMBER_ARR", ref("Ns.MemberArr")),
     ("SECTION_CONFIGS", ref("Svc.TlmPacketizer.SectionConfigs")),
     ("SECTION_ENABLED", ref("Svc.TlmPacketizer.SectionEnabled")),
 ]
@@ -202,9 +217,20 @@ CASE_CMD_BITS = {
     "STRUCT_ARR": 128,
     "NESTED_ARR": 192,
     "STRUCT_WITH_ARR": 8 + 96,
+    "STRUCT_MEMBER_ARR": 3 * 16 + 2 * 64,
     "SECTION_CONFIGS": 4 * (8 + 8 + 32 + 32 + 32),
     "SECTION_ENABLED": 8,
 }
+
+
+RECORDS_JSON = [
+    {"name": "Ns.comp.U32Record", "type": u(32), "array": False, "id": 0x700, "annotation": "A U32"},
+    {"name": "Ns.comp.U8ArrayRecord", "type": u(8), "array": True, "id": 0x701},
+    {"name": "Ns.comp.PointRecord", "type": ref("Ns.Point"), "array": False, "id": 0x702},
+    {"name": "Ns.comp.PointArrayRecord", "type": ref("Ns.Point"), "array": True, "id": 0x703},
+    {"name": "Ns.comp.StrRecord", "type": STRING20, "array": False, "id": 0x704},
+]
+CONTAINERS_JSON = [{"name": "Ns.comp.Container", "id": 0x800, "defaultPriority": 10, "annotation": "c"}]
 
 
 def _build_dictionary(framework_version="v4.2.2"):
@@ -283,6 +309,8 @@ def _build_dictionary(framework_version="v4.2.2"):
         "commands": commands,
         "events": events,
         "telemetryChannels": channels,
+        "records": copy.deepcopy(RECORDS_JSON),
+        "containers": copy.deepcopy(CONTAINERS_JSON),
     }
 
 
@@ -328,12 +356,45 @@ def _load_config(tmp_path):
     return pc
 
 
-def _load_event_conversion(tmp_path):
-    path = _target_dir(tmp_path) / "lib" / "fprime_event_conversion.py"
-    spec = importlib.util.spec_from_file_location("generated_fprime_event_conversion", path)
+def _load_generated(tmp_path, file_name):
+    path = _target_dir(tmp_path) / "lib" / file_name
+    spec = importlib.util.spec_from_file_location(f"generated_{path.stem}", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _load_event_conversion(tmp_path):
+    return _load_generated(tmp_path, "fprime_event_conversion.py")
+
+
+def _v44_dictionary():
+    """A v4.4-style dictionary: framework aliases present, FwSizeStoreType is U64."""
+    d = _build_dictionary("v4.4.1")
+    d["typeDefinitions"] += [
+        {"kind": "alias", "qualifiedName": "FwSizeStoreType", "type": ref("FwSizeType"), "underlyingType": u(64)},
+        {"kind": "alias", "qualifiedName": "FwPacketDescriptorType", "type": u(16), "underlyingType": u(16)},
+        {"kind": "alias", "qualifiedName": "FwDpIdType", "type": ref("FwIdType"), "underlyingType": u(32)},
+        {
+            "kind": "enum",
+            "qualifiedName": "Fw.DpState",
+            "representationType": u(8),
+            "enumeratedConstants": [{"name": "UNTRANSMITTED", "value": 0}],
+            "default": "Fw.DpState.UNTRANSMITTED",
+        },
+    ]
+    d["constants"] = [
+        {"kind": "constant", "qualifiedName": "Fw.DpCfg.CONTAINER_USER_DATA_SIZE", "type": u(64), "value": 16}
+    ]
+    return d
+
+
+@pytest.fixture(scope="module")
+def generated_v44(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktemp("parser_v44")
+    result = _run(tmp_path, dictionary=_v44_dictionary())
+    assert result.returncode == 0, result.stderr
+    return tmp_path
 
 
 @pytest.fixture(scope="module")
@@ -416,6 +477,7 @@ class TestGeneratedFiles:
         assert (target / "cmd_tlm" / "cmd.txt").is_file()
         assert (target / "cmd_tlm" / "tlm.txt").is_file()
         assert (target / "lib" / "fprime_event_conversion.py").is_file()
+        assert (target / "lib" / "fprime_dp_dictionary.py").is_file()
 
     def test_config_loads_without_warnings(self, config):
         assert config.warnings == []
@@ -459,7 +521,10 @@ class TestCommands:
         assert _cmd(config, "CMD_I16").get_item("VAL").data_type == "INT"
         assert _cmd(config, "CMD_F64").get_item("VAL").data_type == "FLOAT"
         assert _cmd(config, "CMD_STR").get_item("VAL").data_type == "STRING"
-        assert _cmd(config, "CMD_BOOL").get_item("VAL").states == {"FALSE": 0, "TRUE": 1}
+        # F Prime serializes true as 0xFF and rejects any other non-zero value
+        item = _cmd(config, "CMD_BOOL").get_item("VAL")
+        assert item.states == {"FALSE": 0, "TRUE": 0xFF}
+        assert item.maximum == 0xFF
 
     def test_enum_param_uses_default(self, config):
         item = _cmd(config, "CMD_ENUM").get_item("VAL")
@@ -516,6 +581,11 @@ class TestCommands:
         assert _param_names(packet) == ["VAL_MODE", "VAL_VALS"]
         assert packet.get_item("VAL_VALS").array_size == 96
 
+    def test_struct_member_array_param(self, config):
+        packet = _cmd(config, "CMD_STRUCT_MEMBER_ARR")
+        assert _param_names(packet) == ["VAL_VALS", "VAL_PTS_0_X", "VAL_PTS_0_Y", "VAL_PTS_1_X", "VAL_PTS_1_Y"]
+        assert packet.get_item("VAL_VALS").array_size == 48
+
     def test_tlm_packetizer_section_configs(self, config):
         packet = _cmd(config, "CMD_SECTION_CONFIGS")
         fields = ["ENABLED", "FORCEENABLED", "RATELOGIC", "MIN", "MAX"]
@@ -548,8 +618,12 @@ class TestTelemetry:
 
     def test_string_channel_is_variable_length(self, config):
         packet = _tlm(config, "TLMSTR")
-        assert packet.get_item("TLMSTR_LENGTH").bit_size == 32
+        assert packet.get_item("TLMSTR_LENGTH").bit_size == 16
         assert packet.get_item("TLMSTR").variable_bit_size is not None
+
+    def test_string_channel_length_follows_size_store(self, generated_v44):
+        packet = _load_config(generated_v44).telemetry[TARGET]["NS.COMP.TLMSTR"]
+        assert packet.get_item("TLMSTR_LENGTH").bit_size == 64
 
     def test_enum_channel_states(self, config):
         assert _tlm(config, "TLMENUM").get_item("TLMENUM").states == {"OFF": 0, "ON": 1}
@@ -570,6 +644,12 @@ class TestTelemetry:
         prefix = "TLMSTRUCT_ARR"
         assert _param_names(_tlm(config, prefix)) == [f"{prefix}_0_X", f"{prefix}_0_Y", f"{prefix}_1_X", f"{prefix}_1_Y"]
 
+    def test_struct_member_array_channel(self, config):
+        prefix = "TLMSTRUCT_MEMBER_ARR"
+        packet = _tlm(config, prefix)
+        assert _param_names(packet) == [f"{prefix}_VALS"] + [f"{prefix}_PTS_{n}_{c}" for n in range(2) for c in "XY"]
+        assert packet.get_item(f"{prefix}_VALS").array_size == 48
+
     def test_nested_array_channel_expanded(self, config):
         packet = _tlm(config, "TLMNESTED_ARR")
         assert _param_names(packet) == ["TLMNESTED_ARR_0", "TLMNESTED_ARR_1"]
@@ -586,6 +666,17 @@ class TestTelemetry:
         packet = _tlm(config, "TLMSECTION_ENABLED").clone()
         packet.buffer = struct.pack(">IHBIIB", 0x300 + 23, 0, 0, 1, 2, 1)
         assert packet.read("TLMSECTION_ENABLED_0") == "ENABLED"
+
+    def test_string_channel_decodes_short_string(self, config, capsys):
+        packet = _tlm(config, "TLMSTR").clone()
+        packet.buffer = struct.pack(">IHBIIH", 0x306, 0, 0, 1, 2, 2) + b"hi"
+        assert packet.read("TLMSTR") == "hi"
+        assert "received with actual packet length" not in capsys.readouterr().out
+
+    def test_bool_channel_true_is_0xff(self, config):
+        packet = _tlm(config, "TLMBOOL").clone()
+        packet.buffer = struct.pack(">IHBIIB", 0x305, 0, 0, 1, 2, 0xFF)
+        assert packet.read("TLMBOOL") == "TRUE"
 
     def test_format_string(self, config):
         assert _tlm(config, "LIMITED").get_item("LIMITED").format_string == "%.2f"
@@ -616,7 +707,12 @@ class TestEventConversion:
         assert self._call(module, 0x600, b"") == "Hello"
 
     def test_scalars(self, module):
-        data = struct.pack(">HbfBI", 513, -3, 1.25, 1, 2) + b"hi"
+        data = struct.pack(">HbfBH", 513, -3, 1.25, 1, 2) + b"hi"
+        assert self._call(module, 0x601, data) == "a=513 b=-3 c=1.2 d=True e=hi"
+
+    def test_scalars_v44_string_length(self, generated_v44):
+        module = _load_event_conversion(generated_v44)
+        data = struct.pack(">HbfBQ", 513, -3, 1.25, 1, 2) + b"hi"
         assert self._call(module, 0x601, data) == "a=513 b=-3 c=1.2 d=True e=hi"
 
     def test_enum_alias_array_and_struct(self, module):
@@ -629,3 +725,203 @@ class TestEventConversion:
 
     def test_short_data_reports_error(self, module):
         assert self._call(module, 0x601, b"\x00").startswith("Error formatting event Ns.comp.Scalars")
+
+
+class TestDpDictionary:
+    @pytest.mark.parametrize("headers", ["SPACE_PACKET", "FPRIME"])
+    def test_fixed_string_array_record_preserves_length_prefixes(self, tmp_path, headers):
+        dictionary = _v44_dictionary()
+        dictionary["typeDefinitions"].append({
+            "kind": "array", "qualifiedName": "Ns.StringPair", "size": 2, "elementType": STRING20,
+        })
+        dictionary["records"].append({
+            "name": "Ns.comp.StringPairRecord", "type": ref("Ns.StringPair"), "array": False, "id": 0x706,
+        })
+        result = _run(tmp_path, dictionary=dictionary, extra_args=(headers,))
+        assert result.returncode == 0, result.stderr
+        generated = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        widths = generated.WIDTHS
+        raw = fx.uint(widths["size_store"], 2) + b"hi" + fx.uint(widths["size_store"], 5) + b"there"
+        decoded = decode_dp(fx.build_fdp(widths, fx.record(widths, 0x706, raw)), widths, generated.RECORDS)
+        assert decoded.records[0].value == ["hi", "there"]
+        packet = _read(_load_config(tmp_path), "DP.NS.COMP.STRINGPAIRRECORD",
+                       build_dp_packets(headers, decoded, "strings.fdp")[1])
+        assert packet.read("VALUE_0") == "hi"
+        assert packet.read("VALUE_1") == "there"
+
+    @pytest.mark.parametrize("headers", ["SPACE_PACKET", "FPRIME"])
+    def test_zero_user_data_preserves_header_layout(self, tmp_path, headers):
+        dictionary = _v44_dictionary()
+        dictionary["constants"][0]["value"] = 0
+        result = _run(tmp_path, dictionary=dictionary, extra_args=(headers,))
+        assert result.returncode == 0, result.stderr
+        generated = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        decoded = decode_dp(fx.build_fdp(generated.WIDTHS, b"", container_id=0x800),
+                            generated.WIDTHS, generated.RECORDS)
+        packet = _read(_load_config(tmp_path), "DP_HEADER", build_dp_packets(headers, decoded, "empty.fdp")[0])
+        assert packet.read("FILE_NAME") == "empty.fdp"
+        assert "USER_DATA" not in packet.items
+
+    def test_file_written(self, generated):
+        assert (_target_dir(generated) / "lib" / "fprime_dp_dictionary.py").is_file()
+
+    def test_v3_default_widths(self, generated):
+        module = _load_generated(generated, "fprime_dp_dictionary.py")
+        assert module.WIDTHS == {
+            "packet_descriptor": 32,
+            "dp_id": 32,
+            "dp_priority": 32,
+            "size_store": 16,
+            "time_base": 16,
+            "time_context": 8,
+            "proc_type": 8,
+            "dp_state": 8,
+            "user_data_size": 32,
+        }
+
+    def test_widths_read_from_dictionary(self, generated_v44):
+        widths = _load_generated(generated_v44, "fprime_dp_dictionary.py").WIDTHS
+        assert widths["size_store"] == 64
+        assert widths["packet_descriptor"] == 16
+        assert widths["dp_id"] == 32
+        assert widths["dp_state"] == 8
+        assert widths["user_data_size"] == 16
+
+    def test_scalar_record(self, generated):
+        records = _load_generated(generated, "fprime_dp_dictionary.py").RECORDS
+        assert records[0x700] == {
+            "name": "Ns.comp.U32Record",
+            "array": False,
+            "type": {"kind": "integer", "size": 32, "signed": False},
+        }
+
+    def test_array_and_struct_records(self, generated):
+        records = _load_generated(generated, "fprime_dp_dictionary.py").RECORDS
+        assert records[0x701]["array"] is True
+        assert records[0x702]["type"]["kind"] == "struct"
+        assert [m["name"] for m in records[0x702]["type"]["members"]] == ["x", "y"]
+        assert records[0x704]["type"] == {"kind": "string", "size": 20}
+
+    def test_struct_member_array_record_type(self, tmp_path):
+        d = _build_dictionary()
+        d["records"].append({"name": "Ns.comp.MemberArrRecord", "type": ref("Ns.MemberArr"), "array": False, "id": 0x705})
+        assert _run(tmp_path, dictionary=d).returncode == 0
+        members = _load_generated(tmp_path, "fprime_dp_dictionary.py").RECORDS[0x705]["type"]["members"]
+        assert members[0] == {
+            "kind": "array", "size": 3, "elementType": {"kind": "integer", "size": 16, "signed": False}, "name": "vals"
+        }
+        assert members[1]["kind"] == "array" and members[1]["elementType"]["kind"] == "struct"
+
+    def test_containers(self, generated):
+        containers = _load_generated(generated, "fprime_dp_dictionary.py").CONTAINERS
+        assert containers == {0x800: {"name": "Ns.comp.Container", "default_priority": 10}}
+
+    def test_dictionary_without_dp_sections(self, tmp_path):
+        d = _build_dictionary()
+        del d["records"]
+        del d["containers"]
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode == 0, result.stderr
+        module = _load_generated(tmp_path, "fprime_dp_dictionary.py")
+        assert module.RECORDS == {}
+        assert module.CONTAINERS == {}
+
+
+def _read(config, name, buffer):
+    packet = config.telemetry[TARGET][name]
+    assert packet.identify(buffer), f"{name} did not identify"
+    packet.buffer = buffer
+    return packet
+
+
+def _dp_packets(generated_dir, headers, data_fn):
+    dictionary = _load_generated(generated_dir, "fprime_dp_dictionary.py")
+    w = dictionary.WIDTHS
+    decoded = decode_dp(fx.build_fdp(w, data_fn(w), container_id=0x800), w, dictionary.RECORDS)
+    assert decoded.error is None
+    return build_dp_packets(headers, decoded, "Dp_00002048_1_2.fdp")
+
+
+@pytest.fixture(scope="module")
+def generated_fprime(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktemp("parser_fprime")
+    result = _run(tmp_path, extra_args=("FPRIME",))
+    assert result.returncode == 0, result.stderr
+    return tmp_path
+
+
+class TestFileTelemetry:
+    def test_file_start(self, config):
+        buffer = frame("SPACE_PACKET", 3, fx.file_start(0, 99, "/src/a", "/dst/Dp_1.fdp"))
+        p = _read(config, "FILE_START", buffer)
+        assert (p.read("FILE_SIZE"), p.read("SOURCE_PATH"), p.read("DEST_PATH")) == (99, "/src/a", "/dst/Dp_1.fdp")
+        assert not config.telemetry[TARGET]["FILE_DATA"].identify(buffer)
+
+    def test_file_data(self, config):
+        p = _read(config, "FILE_DATA", frame("SPACE_PACKET", 3, fx.file_data(4, 16, b"abc")))
+        assert (p.read("SEQUENCE_INDEX"), p.read("BYTE_OFFSET"), p.read("DATA_SIZE"), p.read("DATA")) == (4, 16, 3, b"abc")
+
+    def test_file_end_and_cancel(self, config):
+        assert _read(config, "FILE_END", frame("SPACE_PACKET", 3, fx.file_end(9, 0x1234))).read("CHECKSUM") == 0x1234
+        _read(config, "FILE_CANCEL", frame("SPACE_PACKET", 3, fx.file_cancel(2)))
+
+    def test_fprime_headers_config_loads_without_warnings(self, generated_fprime):
+        assert _load_config(generated_fprime).warnings == []
+
+    def test_fprime_headers_file_data(self, generated_fprime):
+        config = _load_config(generated_fprime)
+        p = _read(config, "FILE_DATA", frame("FPRIME", 3, fx.file_data(4, 16, b"abc")))
+        assert p.read("DATA") == b"abc"
+
+
+class TestDpTelemetry:
+    def test_header(self, generated, config):
+        packets = _dp_packets(generated, "SPACE_PACKET", lambda w: fx.record(w, 0x700, b"\x00\x00\x00\x2a"))
+        p = _read(config, "DP_HEADER", packets[0])
+        assert p.read("CONTAINER_ID") == "NS.COMP.CONTAINER"
+        assert p.read("FILE_NAME") == "Dp_00002048_1_2.fdp"
+        assert (p.read("HEADER_CRC_OK"), p.read("DATA_CRC_OK"), p.read("DECODE_OK")) == ("TRUE", "TRUE", "TRUE")
+        assert p.read("RECORD_COUNT") == 1
+        assert p.read("USER_DATA") == bytes(range(32))
+
+    def test_scalar_record(self, generated, config):
+        packets = _dp_packets(generated, "SPACE_PACKET", lambda w: fx.record(w, 0x700, b"\x00\x00\x00\x2a"))
+        assert _read(config, "DP.NS.COMP.U32RECORD", packets[1]).read("VALUE") == 42
+        assert not config.telemetry[TARGET]["DP.NS.COMP.U8ARRAYRECORD"].identify(packets[1])
+        assert not config.telemetry[TARGET]["DP_HEADER"].identify(packets[1])
+
+    def test_primitive_array_record(self, generated, config):
+        packets = _dp_packets(generated, "SPACE_PACKET",
+                              lambda w: fx.record(w, 0x701, fx.uint(w["size_store"], 3) + b"\x01\x02\x03"))
+        p = _read(config, "DP.NS.COMP.U8ARRAYRECORD", packets[1])
+        assert (p.read("COUNT"), p.read("VALUE")) == (3, [1, 2, 3])
+
+    def test_struct_record(self, generated, config):
+        packets = _dp_packets(generated, "SPACE_PACKET", lambda w: fx.record(w, 0x702, struct.pack(">ff", 1.5, -2.0)))
+        p = _read(config, "DP.NS.COMP.POINTRECORD", packets[1])
+        assert (p.read("VALUE_X"), p.read("VALUE_Y")) == (1.5, -2.0)
+
+    def test_complex_array_record_is_raw_block(self, generated, config):
+        raw = struct.pack(">ffff", 1, 2, 3, 4)
+        packets = _dp_packets(generated, "SPACE_PACKET", lambda w: fx.record(w, 0x703, fx.uint(w["size_store"], 2) + raw))
+        p = _read(config, "DP.NS.COMP.POINTARRAYRECORD", packets[1])
+        assert (p.read("COUNT"), p.read("VALUE")) == (2, raw)
+
+    def test_string_record(self, generated, config):
+        packets = _dp_packets(generated, "SPACE_PACKET", lambda w: fx.record(w, 0x704, fx.uint(w["size_store"], 2) + b"hi"))
+        assert _read(config, "DP.NS.COMP.STRRECORD", packets[1]).read("VALUE") == "hi"
+
+    def test_v44_array_count_is_64_bits(self, generated_v44):
+        config = _load_config(generated_v44)
+        packets = _dp_packets(generated_v44, "SPACE_PACKET",
+                              lambda w: fx.record(w, 0x701, fx.uint(64, 2) + b"\x05\x06"))
+        p = _read(config, "DP.NS.COMP.U8ARRAYRECORD", packets[1])
+        assert (p.read("COUNT"), p.read("VALUE")) == (2, [5, 6])
+        assert len(_read(config, "DP_HEADER", packets[0]).read("USER_DATA")) == 16
+
+    def test_fprime_headers_record(self, generated_fprime):
+        config = _load_config(generated_fprime)
+        packets = _dp_packets(generated_fprime, "FPRIME",
+                              lambda w: fx.record(w, 0x701, fx.uint(w["size_store"], 2) + b"\x05\x06"))
+        assert _read(config, "DP.NS.COMP.U8ARRAYRECORD", packets[1]).read("VALUE") == [5, 6]
+        assert _read(config, "DP_HEADER", packets[0]).read("FILE_NAME") == "Dp_00002048_1_2.fdp"

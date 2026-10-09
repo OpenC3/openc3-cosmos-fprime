@@ -14,9 +14,11 @@ INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface
   PROTOCOL WRITE openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
   PROTOCOL READ_WRITE openc3/interfaces/protocols/length_protocol.py 32 32 12 1 BIG_ENDIAN 0 0xDEADBEEF None True
   PROTOCOL READ openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
+  PROTOCOL READ fprime_file_downlink_protocol.py FPRIME <%= fprime_target_name %>
 <% else %>
   PROTOCOL WRITE ccsds_tctf_protocol.py False True 1 <%= fprime_scid %> 0x1
   PROTOCOL WRITE ccsds_seqcnt_protocol.py
   PROTOCOl WRITE openc3/interfaces/protocols/length_protocol.py 32 16 7 1 BIG_ENDIAN 0 None None True
   PROTOCOL READ ccsds_tmtf_protocol.py <%= fprime_scid %> 1024 False 0 None True True
+  PROTOCOL READ fprime_file_downlink_protocol.py SPACE_PACKET <%= fprime_target_name %>
 <% end %>

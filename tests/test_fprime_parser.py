@@ -86,6 +86,14 @@ TYPE_DEFINITIONS = [
             "x": {"type": f(32), "index": 0, "annotation": "X coord"},
         },
     },
+    {
+        "kind": "struct",
+        "qualifiedName": "Ns.Named",
+        "members": {
+            "id": {"type": u(8), "index": 0},
+            "name": {"type": STRING20, "index": 1},
+        },
+    },
     {"kind": "array", "qualifiedName": "Ns.U32Arr", "size": 3, "elementType": u(32)},
     {"kind": "array", "qualifiedName": "Ns.I8Arr", "size": 2, "elementType": i(8)},
     {"kind": "array", "qualifiedName": "Ns.F64Arr", "size": 2, "elementType": f(64)},
@@ -193,7 +201,8 @@ CASES = [
     ("SECTION_ENABLED", ref("Svc.TlmPacketizer.SectionEnabled")),
 ]
 
-# Bits each case contributes to a command (strings are fixed size in commands)
+# Bits each case contributes to a command (strings contribute only their
+# FwSizeStoreType length prefix, 16 bits without a dictionary alias)
 CASE_CMD_BITS = {
     "U8": 8,
     "U64": 64,
@@ -201,7 +210,7 @@ CASE_CMD_BITS = {
     "F32": 32,
     "F64": 64,
     "BOOL": 8,
-    "STR": 20 * 8,
+    "STR": 16,
     "ENUM": 8,
     "SENUM": 32,
     "ALIAS": 16,
@@ -264,6 +273,14 @@ def _build_dictionary(framework_version="v4.2.2"):
                 {"name": "b", "type": ref("Ns.ModeArr")},
                 {"name": "c", "type": i(32)},
             ],
+        }
+    )
+    commands.append(
+        {
+            "name": "Ns.comp.CMD_NAMED",
+            "commandKind": "async",
+            "opcode": 0x401,
+            "formalParams": [{"name": "val", "type": ref("Ns.Named")}],
         }
     )
     channels.append(
@@ -596,6 +613,39 @@ class TestCommands:
     def test_tlm_packetizer_section_enabled(self, config):
         item = _cmd(config, "CMD_SECTION_ENABLED").get_item("VAL_0")
         assert item.states == {"DISABLED": 0, "ENABLED": 1}
+
+    def test_string_param_is_length_prefixed(self, config):
+        packet = _cmd(config, "CMD_STR")
+        assert packet.get_item("VAL_LENGTH").bit_size == 16
+        assert packet.get_item("VAL").variable_bit_size["length_item_name"] == "VAL_LENGTH"
+
+    def test_string_param_length_follows_size_store(self, generated_v44):
+        packet = _cmd(_load_config(generated_v44), "CMD_STR")
+        assert packet.get_item("VAL_LENGTH").bit_size == 64
+
+    def test_string_param_encodes_length_then_chars(self, config):
+        packet = _cmd(config, "CMD_STR").clone()
+        packet.restore_defaults()
+        packet.write("VAL", "abc")
+        assert packet.buffer[CCSDS_CMD_HEADER_BITS // 8:] == b"\x00\x03abc"
+
+    def test_empty_string_param_encodes_zero_length(self, config):
+        packet = _cmd(config, "CMD_STR").clone()
+        packet.restore_defaults()
+        packet.write("VAL", "")
+        assert packet.buffer[CCSDS_CMD_HEADER_BITS // 8:] == b"\x00\x00"
+
+    def test_fprime_header_string_param_crc_follows_string(self, tmp_path):
+        assert _run(tmp_path, extra_args=["FPRIME"]).returncode == 0
+        packet = _cmd(_load_config(tmp_path), "CMD_STR").clone()
+        packet.restore_defaults()
+        packet.write("VAL", "abcd")
+        # FPRIME_CRC32 is the last 4 bytes, after the 2-byte length + 4 chars
+        assert len(packet.buffer) == FPRIME_CMD_OVERHEAD_BITS // 8 + 2 + 4
+
+    def test_struct_string_member_is_length_prefixed(self, config):
+        packet = _cmd(config, "CMD_NAMED")
+        assert packet.get_item("VAL_NAME").variable_bit_size["length_item_name"] == "VAL_NAME_LENGTH"
 
     def test_multiple_params_in_order(self, config):
         assert _param_names(_cmd(config, "MULTI")) == ["A", "B_0", "B_1", "C"]

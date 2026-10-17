@@ -195,7 +195,7 @@ def emit_command_param(f, name, t, types, annotation):
             return
         raise RuntimeError(f"Unhandled typeDefinition kind {rkind}")
     if kind == "string":
-        print(f"  APPEND_PARAMETER {name} {t['size'] * 8} STRING \"\" \"{annotation}\"", file=f)
+        emit_variable_string_param(f, name, widths["size_store"], annotation)
         return
     if kind == "integer":
         ts = "INT" if t["signed"] else "UINT"
@@ -216,6 +216,13 @@ def emit_variable_string(f, name, length_bits, annotation=""):
     # a non-zero size is counted in the packet's defined length
     print(f"  APPEND_ITEM {name}_LENGTH {length_bits} UINT", file=f)
     print(f"  APPEND_ITEM {name} 0 STRING \"{annotation}\"", file=f)
+    print(f"    VARIABLE_BIT_SIZE {name}_LENGTH 8 0", file=f)
+
+def emit_variable_string_param(f, name, length_bits, annotation=""):
+    # F Prime deserializes command strings as a FwSizeStoreType length then the
+    # characters; COSMOS fills the length parameter when the string is written
+    print(f"  APPEND_PARAMETER {name}_LENGTH {length_bits} UINT MIN MAX 0", file=f)
+    print(f"  APPEND_PARAMETER {name} 0 STRING \"\" \"{annotation}\"", file=f)
     print(f"    VARIABLE_BIT_SIZE {name}_LENGTH 8 0", file=f)
 
 FW_PACKET_FILE = 3

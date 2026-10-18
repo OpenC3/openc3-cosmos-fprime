@@ -80,6 +80,21 @@ TELEMETRY <%= target_name %> CdhCore.cmdDisp.CommandsDropped BIG_ENDIAN "Number 
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
+TELEMETRY <%= target_name %> CdhCore.events.EventsDropped BIG_ENDIAN "Number of events dropped due to queue full"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 16781312
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM EventsDropped 64 UINT "Number of events dropped due to queue full"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
 TELEMETRY <%= target_name %> CdhCore.health.PingLateWarnings BIG_ENDIAN "Number of overrun warnings"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 16785408
@@ -106,8 +121,8 @@ TELEMETRY <%= target_name %> CdhCore.version.FrameworkVersion BIG_ENDIAN "Softwa
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM FrameworkVersion_LENGTH 32 UINT
-  APPEND_ITEM FrameworkVersion 320 STRING "Software framework version"
+  APPEND_ITEM FrameworkVersion_LENGTH 64 UINT
+  APPEND_ITEM FrameworkVersion 0 STRING "Software framework version"
     VARIABLE_BIT_SIZE FrameworkVersion_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -123,8 +138,8 @@ TELEMETRY <%= target_name %> CdhCore.version.ProjectVersion BIG_ENDIAN "Software
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM ProjectVersion_LENGTH 32 UINT
-  APPEND_ITEM ProjectVersion 320 STRING "Software project version"
+  APPEND_ITEM ProjectVersion_LENGTH 64 UINT
+  APPEND_ITEM ProjectVersion 0 STRING "Software project version"
     VARIABLE_BIT_SIZE ProjectVersion_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -151,8 +166,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion01 BIG_ENDIAN "Custom 
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion01_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion01_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion01_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion01_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion01_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion01_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -182,8 +197,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion02 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion02_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion02_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion02_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion02_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion02_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion02_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -213,8 +228,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion03 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion03_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion03_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion03_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion03_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion03_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion03_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -244,8 +259,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion04 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion04_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion04_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion04_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion04_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion04_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion04_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -275,8 +290,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion05 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion05_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion05_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion05_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion05_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion05_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion05_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -306,8 +321,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion06 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion06_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion06_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion06_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion06_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion06_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion06_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -337,8 +352,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion07 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion07_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion07_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion07_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion07_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion07_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion07_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -368,8 +383,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion08 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion08_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion08_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion08_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion08_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion08_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion08_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -399,8 +414,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion09 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion09_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion09_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion09_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion09_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion09_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion09_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -430,8 +445,8 @@ TELEMETRY <%= target_name %> CdhCore.version.CustomVersion10 BIG_ENDIAN ""
     STATE PROJECT_VERSION_07 7
     STATE PROJECT_VERSION_08 8
     STATE PROJECT_VERSION_09 9
-  APPEND_ITEM CustomVersion10_version_value_LENGTH 32 UINT
-  APPEND_ITEM CustomVersion10_version_value 640 STRING "string containing custom version"
+  APPEND_ITEM CustomVersion10_version_value_LENGTH 64 UINT
+  APPEND_ITEM CustomVersion10_version_value 0 STRING "string containing custom version"
     VARIABLE_BIT_SIZE CustomVersion10_version_value_LENGTH 8 0
   APPEND_ITEM CustomVersion10_version_status 8 UINT "status of the custom version"
     STATE OK 0
@@ -450,8 +465,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion01 BIG_ENDIAN "Librar
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion01_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion01 320 STRING "Library Versions"
+  APPEND_ITEM LibraryVersion01_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion01 0 STRING "Library Versions"
     VARIABLE_BIT_SIZE LibraryVersion01_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -467,8 +482,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion02 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion02_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion02 320 STRING ""
+  APPEND_ITEM LibraryVersion02_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion02 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion02_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -484,8 +499,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion03 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion03_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion03 320 STRING ""
+  APPEND_ITEM LibraryVersion03_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion03 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion03_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -501,8 +516,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion04 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion04_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion04 320 STRING ""
+  APPEND_ITEM LibraryVersion04_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion04 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion04_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -518,8 +533,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion05 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion05_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion05 320 STRING ""
+  APPEND_ITEM LibraryVersion05_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion05 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion05_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -535,8 +550,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion06 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion06_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion06 320 STRING ""
+  APPEND_ITEM LibraryVersion06_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion06 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion06_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -552,8 +567,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion07 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion07_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion07 320 STRING ""
+  APPEND_ITEM LibraryVersion07_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion07 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion07_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -569,8 +584,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion08 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion08_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion08 320 STRING ""
+  APPEND_ITEM LibraryVersion08_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion08 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion08_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -586,8 +601,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion09 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion09_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion09 320 STRING ""
+  APPEND_ITEM LibraryVersion09_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion09 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion09_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -603,8 +618,8 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion10 BIG_ENDIAN ""
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM LibraryVersion10_LENGTH 32 UINT
-  APPEND_ITEM LibraryVersion10 320 STRING ""
+  APPEND_ITEM LibraryVersion10_LENGTH 64 UINT
+  APPEND_ITEM LibraryVersion10 0 STRING ""
     VARIABLE_BIT_SIZE LibraryVersion10_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
@@ -958,9 +973,9 @@ TELEMETRY <%= target_name %> DataProducts.dpBufferManager.EmptyBuffs BIG_ENDIAN 
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileUplink.FilesReceived BIG_ENDIAN "The total number of complete files received"
+TELEMETRY <%= target_name %> DataProducts.dpBufferAccumulator.BA_NumQueuedBuffers BIG_ENDIAN "The number of buffers queued"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83886080
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 67125248
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -969,13 +984,13 @@ TELEMETRY <%= target_name %> FileHandling.fileUplink.FilesReceived BIG_ENDIAN "T
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM FilesReceived 32 UINT "The total number of complete files received"
+  APPEND_ITEM BA_NumQueuedBuffers 32 UINT "The number of buffers queued"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileUplink.PacketsReceived BIG_ENDIAN "The total number of packets received"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.ChannelTelemetry BIG_ENDIAN "Array of per-channel telemetry counters Each element contains receive counters, sent counters, fault counters, queue depths, and activity counters for one CFDP channel."
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83886081
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440512
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -984,13 +999,74 @@ TELEMETRY <%= target_name %> FileHandling.fileUplink.PacketsReceived BIG_ENDIAN 
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM PacketsReceived 32 UINT "The total number of packets received"
+  APPEND_ITEM ChannelTelemetry_0_recvErrors 32 UINT "Number of PDU receive errors"
+  APPEND_ITEM ChannelTelemetry_0_recvDropped 32 UINT "Number of PDUs dropped due to lack of resources"
+  APPEND_ITEM ChannelTelemetry_0_recvSpurious 32 UINT "Number of spurious PDUs received"
+  APPEND_ITEM ChannelTelemetry_0_recvFileDataBytes 64 UINT "Total file data bytes received"
+  APPEND_ITEM ChannelTelemetry_0_recvNakSegmentRequests 32 UINT "Number of NAK segment requests received from peer"
+  APPEND_ITEM ChannelTelemetry_0_recvPdu 32 UINT "Number of PDUs received with valid headers"
+  APPEND_ITEM ChannelTelemetry_0_recvEofCanceled 32 UINT "Number of EOF PDUs received with cancellation condition code"
+  APPEND_ITEM ChannelTelemetry_0_sentNakSegmentRequests 32 UINT "Number of NAK segment requests sent to peer"
+  APPEND_ITEM ChannelTelemetry_0_sentFileDataBytes 64 UINT "Total file data bytes sent"
+  APPEND_ITEM ChannelTelemetry_0_sentPdu 32 UINT "Number of PDUs sent"
+  APPEND_ITEM ChannelTelemetry_0_sentEofCanceled 32 UINT "Number of EOF PDUs sent with cancellation condition code"
+  APPEND_ITEM ChannelTelemetry_0_faultAckLimit 32 UINT "Number of transactions abandoned due to ACK limit exceeded"
+  APPEND_ITEM ChannelTelemetry_0_faultNakLimit 32 UINT "Number of transactions abandoned due to NAK limit exceeded"
+  APPEND_ITEM ChannelTelemetry_0_faultInactivityTimer 32 UINT "Number of transactions abandoned due to inactivity timeout"
+  APPEND_ITEM ChannelTelemetry_0_faultCrcMismatch 32 UINT "Number of CRC mismatches detected in received files"
+  APPEND_ITEM ChannelTelemetry_0_faultFileSizeMismatch 32 UINT "Number of file size mismatches detected"
+  APPEND_ITEM ChannelTelemetry_0_faultFileOpen 32 UINT "Number of file open failures"
+  APPEND_ITEM ChannelTelemetry_0_faultFileRead 32 UINT "Number of file read failures"
+  APPEND_ITEM ChannelTelemetry_0_faultFileWrite 32 UINT "Number of file write failures"
+  APPEND_ITEM ChannelTelemetry_0_faultFileSeek 32 UINT "Number of file seek failures"
+  APPEND_ITEM ChannelTelemetry_0_faultFileRename 32 UINT "Number of file rename failures"
+  APPEND_ITEM ChannelTelemetry_0_faultDirectoryRead 32 UINT "Number of directory read failures"
+  APPEND_ITEM ChannelTelemetry_0_faultRxEofError 32 UINT "Number of EOF PDUs received with error condition code (other than cancel)"
+  APPEND_ITEM ChannelTelemetry_0_faultTxEofError 32 UINT "Number of EOF PDUs sent with error condition code (other than cancel)"
+  APPEND_ITEM ChannelTelemetry_0_queueFree 16 UINT "Number of transactions in FREE queue"
+  APPEND_ITEM ChannelTelemetry_0_queueTxActive 16 UINT "Number of transactions in active transmit queue (TXA)"
+  APPEND_ITEM ChannelTelemetry_0_queueTxWaiting 16 UINT "Number of transactions in waiting transmit queue (TXW)"
+  APPEND_ITEM ChannelTelemetry_0_queueRx 16 UINT "Number of transactions in receive queue (RX)"
+  APPEND_ITEM ChannelTelemetry_0_queueHistory 16 UINT "Number of completed transactions in history queue"
+  APPEND_ITEM ChannelTelemetry_0_playbackCounter 8 UINT "Number of active directory playback operations"
+  APPEND_ITEM ChannelTelemetry_0_pollCounter 8 UINT "Number of active directory poll operations"
+  APPEND_ITEM ChannelTelemetry_1_recvErrors 32 UINT "Number of PDU receive errors"
+  APPEND_ITEM ChannelTelemetry_1_recvDropped 32 UINT "Number of PDUs dropped due to lack of resources"
+  APPEND_ITEM ChannelTelemetry_1_recvSpurious 32 UINT "Number of spurious PDUs received"
+  APPEND_ITEM ChannelTelemetry_1_recvFileDataBytes 64 UINT "Total file data bytes received"
+  APPEND_ITEM ChannelTelemetry_1_recvNakSegmentRequests 32 UINT "Number of NAK segment requests received from peer"
+  APPEND_ITEM ChannelTelemetry_1_recvPdu 32 UINT "Number of PDUs received with valid headers"
+  APPEND_ITEM ChannelTelemetry_1_recvEofCanceled 32 UINT "Number of EOF PDUs received with cancellation condition code"
+  APPEND_ITEM ChannelTelemetry_1_sentNakSegmentRequests 32 UINT "Number of NAK segment requests sent to peer"
+  APPEND_ITEM ChannelTelemetry_1_sentFileDataBytes 64 UINT "Total file data bytes sent"
+  APPEND_ITEM ChannelTelemetry_1_sentPdu 32 UINT "Number of PDUs sent"
+  APPEND_ITEM ChannelTelemetry_1_sentEofCanceled 32 UINT "Number of EOF PDUs sent with cancellation condition code"
+  APPEND_ITEM ChannelTelemetry_1_faultAckLimit 32 UINT "Number of transactions abandoned due to ACK limit exceeded"
+  APPEND_ITEM ChannelTelemetry_1_faultNakLimit 32 UINT "Number of transactions abandoned due to NAK limit exceeded"
+  APPEND_ITEM ChannelTelemetry_1_faultInactivityTimer 32 UINT "Number of transactions abandoned due to inactivity timeout"
+  APPEND_ITEM ChannelTelemetry_1_faultCrcMismatch 32 UINT "Number of CRC mismatches detected in received files"
+  APPEND_ITEM ChannelTelemetry_1_faultFileSizeMismatch 32 UINT "Number of file size mismatches detected"
+  APPEND_ITEM ChannelTelemetry_1_faultFileOpen 32 UINT "Number of file open failures"
+  APPEND_ITEM ChannelTelemetry_1_faultFileRead 32 UINT "Number of file read failures"
+  APPEND_ITEM ChannelTelemetry_1_faultFileWrite 32 UINT "Number of file write failures"
+  APPEND_ITEM ChannelTelemetry_1_faultFileSeek 32 UINT "Number of file seek failures"
+  APPEND_ITEM ChannelTelemetry_1_faultFileRename 32 UINT "Number of file rename failures"
+  APPEND_ITEM ChannelTelemetry_1_faultDirectoryRead 32 UINT "Number of directory read failures"
+  APPEND_ITEM ChannelTelemetry_1_faultRxEofError 32 UINT "Number of EOF PDUs received with error condition code (other than cancel)"
+  APPEND_ITEM ChannelTelemetry_1_faultTxEofError 32 UINT "Number of EOF PDUs sent with error condition code (other than cancel)"
+  APPEND_ITEM ChannelTelemetry_1_queueFree 16 UINT "Number of transactions in FREE queue"
+  APPEND_ITEM ChannelTelemetry_1_queueTxActive 16 UINT "Number of transactions in active transmit queue (TXA)"
+  APPEND_ITEM ChannelTelemetry_1_queueTxWaiting 16 UINT "Number of transactions in waiting transmit queue (TXW)"
+  APPEND_ITEM ChannelTelemetry_1_queueRx 16 UINT "Number of transactions in receive queue (RX)"
+  APPEND_ITEM ChannelTelemetry_1_queueHistory 16 UINT "Number of completed transactions in history queue"
+  APPEND_ITEM ChannelTelemetry_1_playbackCounter 8 UINT "Number of active directory playback operations"
+  APPEND_ITEM ChannelTelemetry_1_pollCounter 8 UINT "Number of active directory poll operations"
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileUplink.Warnings BIG_ENDIAN "The total number of warnings issued"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_LOCAL_EID BIG_ENDIAN ""
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83886082
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440513
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -999,13 +1075,13 @@ TELEMETRY <%= target_name %> FileHandling.fileUplink.Warnings BIG_ENDIAN "The to
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM Warnings 32 UINT "The total number of warnings issued"
+  APPEND_ITEM PRM_LOCAL_EID 32 UINT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileDownlink.FilesSent BIG_ENDIAN "The total number of files sent"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_OUTGOING_FILE_CHUNK_SIZE BIG_ENDIAN ""
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83890176
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440514
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1014,13 +1090,13 @@ TELEMETRY <%= target_name %> FileHandling.fileDownlink.FilesSent BIG_ENDIAN "The
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM FilesSent 32 UINT "The total number of files sent"
+  APPEND_ITEM PRM_OUTGOING_FILE_CHUNK_SIZE 32 UINT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileDownlink.PacketsSent BIG_ENDIAN "The total number of packets sent"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_RX_CRC_CALC_BYTES_PER_CYCLE BIG_ENDIAN ""
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83890177
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440515
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1029,13 +1105,13 @@ TELEMETRY <%= target_name %> FileHandling.fileDownlink.PacketsSent BIG_ENDIAN "T
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM PacketsSent 32 UINT "The total number of packets sent"
+  APPEND_ITEM PRM_RX_CRC_CALC_BYTES_PER_CYCLE 32 UINT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileDownlink.Warnings BIG_ENDIAN "The total number of warnings"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_POST_INACTIVITY_SEND_RETRIES BIG_ENDIAN ""
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83890178
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440516
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1044,13 +1120,140 @@ TELEMETRY <%= target_name %> FileHandling.fileDownlink.Warnings BIG_ENDIAN "The 
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM Warnings 32 UINT "The total number of warnings"
+  APPEND_ITEM PRM_POST_INACTIVITY_SEND_RETRIES 8 UINT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileManager.CommandsExecuted BIG_ENDIAN "The total number of commands successfully executed"
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_CHANNEL BIG_ENDIAN ""
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83894272
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440517
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_FILE_IN_DEFAULT_CHANNEL 8 UINT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_DEST_ENTITY_ID BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440518
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_FILE_IN_DEFAULT_DEST_ENTITY_ID 32 UINT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_CLASS BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440519
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_FILE_IN_DEFAULT_CLASS 8 UINT ""
+    STATE CLASS_2 0
+    STATE CLASS_1 1
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_KEEP BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440520
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_FILE_IN_DEFAULT_KEEP 8 UINT ""
+    STATE DELETE 0
+    STATE KEEP 1
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_PRIORITY BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440521
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_FILE_IN_DEFAULT_PRIORITY 8 UINT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.cfdpManager.PRM_CHANNEL_CONFIG BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117440522
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_ack_limit 8 UINT "number of times to retry ACK (for ex, send FIN and wait for fin-ack)"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_nack_limit 8 UINT "number of times to retry NAK before giving up (resets on a single response"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_ack_timer 32 UINT "Acknowledge timer in seconds"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_inactivity_timer 32 UINT "Inactivity timer in seconds"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_dequeue_enabled 8 UINT "if enabled, then the channel will make pending transactions active"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_move_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_move_dir 0 STRING "Move directory if not empty"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_0_move_dir_LENGTH 8 0
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_max_outgoing_pdus_per_cycle 32 UINT "Maximum number of PDUs to send per cycle per channel for throttling"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_tmp_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_tmp_dir 0 STRING "Temporary directory for uplink file reception"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_0_tmp_dir_LENGTH 8 0
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_fail_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_0_fail_dir 0 STRING "Directory for failed poll files"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_0_fail_dir_LENGTH 8 0
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_ack_limit 8 UINT "number of times to retry ACK (for ex, send FIN and wait for fin-ack)"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_nack_limit 8 UINT "number of times to retry NAK before giving up (resets on a single response"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_ack_timer 32 UINT "Acknowledge timer in seconds"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_inactivity_timer 32 UINT "Inactivity timer in seconds"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_dequeue_enabled 8 UINT "if enabled, then the channel will make pending transactions active"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_move_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_move_dir 0 STRING "Move directory if not empty"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_1_move_dir_LENGTH 8 0
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_max_outgoing_pdus_per_cycle 32 UINT "Maximum number of PDUs to send per cycle per channel for throttling"
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_tmp_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_tmp_dir 0 STRING "Temporary directory for uplink file reception"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_1_tmp_dir_LENGTH 8 0
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_fail_dir_LENGTH 64 UINT
+  APPEND_ITEM PRM_CHANNEL_CONFIG_1_fail_dir 0 STRING "Directory for failed poll files"
+    VARIABLE_BIT_SIZE PRM_CHANNEL_CONFIG_1_fail_dir_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FileHandlingCfdp.fileManager.CommandsExecuted BIG_ENDIAN "The total number of commands successfully executed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117444608
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1063,9 +1266,9 @@ TELEMETRY <%= target_name %> FileHandling.fileManager.CommandsExecuted BIG_ENDIA
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> FileHandling.fileManager.Errors BIG_ENDIAN "The total number of errors"
+TELEMETRY <%= target_name %> FileHandlingCfdp.fileManager.Errors BIG_ENDIAN "The total number of errors"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 83894273
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 117444609
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1078,7 +1281,22 @@ TELEMETRY <%= target_name %> FileHandling.fileManager.Errors BIG_ENDIAN "The tot
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup1.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+TELEMETRY <%= target_name %> Ref.blockDrv.BD_Cycles BIG_ENDIAN "Driver cycle count"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268435456
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM BD_Cycles 32 UINT "Driver cycle count"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.rateGroup1Comp.RgMaxTime BIG_ENDIAN "Max execution time rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268439552
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1094,7 +1312,7 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup1.RgMaxTime BIG_ENDIAN "Max ex
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup1.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+TELEMETRY <%= target_name %> Ref.rateGroup1Comp.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268439553
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1109,7 +1327,7 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup1.RgCycleSlips BIG_ENDIAN "Cyc
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup2.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+TELEMETRY <%= target_name %> Ref.rateGroup2Comp.RgMaxTime BIG_ENDIAN "Max execution time rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268443648
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1125,7 +1343,7 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup2.RgMaxTime BIG_ENDIAN "Max ex
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup2.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+TELEMETRY <%= target_name %> Ref.rateGroup2Comp.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268443649
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1140,7 +1358,7 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup2.RgCycleSlips BIG_ENDIAN "Cyc
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup3.RgMaxTime BIG_ENDIAN "Max execution time rate group"
+TELEMETRY <%= target_name %> Ref.rateGroup3Comp.RgMaxTime BIG_ENDIAN "Max execution time rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268447744
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1156,7 +1374,7 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup3.RgMaxTime BIG_ENDIAN "Max ex
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.rateGroup3.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
+TELEMETRY <%= target_name %> Ref.rateGroup3Comp.RgCycleSlips BIG_ENDIAN "Cycle slips for rate group"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268447745
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
@@ -1171,9 +1389,409 @@ TELEMETRY <%= target_name %> HiNamespace.rateGroup3.RgCycleSlips BIG_ENDIAN "Cyc
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_LoadCommands BIG_ENDIAN "The number of Load commands executed"
+TELEMETRY <%= target_name %> Ref.pingRcvr.PR_NumPings BIG_ENDIAN "Number of pings received"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268451840
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PR_NumPings 32 UINT "Number of pings received"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ChoiceCh BIG_ENDIAN "Single choice channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455936
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ChoiceCh 32 INT "Single choice channel"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ChoicesCh BIG_ENDIAN "Multiple choice channel via Array"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455937
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ChoicesCh_0 32 INT "Multiple choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoicesCh_1 32 INT "Multiple choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ExtraChoicesCh BIG_ENDIAN "Too many choice channel via Array"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455938
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ExtraChoicesCh_0_0 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ExtraChoicesCh_0_1 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ExtraChoicesCh_1_0 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ExtraChoicesCh_1_1 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ChoicePairCh BIG_ENDIAN "Multiple choice channel via Structure"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455939
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ChoicePairCh_firstChoice 32 INT "The first choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoicePairCh_secondChoice 32 INT "The second choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ChoiceSlurryCh BIG_ENDIAN "Multiple choice channel via Complex Structure"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455940
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ChoiceSlurryCh_tooManyChoices_0_0 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_tooManyChoices_0_1 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_tooManyChoices_1_0 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_tooManyChoices_1_1 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_separateChoice 32 INT "A singular choice"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_choicePair_firstChoice 32 INT "The first choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM ChoiceSlurryCh_choicePair_secondChoice 32 INT "The second choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ARRAY_ITEM ChoiceSlurryCh_choiceAsMemberArray 8 UINT 16 "An array of choices defined as member array"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.Float1Ch BIG_ENDIAN "Float output channel 1"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455941
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Float1Ch 32 FLOAT "Float output channel 1"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.Float2Ch BIG_ENDIAN "Float output channel 2"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455942
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Float2Ch 32 FLOAT "Float output channel 2"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.Float3Ch BIG_ENDIAN "Float output channel 3"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455943
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Float3Ch 32 FLOAT "Float output channel 3"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.FloatSet BIG_ENDIAN "Float set output channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455944
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM FloatSet 32 FLOAT 96 "Float set output channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarStructCh BIG_ENDIAN "Scalar struct channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455945
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarStructCh_i8 8 INT ""
+  APPEND_ITEM ScalarStructCh_i16 16 INT ""
+  APPEND_ITEM ScalarStructCh_i32 32 INT ""
+  APPEND_ITEM ScalarStructCh_i64 64 INT ""
+  APPEND_ITEM ScalarStructCh_u8 8 UINT ""
+  APPEND_ITEM ScalarStructCh_u16 16 UINT ""
+  APPEND_ITEM ScalarStructCh_u32 32 UINT ""
+  APPEND_ITEM ScalarStructCh_u64 64 UINT ""
+  APPEND_ITEM ScalarStructCh_f32 32 FLOAT ""
+  APPEND_ITEM ScalarStructCh_f64 64 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarU8Ch BIG_ENDIAN "Scalar U8 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455946
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarU8Ch 8 UINT "Scalar U8 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarU16Ch BIG_ENDIAN "Scalar U16 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455947
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarU16Ch 16 UINT "Scalar U16 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarU32Ch BIG_ENDIAN "Scalar U32 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455948
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarU32Ch 32 UINT "Scalar U32 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarU64Ch BIG_ENDIAN "Scalar U64 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455949
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarU64Ch 64 UINT "Scalar U64 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarI8Ch BIG_ENDIAN "Scalar I8 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455950
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarI8Ch 8 INT "Scalar I8 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarI16Ch BIG_ENDIAN "Scalar I16 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455951
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarI16Ch 16 INT "Scalar I16 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarI32Ch BIG_ENDIAN "Scalar I32 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455952
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarI32Ch 32 INT "Scalar I32 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarI64Ch BIG_ENDIAN "Scalar I64 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455953
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarI64Ch 64 INT "Scalar I64 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarF32Ch BIG_ENDIAN "Scalar F32 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455954
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarF32Ch 32 FLOAT "Scalar F32 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.typeDemo.ScalarF64Ch BIG_ENDIAN "Scalar F64 channel"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455955
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ScalarF64Ch 64 FLOAT "Scalar F64 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_LoadCommands BIG_ENDIAN "The number of Load commands executed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460032
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1186,9 +1804,9 @@ TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_LoadCommands BIG_ENDIAN "The 
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_CancelCommands BIG_ENDIAN "The number of Cancel commands executed"
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_CancelCommands BIG_ENDIAN "The number of Cancel commands executed"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268451841
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460033
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1201,9 +1819,9 @@ TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_CancelCommands BIG_ENDIAN "Th
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_Errors BIG_ENDIAN "The number of errors that have occurred"
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_Errors BIG_ENDIAN "The number of errors that have occurred"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268451842
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460034
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1216,9 +1834,9 @@ TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_Errors BIG_ENDIAN "The number
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_CommandsExecuted BIG_ENDIAN "The number of commands executed across all sequences."
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_CommandsExecuted BIG_ENDIAN "The number of commands executed across all sequences."
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268451843
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460035
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1231,9 +1849,9 @@ TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_CommandsExecuted BIG_ENDIAN "
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_SequencesCompleted BIG_ENDIAN "The number of sequences completed."
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_SequencesCompleted BIG_ENDIAN "The number of sequences completed."
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268451844
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460036
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1246,9 +1864,9 @@ TELEMETRY <%= target_name %> HiNamespace.cmdSeq.CS_SequencesCompleted BIG_ENDIAN
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.hiCmpntInstance.GreetingCount BIG_ENDIAN "A count of the number of greetings issued"
+TELEMETRY <%= target_name %> Ref.cmdSeq.CS_CurrentSequence BIG_ENDIAN "The sequence file currently executing"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268455936
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268460037
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1257,13 +1875,1073 @@ TELEMETRY <%= target_name %> HiNamespace.hiCmpntInstance.GreetingCount BIG_ENDIA
   APPEND_ITEM FPRIME_CONTEXT 8 UINT
   APPEND_ITEM FPRIME_TIME_SEC 32 UINT
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
-  APPEND_ITEM GreetingCount 32 UINT "A count of the number of greetings issued"
+  APPEND_ITEM CS_CurrentSequence_LENGTH 64 UINT
+  APPEND_ITEM CS_CurrentSequence 0 STRING "The sequence file currently executing"
+    VARIABLE_BIT_SIZE CS_CurrentSequence_LENGTH 8 0
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.MEMORY_TOTAL BIG_ENDIAN "Total system memory in KB"
+TELEMETRY <%= target_name %> Ref.wasmSeq.ControllerState BIG_ENDIAN "Current executing state of the sequencer controller"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464128
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM ControllerState 8 UINT "Current executing state of the sequencer controller"
+    STATE __FPRIME_UNINITIALIZED 0
+    STATE IDLE 1
+    STATE INVOKING 2
+    STATE LOADING_TO_READY 3
+    STATE LOADING_TO_RUN 4
+    STATE LOAD_RUNNING_START 5
+    STATE READY 6
+    STATE RUNNING_MAIN 7
+    STATE RUNNING_START_PENDING_MAIN 8
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.InterpreterState BIG_ENDIAN "Current executing state of the WebAssembly interpreter engine"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464129
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM InterpreterState 8 UINT "Current executing state of the WebAssembly interpreter engine"
+    STATE __FPRIME_UNINITIALIZED 0
+    STATE IDLE 1
+    STATE RUNNING_AWAITING_RESPONSE_SLEEPING 2
+    STATE RUNNING_AWAITING_RESPONSE_WAITING 3
+    STATE RUNNING_PAUSED 4
+    STATE RUNNING_SPINNING 5
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.SequencesSucceeded BIG_ENDIAN "Sequences successfully completed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464130
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SequencesSucceeded 64 UINT "Sequences successfully completed"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.SequencesFailed BIG_ENDIAN "Sequences that failed to validate or execute"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464131
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SequencesFailed 64 UINT "Sequences that failed to validate or execute"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.SequencesCancelled BIG_ENDIAN "Sequences that were cancelled"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464132
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SequencesCancelled 64 UINT "Sequences that were cancelled"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.CommandsDispatched BIG_ENDIAN "Commands dispatched total"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464133
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CommandsDispatched 64 UINT "Commands dispatched total"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.CommandsFailed BIG_ENDIAN "Number of commands that failed"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464134
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CommandsFailed 64 UINT "Number of commands that failed"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.LastTrapReason BIG_ENDIAN "Reason last sequence trapped"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464135
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM LastTrapReason 32 INT "Reason last sequence trapped"
+    STATE NONE -1
+    STATE UNREACHABLE 0
+    STATE HOST 1
+    STATE DIVIDE_BY_ZERO 2
+    STATE INVALID_TABLE_INDEX 3
+    STATE INVALID_TABLE_FUNCTION_TYPE 4
+    STATE UNINITIALIZED_TABLE_ELEMENT 5
+    STATE GLOBAL_GET_FAILED 6
+    STATE GLOBAL_SET_FAILED 7
+    STATE OUT_OF_MEMORY 8
+    STATE MEMORY_REF_NOT_UNIQUE 9
+    STATE MEMORY_OUT_OF_BOUNDS 10
+    STATE STACK_OVERFLOW 11
+    STATE UNREPRESENTABLE_RESULT 12
+    STATE INTEGER_OVERFLOW 13
+    STATE BAD_CONVERSION_TO_INTEGER 14
+    STATE MALFORMED_IR 15
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.wasmSeq.SeqName BIG_ENDIAN "Currently running sequence name. When a module is loaded under an empty name (`RUN`, or `LOAD` with no name) the name is the filename without `.wasm`; otherwise it is the module name provided to `LOAD`"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268464136
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SeqName_LENGTH 64 UINT
+  APPEND_ITEM SeqName 0 STRING "Currently running sequence name. When a module is loaded under an empty name (`RUN`, or `LOAD` with no name) the name is the filename without `.wasm`; otherwise it is the module name provided to `LOAD`"
+    VARIABLE_BIT_SIZE SeqName_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.sendBuffComp.PacketsSent BIG_ENDIAN "Number of packets sent"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268500992
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PacketsSent 64 UINT "Number of packets sent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.sendBuffComp.NumErrorsInjected BIG_ENDIAN "Number of errors injected"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268500993
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM NumErrorsInjected 32 UINT "Number of errors injected"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.sendBuffComp.Parameter3 BIG_ENDIAN "Readback of Parameter3"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268500994
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Parameter3 8 UINT "Readback of Parameter3"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.sendBuffComp.Parameter4 BIG_ENDIAN "Readback of Parameter4"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268500995
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Parameter4 32 FLOAT "Readback of Parameter4"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.sendBuffComp.SendState BIG_ENDIAN "Readback of Parameter4"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268500996
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SendState 32 INT "Readback of Parameter4"
+    STATE SEND_IDLE 0
+    STATE SEND_ACTIVE 1
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.Type BIG_ENDIAN "Type of the output signal: SINE, TRIANGLE, etc."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505088
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.Output BIG_ENDIAN "Single Y value of the output"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505089
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.PairOutput BIG_ENDIAN "Single (time, value) pair of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505090
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairOutput_time 32 FLOAT ""
+  APPEND_ITEM PairOutput_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.History BIG_ENDIAN "Last 10 Y values of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505091
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM History 32 FLOAT 128 "Last 10 Y values of the signal"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.PairHistory BIG_ENDIAN "Last 10 (time, value) pairs of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505092
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.Info BIG_ENDIAN "Composite field of signal information, containing histories, pairs etc"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505093
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.DpBytes BIG_ENDIAN "DP bytes written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505094
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpBytes 32 UINT "DP bytes written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG1.DpRecords BIG_ENDIAN "DP records written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268505095
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.Type BIG_ENDIAN "Type of the output signal: SINE, TRIANGLE, etc."
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509184
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.Output BIG_ENDIAN "Single Y value of the output"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509185
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.PairOutput BIG_ENDIAN "Single (time, value) pair of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509186
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairOutput_time 32 FLOAT ""
+  APPEND_ITEM PairOutput_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.History BIG_ENDIAN "Last 10 Y values of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509187
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM History 32 FLOAT 128 "Last 10 Y values of the signal"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.PairHistory BIG_ENDIAN "Last 10 (time, value) pairs of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509188
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.Info BIG_ENDIAN "Composite field of signal information, containing histories, pairs etc"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509189
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.DpBytes BIG_ENDIAN "DP bytes written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509190
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpBytes 32 UINT "DP bytes written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG2.DpRecords BIG_ENDIAN "DP records written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509191
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.Type BIG_ENDIAN "Type of the output signal: SINE, TRIANGLE, etc."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513280
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.Output BIG_ENDIAN "Single Y value of the output"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513281
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.PairOutput BIG_ENDIAN "Single (time, value) pair of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513282
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairOutput_time 32 FLOAT ""
+  APPEND_ITEM PairOutput_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.History BIG_ENDIAN "Last 10 Y values of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513283
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM History 32 FLOAT 128 "Last 10 Y values of the signal"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.PairHistory BIG_ENDIAN "Last 10 (time, value) pairs of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513284
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.Info BIG_ENDIAN "Composite field of signal information, containing histories, pairs etc"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513285
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.DpBytes BIG_ENDIAN "DP bytes written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513286
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpBytes 32 UINT "DP bytes written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG3.DpRecords BIG_ENDIAN "DP records written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268513287
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.Type BIG_ENDIAN "Type of the output signal: SINE, TRIANGLE, etc."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517376
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.Output BIG_ENDIAN "Single Y value of the output"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517377
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.PairOutput BIG_ENDIAN "Single (time, value) pair of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517378
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairOutput_time 32 FLOAT ""
+  APPEND_ITEM PairOutput_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.History BIG_ENDIAN "Last 10 Y values of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517379
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM History 32 FLOAT 128 "Last 10 Y values of the signal"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.PairHistory BIG_ENDIAN "Last 10 (time, value) pairs of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517380
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.Info BIG_ENDIAN "Composite field of signal information, containing histories, pairs etc"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517381
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.DpBytes BIG_ENDIAN "DP bytes written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517382
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpBytes 32 UINT "DP bytes written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG4.DpRecords BIG_ENDIAN "DP records written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268517383
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.Type BIG_ENDIAN "Type of the output signal: SINE, TRIANGLE, etc."
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.Output BIG_ENDIAN "Single Y value of the output"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521473
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.PairOutput BIG_ENDIAN "Single (time, value) pair of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521474
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairOutput_time 32 FLOAT ""
+  APPEND_ITEM PairOutput_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.History BIG_ENDIAN "Last 10 Y values of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521475
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ARRAY_ITEM History 32 FLOAT 128 "Last 10 Y values of the signal"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.PairHistory BIG_ENDIAN "Last 10 (time, value) pairs of the signal"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521476
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM PairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.Info BIG_ENDIAN "Composite field of signal information, containing histories, pairs etc"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521477
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.DpBytes BIG_ENDIAN "DP bytes written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521478
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpBytes 32 UINT "DP bytes written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.SG5.DpRecords BIG_ENDIAN "DP records written"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268521479
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.recvBuffComp.PktState BIG_ENDIAN "Packet Statistics"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268574720
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PktState_BuffRecv 32 UINT "Number of buffers received"
+  APPEND_ITEM PktState_BuffErr 32 UINT "Number of buffers received with errors"
+  APPEND_ITEM PktState_PacketStatus 32 INT "Packet Status"
+    STATE PACKET_STATE_NO_PACKETS 0
+    STATE PACKET_STATE_OK 1
+    STATE PACKET_STATE_ERRORS 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.recvBuffComp.Sensor1 BIG_ENDIAN "Value of Sensor1"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268574721
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Sensor1 32 FLOAT "Value of Sensor1"
+    FORMAT_STRING "%.2fV"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.recvBuffComp.Sensor2 BIG_ENDIAN "Value of Sensor3"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268574722
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Sensor2 32 FLOAT "Value of Sensor3"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.recvBuffComp.Parameter1 BIG_ENDIAN "Readback of Parameter1"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268574723
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Parameter1 32 UINT "Readback of Parameter1"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.recvBuffComp.Parameter2 BIG_ENDIAN "Readback of Parameter2"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268574724
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Parameter2 16 INT "Readback of Parameter2"
+    LIMITS DEFAULT 1 ENABLED -3 -1 1 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Ref.systemResources.MEMORY_TOTAL BIG_ENDIAN "Total system memory in KB"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578816
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1277,9 +2955,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.MEMORY_TOTAL BIG_ENDIAN
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.MEMORY_USED BIG_ENDIAN "System memory used in KB"
+TELEMETRY <%= target_name %> Ref.systemResources.MEMORY_USED BIG_ENDIAN "System memory used in KB"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509185
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578817
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1293,9 +2971,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.MEMORY_USED BIG_ENDIAN 
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.NON_VOLATILE_TOTAL BIG_ENDIAN "System non-volatile available in KB"
+TELEMETRY <%= target_name %> Ref.systemResources.NON_VOLATILE_TOTAL BIG_ENDIAN "System non-volatile available in KB"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509186
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578818
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1309,9 +2987,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.NON_VOLATILE_TOTAL BIG_
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.NON_VOLATILE_FREE BIG_ENDIAN "System non-volatile available in KB"
+TELEMETRY <%= target_name %> Ref.systemResources.NON_VOLATILE_FREE BIG_ENDIAN "System non-volatile available in KB"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509187
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578819
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1325,9 +3003,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.NON_VOLATILE_FREE BIG_E
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509188
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578820
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1341,9 +3019,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU BIG_ENDIAN "System'
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_00 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_00 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509189
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578821
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1357,9 +3035,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_00 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_01 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_01 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509190
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578822
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1373,9 +3051,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_01 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_02 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_02 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509191
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578823
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1389,9 +3067,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_02 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_03 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_03 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509192
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578824
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1405,9 +3083,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_03 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_04 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_04 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509193
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578825
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1421,9 +3099,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_04 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_05 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_05 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509194
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578826
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1437,9 +3115,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_05 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_06 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_06 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509195
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578827
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1453,9 +3131,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_06 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_07 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_07 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509196
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578828
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1469,9 +3147,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_07 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_08 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_08 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509197
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578829
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1485,9 +3163,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_08 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_09 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_09 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509198
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578830
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1501,9 +3179,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_09 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_10 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_10 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509199
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578831
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1517,9 +3195,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_10 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_11 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_11 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509200
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578832
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1533,9 +3211,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_11 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_12 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_12 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509201
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578833
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1549,9 +3227,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_12 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_13 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_13 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509202
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578834
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1565,9 +3243,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_13 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_14 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_14 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509203
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578835
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1581,9 +3259,9 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_14 BIG_ENDIAN "Syst
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
-TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_15 BIG_ENDIAN "System's CPU Percentage"
+TELEMETRY <%= target_name %> Ref.systemResources.CPU_15 BIG_ENDIAN "System's CPU Percentage"
   SUBPACKET
-  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268509204
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 268578836
   APPEND_ITEM FPRIME_TIMEBASE 16 UINT
     STATE TB_NONE 0 # No time base has been established
     STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
@@ -1594,5 +3272,1045 @@ TELEMETRY <%= target_name %> HiNamespace.systemResources.CPU_15 BIG_ENDIAN "Syst
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_15 32 FLOAT "System's CPU Percentage"
     FORMAT_STRING "%.2f percent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> FILE_START BIG_ENDIAN "F Prime file downlink START packet"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 3
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FILE_TYPE 8 UINT 0
+  APPEND_ITEM SEQUENCE_INDEX 32 UINT
+  APPEND_ITEM FILE_SIZE 32 UINT "File size in bytes"
+  APPEND_ITEM SOURCE_PATH_LENGTH 8 UINT
+  APPEND_ITEM SOURCE_PATH 0 STRING "Source path on the spacecraft"
+    VARIABLE_BIT_SIZE SOURCE_PATH_LENGTH 8 0
+  APPEND_ITEM DEST_PATH_LENGTH 8 UINT
+  APPEND_ITEM DEST_PATH 0 STRING "Destination path"
+    VARIABLE_BIT_SIZE DEST_PATH_LENGTH 8 0
+
+TELEMETRY <%= target_name %> FILE_DATA BIG_ENDIAN "F Prime file downlink DATA packet"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 3
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FILE_TYPE 8 UINT 1
+  APPEND_ITEM SEQUENCE_INDEX 32 UINT
+  APPEND_ITEM BYTE_OFFSET 32 UINT
+  APPEND_ITEM DATA_SIZE 16 UINT
+  APPEND_ITEM DATA 0 BLOCK
+    VARIABLE_BIT_SIZE DATA_SIZE 8 0
+
+TELEMETRY <%= target_name %> FILE_END BIG_ENDIAN "F Prime file downlink END packet"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 3
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FILE_TYPE 8 UINT 2
+  APPEND_ITEM SEQUENCE_INDEX 32 UINT
+  APPEND_ITEM CHECKSUM 32 UINT "CFDP checksum of the file"
+    FORMAT_STRING "0x%08X"
+
+TELEMETRY <%= target_name %> FILE_CANCEL BIG_ENDIAN "F Prime file downlink CANCEL packet"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 3
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FILE_TYPE 8 UINT 3
+  APPEND_ITEM SEQUENCE_INDEX 32 UINT
+
+TELEMETRY <%= target_name %> CFDP_PDU BIG_ENDIAN "CFDP PDU carried on APID 3 (F Prime CfdpManager)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 3
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  ID_ITEM CFDP_VERSION 64 3 UINT 1 "CFDP protocol version"
+  ITEM PDU 64 0 BLOCK "Raw CFDP PDU"
+    OVERLAP
+
+TELEMETRY <%= target_name %> DP_HEADER BIG_ENDIAN "Data product header, synthesized by fprime_file_downlink_protocol.py"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 0
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM PRIORITY 32 UINT
+  APPEND_ITEM PROC_TYPES 8 UINT "Processing type bit mask"
+  APPEND_ITEM DP_STATE 8 UINT
+    STATE UNTRANSMITTED 0
+    STATE PARTIAL 1
+    STATE TRANSMITTED 2
+  APPEND_ITEM DATA_SIZE 64 UINT "Record data size in bytes"
+  APPEND_ITEM HEADER_CRC_OK 8 UINT "Header hash matched"
+    STATE FALSE 0
+    STATE TRUE 1
+  APPEND_ITEM DATA_CRC_OK 8 UINT "Data hash matched"
+    STATE FALSE 0
+    STATE TRUE 1
+  APPEND_ITEM DECODE_OK 8 UINT "All records decoded"
+    STATE FALSE 0
+    STATE TRUE 1
+  APPEND_ITEM RECORD_COUNT 32 UINT "Number of records decoded"
+  APPEND_ITEM USER_DATA 256 BLOCK
+  APPEND_ITEM FILE_NAME_LENGTH 8 UINT
+  APPEND_ITEM FILE_NAME 0 STRING "Downlinked data product file"
+    VARIABLE_BIT_SIZE FILE_NAME_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.ColorInfoStructRecord BIG_ENDIAN "Data product record - struct record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2576
+  APPEND_ITEM VALUE_Color 32 INT ""
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.ColorEnumRecord BIG_ENDIAN "Data product record - enum"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2577
+  APPEND_ITEM VALUE 32 INT "Data product record - enum"
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.StringRecord BIG_ENDIAN "Data product record - string"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2578
+  APPEND_ITEM VALUE_LENGTH 64 UINT
+  APPEND_ITEM VALUE 0 STRING "Data product record - string"
+    VARIABLE_BIT_SIZE VALUE_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.BooleanRecord BIG_ENDIAN "Data product record - boolean"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2579
+  APPEND_ITEM VALUE 8 UINT "Data product record - boolean"
+    STATE FALSE 0
+    STATE TRUE 0xFF
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.I32Record BIG_ENDIAN "Data product record - I32"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2580
+  APPEND_ITEM VALUE 32 INT "Data product record - I32"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.F64Record BIG_ENDIAN "Data product record - F64"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2581
+  APPEND_ITEM VALUE 64 FLOAT "Data product record - F64"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.U32ArrayRecord BIG_ENDIAN "Data product record - U32 array record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2582
+  APPEND_ARRAY_ITEM VALUE 32 UINT 160 "Data product record - U32 array record"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.F32ArrayRecord BIG_ENDIAN "Data product record - F32 array record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2583
+  APPEND_ARRAY_ITEM VALUE 32 FLOAT 96 "Data product record - F32 array record"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.BooleanArrayRecord BIG_ENDIAN "Data product record - boolean array record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2584
+  APPEND_ARRAY_ITEM VALUE 8 UINT 16 "Data product record - boolean array record"
+    STATE FALSE 0
+    STATE TRUE 0xFF
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.EnumArrayRecord BIG_ENDIAN "Data product record - enum array record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2585
+  APPEND_ITEM VALUE_0 32 INT "Data product record - enum array record"
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ITEM VALUE_1 32 INT "Data product record - enum array record"
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ITEM VALUE_2 32 INT "Data product record - enum array record"
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.StringArrayRecord BIG_ENDIAN "Data product record - string array record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2586
+  APPEND_ITEM COUNT 64 UINT "Number of array elements"
+  APPEND_ITEM VALUE 0 BLOCK "Data product record - string array record (raw elements; decoded values are in the .json file)"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.StructArrayRecord BIG_ENDIAN "Data product record - array record (structs)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2587
+  APPEND_ITEM COUNT 64 UINT "Number of array elements"
+  APPEND_ITEM VALUE 0 BLOCK "Data product record - array record (structs) (raw elements; decoded values are in the .json file)"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.ArrayArrayRecord BIG_ENDIAN "Data product record - array record (arrays)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2588
+  APPEND_ITEM COUNT 64 UINT "Number of array elements"
+  APPEND_ITEM VALUE 0 BLOCK "Data product record - array record (arrays) (raw elements; decoded values are in the .json file)"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.ArrayOfStringArrayRecord BIG_ENDIAN "Data product record - array record (string arrays)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2589
+  APPEND_ITEM VALUE_0_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_0_0 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_0_0_LENGTH 8 0
+  APPEND_ITEM VALUE_0_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_0_1 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_0_1_LENGTH 8 0
+  APPEND_ITEM VALUE_1_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_1_0 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_1_0_LENGTH 8 0
+  APPEND_ITEM VALUE_1_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_1_1 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_1_1_LENGTH 8 0
+  APPEND_ITEM VALUE_2_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_2_0 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_2_0_LENGTH 8 0
+  APPEND_ITEM VALUE_2_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_2_1 0 STRING "Data product record - array record (string arrays)"
+    VARIABLE_BIT_SIZE VALUE_2_1_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.StructWithEverythingRecord BIG_ENDIAN "Data product record - struct record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2590
+  APPEND_ITEM VALUE_integerMember 32 INT ""
+  APPEND_ITEM VALUE_floatMember 32 FLOAT ""
+  APPEND_ITEM VALUE_stringMember_LENGTH 64 UINT
+  APPEND_ITEM VALUE_stringMember 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_stringMember_LENGTH 8 0
+  APPEND_ITEM VALUE_booleanMember 8 UINT ""
+    STATE FALSE 0
+    STATE TRUE 0xFF
+  APPEND_ITEM VALUE_enumMember 32 INT ""
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ARRAY_ITEM VALUE_arrayMemberU32_0 32 UINT 160 ""
+  APPEND_ARRAY_ITEM VALUE_arrayMemberU32_1 32 UINT 160 ""
+  APPEND_ARRAY_ITEM VALUE_F32Array 32 FLOAT 96 ""
+  APPEND_ARRAY_ITEM VALUE_U32Array 32 UINT 160 ""
+  APPEND_ITEM VALUE_enumArray_0 32 INT ""
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ITEM VALUE_enumArray_1 32 INT ""
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ITEM VALUE_enumArray_2 32 INT ""
+    STATE RED 0
+    STATE GREEN 1
+    STATE BLUE 2
+  APPEND_ITEM VALUE_stringArray_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_stringArray_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_stringArray_0_LENGTH 8 0
+  APPEND_ITEM VALUE_stringArray_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_stringArray_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_stringArray_1_LENGTH 8 0
+  APPEND_ARRAY_ITEM VALUE_booleanArray 8 UINT 16 ""
+    STATE FALSE 0
+    STATE TRUE 0xFF
+  APPEND_ITEM VALUE_structWithStrings_stringMember_LENGTH 64 UINT
+  APPEND_ITEM VALUE_structWithStrings_stringMember 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_structWithStrings_stringMember_LENGTH 8 0
+  APPEND_ITEM VALUE_structWithStrings_stringArrayMember_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_structWithStrings_stringArrayMember_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_structWithStrings_stringArrayMember_0_LENGTH 8 0
+  APPEND_ITEM VALUE_structWithStrings_stringArrayMember_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_structWithStrings_stringArrayMember_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_structWithStrings_stringArrayMember_1_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_0_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_0_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_0_0_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_0_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_0_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_0_1_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_1_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_1_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_1_0_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_1_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_1_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_1_1_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_2_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_2_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_2_0_LENGTH 8 0
+  APPEND_ITEM VALUE_nestedArrays_2_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_nestedArrays_2_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_nestedArrays_2_1_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.dpDemo.ArrayOfStructsRecord BIG_ENDIAN "Data product record - array of structs"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 2591
+  APPEND_ITEM VALUE_0_stringMember_LENGTH 64 UINT
+  APPEND_ITEM VALUE_0_stringMember 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_0_stringMember_LENGTH 8 0
+  APPEND_ITEM VALUE_0_stringArrayMember_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_0_stringArrayMember_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_0_stringArrayMember_0_LENGTH 8 0
+  APPEND_ITEM VALUE_0_stringArrayMember_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_0_stringArrayMember_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_0_stringArrayMember_1_LENGTH 8 0
+  APPEND_ITEM VALUE_1_stringMember_LENGTH 64 UINT
+  APPEND_ITEM VALUE_1_stringMember 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_1_stringMember_LENGTH 8 0
+  APPEND_ITEM VALUE_1_stringArrayMember_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_1_stringArrayMember_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_1_stringArrayMember_0_LENGTH 8 0
+  APPEND_ITEM VALUE_1_stringArrayMember_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_1_stringArrayMember_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_1_stringArrayMember_1_LENGTH 8 0
+  APPEND_ITEM VALUE_2_stringMember_LENGTH 64 UINT
+  APPEND_ITEM VALUE_2_stringMember 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_2_stringMember_LENGTH 8 0
+  APPEND_ITEM VALUE_2_stringArrayMember_0_LENGTH 64 UINT
+  APPEND_ITEM VALUE_2_stringArrayMember_0 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_2_stringArrayMember_0_LENGTH 8 0
+  APPEND_ITEM VALUE_2_stringArrayMember_1_LENGTH 64 UINT
+  APPEND_ITEM VALUE_2_stringArrayMember_1 0 STRING ""
+    VARIABLE_BIT_SIZE VALUE_2_stringArrayMember_1_LENGTH 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.FileHandlingCfdp.fileManager.FileChunkHeaderRecord BIG_ENDIAN "Chunk metadata record; each instance is followed by a FileChunkDataRecord"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 117444608
+  APPEND_ITEM VALUE_fileName_LENGTH 64 UINT
+  APPEND_ITEM VALUE_fileName 0 STRING "The name of the source file"
+    VARIABLE_BIT_SIZE VALUE_fileName_LENGTH 8 0
+  APPEND_ITEM VALUE_offset 64 UINT "The offset of this chunk within the source file"
+  APPEND_ITEM VALUE_dataSize 32 UINT "The number of data bytes in this chunk"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.FileHandlingCfdp.fileManager.FileChunkDataRecord BIG_ENDIAN "Chunk data record; carries the actual file bytes for the preceding header"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 117444609
+  APPEND_ITEM COUNT 64 UINT "Number of array elements"
+  APPEND_ARRAY_ITEM VALUE 8 UINT 0 "Chunk data record; carries the actual file bytes for the preceding header"
+    VARIABLE_BIT_SIZE COUNT 8 0
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.SG1.DataRecord BIG_ENDIAN "Signal generation data product record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 268505088
+  APPEND_ITEM VALUE_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM VALUE_history 32 FLOAT 128 ""
+  APPEND_ITEM VALUE_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.SG2.DataRecord BIG_ENDIAN "Signal generation data product record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 268509184
+  APPEND_ITEM VALUE_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM VALUE_history 32 FLOAT 128 ""
+  APPEND_ITEM VALUE_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.SG3.DataRecord BIG_ENDIAN "Signal generation data product record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 268513280
+  APPEND_ITEM VALUE_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM VALUE_history 32 FLOAT 128 ""
+  APPEND_ITEM VALUE_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.SG4.DataRecord BIG_ENDIAN "Signal generation data product record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 268517376
+  APPEND_ITEM VALUE_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM VALUE_history 32 FLOAT 128 ""
+  APPEND_ITEM VALUE_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DP.Ref.SG5.DataRecord BIG_ENDIAN "Signal generation data product record"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 5
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM DP_KIND 8 UINT 1
+  APPEND_ITEM CONTAINER_ID 32 UINT "Data product container ID"
+    STATE "Ref.dpDemo.DpDemoContainer" 2576
+    STATE "FileHandlingCfdp.fileManager.FileDpContainer" 117444608
+    STATE "Ref.SG1.DataContainer" 268505088
+    STATE "Ref.SG2.DataContainer" 268509184
+    STATE "Ref.SG3.DataContainer" 268513280
+    STATE "Ref.SG4.DataContainer" 268517376
+    STATE "Ref.SG5.DataContainer" 268521472
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ID_ITEM RECORD_ID 32 UINT 268521472
+  APPEND_ITEM VALUE_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM VALUE_history 32 FLOAT 128 ""
+  APPEND_ITEM VALUE_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM VALUE_pairHistory_3_value 32 FLOAT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC

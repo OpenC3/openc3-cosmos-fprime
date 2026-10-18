@@ -59,3 +59,25 @@ class TestCcsdsSeqcntProtocol:
         packet_b = _make_packet()
         protocol_b.write_packet(packet_b)
         assert packet_b.read("CCSDS_SEQ_CNT") == 0
+
+    def test_counts_per_apid(self):
+        # CCSDS sequence counts are per APID; F Prime's ApidManager checks each APID separately
+        protocol = CcsdsSeqcntProtocol()
+
+        def send(apid):
+            packet = _make_packet()
+            packet.append_item("CCSDS_APID", 11, "UINT")
+            packet.write("CCSDS_APID", apid)
+            protocol.write_packet(packet)
+            return packet.read("CCSDS_SEQ_CNT")
+
+        assert [send(0), send(3), send(3), send(0), send(3)] == [0, 0, 1, 1, 2]
+
+    def test_wraps_at_14_bits(self):
+        protocol = CcsdsSeqcntProtocol()
+        protocol.seq_num = 0x3FFF
+        packet = _make_packet()
+        protocol.write_packet(packet)
+        assert packet.read("CCSDS_SEQ_CNT") == 0x3FFF
+        protocol.write_packet(packet)
+        assert packet.read("CCSDS_SEQ_CNT") == 0

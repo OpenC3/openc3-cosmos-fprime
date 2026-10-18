@@ -13,6 +13,8 @@ This builds NASA F Prime's `Ref` deployment at tag **v4.4.1** with `CfdpManager`
 - **Comm driver:** `Drv.TcpServer` replaces `Drv.TcpClient`, so the deployment listens and COSMOS connects as a client.
 - **Telemetry:** the CfdpManager parameter channels are added to the Ref telemetry packets. `ChannelTelemetry` and `PRM_CHANNEL_CONFIG` are too large for a packet, so they are omitted from the packets, but TlmChan still downlinks them as channels.
 - **Subtopology build fix:** `FileHandlingCfdp.fpp` is patched to pass the `fileQueueDepth` argument (10) that `CfdpManager::configure` requires. As shipped, v4.4.1's subtopology does not compile.
+- **CfdpManager queue:** the queue depth goes from 30 to 100. Each uplinked PDU is a queued `dataIn` message, and a full queue asserts.
+- **TM packet spanning:** `ComCcsdsConfig.Aggregator.enablePacketSpanning` is turned on. CfdpManager's default 992-byte chunks make 1011-byte space packets, which overflow an unspanned 1024-byte TM frame and assert in ComAggregator.
 - **Rust:** the image installs Rust because Ref's WasmSequencer needs cargo 1.87 or newer.
 - **DpCatalog:** it is **not** connected to CfdpManager. In 4.4.1, `fileDoneOut` returns a constant context, which DpCatalog cannot use. Data products are still generated but not downlinked.
 

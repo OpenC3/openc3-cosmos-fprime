@@ -395,6 +395,32 @@ def format_limits_line(limits, value_type):
     yellow_low = low.get("yellow", low.get("orange", red_low))
     return f"LIMITS DEFAULT 1 ENABLED {red_low} {yellow_low} {yellow_high} {red_high}"
 
+def emit_cmd_header(f, descriptor):
+    if headers == "FPRIME":
+        print("  APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0", file=f)
+        print("  APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0", file=f)
+        print(f"  APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT {descriptor} {descriptor} {descriptor}", file=f)
+    else:
+        print("  APPEND_PARAMETER CCSDS_VERSION 3 UINT 0 0 0", file=f)
+        print("  APPEND_PARAMETER CCSDS_TYPE 1 UINT 1 1 1", file=f)
+        print("  APPEND_PARAMETER CCSDS_SHF 1 UINT 0 0 0", file=f)
+        print(f"  APPEND_ID_PARAMETER CCSDS_APID 11 UINT {descriptor} {descriptor} {descriptor}", file=f)
+        print("  APPEND_PARAMETER CCSDS_SEQ_FLAGS 2 UINT MIN MAX 0", file=f)
+        print("  APPEND_PARAMETER CCSDS_SEQ_CNT 14 UINT MIN MAX 0", file=f)
+        print("  APPEND_PARAMETER CCSDS_LENGTH 16 UINT MIN MAX 0", file=f)
+        print(f"  APPEND_PARAMETER FPRIME_APID 16 UINT {descriptor} {descriptor} {descriptor}", file=f)
+
+def has_cfdp_manager(commands):
+    # CfdpManager.SendFile; FileDownlink also has a SendFile but no cfdpClass
+    for command in commands:
+        if command["name"].endswith(".SendFile"):
+            if any(p["name"] == "cfdpClass" for p in command["formalParams"]):
+                return True
+    return False
+
+# CfdpManager is F Prime 4.x only, so CFDP rides in CCSDS space packets
+cfdp = headers == "SPACE_PACKET" and has_cfdp_manager(commands)
+
 first = True
 cmd_path = os.path.join(base_dir, 'targets', target_name, 'cmd_tlm', 'cmd.txt')
 os.makedirs(os.path.dirname(cmd_path), exist_ok=True)
@@ -409,24 +435,17 @@ with open(cmd_path, 'w') as f:
             print(file=f)
 
         print(f"COMMAND <%= target_name %> {command["name"]} BIG_ENDIAN \"{command.get("annotation", "").replace('\n', ' ').replace('\r', '')}\"", file=f)
-        if headers == "FPRIME":
-            print("  APPEND_PARAMETER FPRIME_SYNC 32 UINT MIN MAX 0", file=f)
-            print("  APPEND_PARAMETER FPRIME_SIZE 32 UINT MIN MAX 0", file=f)
-            print("  APPEND_ID_PARAMETER FPRIME_PACKET_ID 32 UINT 0 0 0", file=f)
-        else:
-            print("  APPEND_PARAMETER CCSDS_VERSION 3 UINT 0 0 0", file=f)
-            print("  APPEND_PARAMETER CCSDS_TYPE 1 UINT 1 1 1", file=f)
-            print("  APPEND_PARAMETER CCSDS_SHF 1 UINT 0 0 0", file=f)
-            print("  APPEND_ID_PARAMETER CCSDS_APID 11 UINT 0 0 0", file=f)
-            print("  APPEND_PARAMETER CCSDS_SEQ_FLAGS 2 UINT MIN MAX 0", file=f)
-            print("  APPEND_PARAMETER CCSDS_SEQ_CNT 14 UINT MIN MAX 0", file=f)
-            print("  APPEND_PARAMETER CCSDS_LENGTH 16 UINT MIN MAX 0", file=f)
-            print("  APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0", file=f)
+        emit_cmd_header(f, 0)
         print(f"  APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT {command["opcode"]} {command["opcode"]} {command["opcode"]}", file=f)
         for param in command["formalParams"]:
             emit_command_param(f, param["name"], param["type"], types, param.get("annotation", ""))
         if headers == "FPRIME":
             print("  APPEND_PARAMETER FPRIME_CRC32 32 UINT MIN MAX 0", file=f)
+    if cfdp:
+        print(file=f)
+        print("COMMAND <%= target_name %> CFDP_PDU BIG_ENDIAN \"CFDP PDU sent to F Prime CfdpManager on APID 3\"", file=f)
+        emit_cmd_header(f, FW_PACKET_FILE)
+        print("  APPEND_PARAMETER PDU 0 BLOCK \"\" \"Raw CFDP PDU\"", file=f)
 
 tlm_path = os.path.join(base_dir, 'targets', target_name, 'cmd_tlm', 'tlm.txt')
 os.makedirs(os.path.dirname(tlm_path), exist_ok=True)
@@ -493,6 +512,16 @@ with open(tlm_path, 'w') as f:
             print("  APPEND_ITEM CHECKSUM 32 UINT \"CFDP checksum of the file\"", file=f)
             print("    FORMAT_STRING \"0x%08X\"", file=f)
         emit_tlm_trailer(f)
+
+    if cfdp:
+        print(file=f)
+        print("TELEMETRY <%= target_name %> CFDP_PDU BIG_ENDIAN \"CFDP PDU carried on APID 3 (F Prime CfdpManager)\"", file=f)
+        emit_tlm_header(f, FW_PACKET_FILE)
+        # A CFDP PDU starts with version 1 in its top 3 bits; legacy file packets
+        # start with a type byte of 0-4 there, so the version tells them apart
+        print("  ID_ITEM CFDP_VERSION 64 3 UINT 1 \"CFDP protocol version\"", file=f)
+        print("  ITEM PDU 64 0 BLOCK \"Raw CFDP PDU\"", file=f)
+        print("    OVERLAP", file=f)
 
     print(file=f)
     print("TELEMETRY <%= target_name %> DP_HEADER BIG_ENDIAN \"Data product header, synthesized by fprime_file_downlink_protocol.py\"", file=f)

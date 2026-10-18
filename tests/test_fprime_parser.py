@@ -975,3 +975,102 @@ class TestDpTelemetry:
                               lambda w: fx.record(w, 0x701, fx.uint(w["size_store"], 2) + b"\x05\x06"))
         assert _read(config, "DP.NS.COMP.U8ARRAYRECORD", packets[1]).read("VALUE") == [5, 6]
         assert _read(config, "DP_HEADER", packets[0]).read("FILE_NAME") == "Dp_00002048_1_2.fdp"
+
+
+STRING200 = {"name": "string", "kind": "string", "size": 200}
+
+
+def _cfdp_dictionary(version="v4.4.1"):
+    """A v4.4 dictionary with a CfdpManager SendFile and a FileDownlink SendFile."""
+    d = _v44_dictionary()
+    d["metadata"]["frameworkVersion"] = version
+    d["commands"].append(
+        {
+            "name": "Ns.cfdpManager.SendFile",
+            "commandKind": "async",
+            "opcode": 0x900,
+            "formalParams": [
+                {"name": "channelId", "type": u(8)},
+                {"name": "destId", "type": u(32)},
+                {"name": "cfdpClass", "type": u(8)},
+                {"name": "keep", "type": u(8)},
+                {"name": "priority", "type": u(8)},
+                {"name": "sourceFileName", "type": STRING200},
+                {"name": "destFileName", "type": STRING200},
+            ],
+        }
+    )
+    d["commands"].append(_file_downlink_send_file())
+    return d
+
+
+def _file_downlink_send_file():
+    return {
+        "name": "Ns.fileDownlink.SendFile",
+        "commandKind": "async",
+        "opcode": 0x901,
+        "formalParams": [
+            {"name": "sourceFileName", "type": STRING200},
+            {"name": "destFileName", "type": STRING200},
+        ],
+    }
+
+
+# A CFDP directive PDU header: version 1, ack, 1-byte EIDs/TSN (src 0x2a, seq 1, dst 0x64)
+CFDP_PDU = b"\x24\x00\x05\x00\x2a\x01\x64"
+
+
+def _space_packet(apid, payload):
+    return struct.pack(">HHH", apid, 0xC000, len(payload) - 1) + payload
+
+
+@pytest.fixture(scope="module")
+def cfdp_config(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktemp("parser_cfdp")
+    result = _run(tmp_path, dictionary=_cfdp_dictionary())
+    assert result.returncode == 0, result.stderr
+    return _load_config(tmp_path)
+
+
+class TestCfdpPackets:
+    def test_no_cfdp_packets_without_cfdp_manager(self, config):
+        assert "CFDP_PDU" not in config.commands[TARGET]
+        assert "CFDP_PDU" not in config.telemetry[TARGET]
+
+    def test_file_downlink_send_file_alone_does_not_trigger(self, tmp_path):
+        d = _v44_dictionary()
+        d["commands"].append(_file_downlink_send_file())
+        assert _run(tmp_path, dictionary=d).returncode == 0
+        assert "CFDP_PDU" not in _load_config(tmp_path).commands[TARGET]
+
+    def test_fprime_headers_never_get_cfdp_packets(self, tmp_path):
+        assert _run(tmp_path, dictionary=_cfdp_dictionary(), extra_args=["FPRIME"]).returncode == 0
+        config = _load_config(tmp_path)
+        assert "CFDP_PDU" not in config.commands[TARGET]
+        assert "CFDP_PDU" not in config.telemetry[TARGET]
+
+    def test_cfdp_config_loads_without_warnings(self, cfdp_config):
+        assert cfdp_config.warnings == []
+
+    def test_cfdp_command_wraps_pdu(self, cfdp_config):
+        packet = cfdp_config.commands[TARGET]["CFDP_PDU"].clone()
+        packet.restore_defaults()
+        packet.write("PDU", CFDP_PDU)
+        assert packet.read("CCSDS_APID") == 3
+        assert packet.read("CCSDS_TYPE") == 1
+        assert packet.buffer[6:] == b"\x00\x03" + CFDP_PDU
+        assert "CCSDS_SEQ_CNT" in packet.items
+
+    def test_cfdp_telemetry_identifies_and_reads_pdu(self, cfdp_config):
+        raw = _space_packet(3, b"\x00\x03" + CFDP_PDU)
+        packet = cfdp_config.telemetry[TARGET]["CFDP_PDU"]
+        assert packet.identify(raw)
+        assert not cfdp_config.telemetry[TARGET]["FILE_START"].identify(raw)
+        p = packet.clone()
+        p.buffer = raw
+        assert p.read("PDU") == CFDP_PDU
+        assert not packet.get_item("PDU").hidden
+
+    def test_legacy_file_packet_is_not_cfdp(self, cfdp_config):
+        raw = _space_packet(3, b"\x00\x03" + b"\x00" + b"\x00\x00\x00\x00")
+        assert not cfdp_config.telemetry[TARGET]["CFDP_PDU"].identify(raw)

@@ -70,7 +70,11 @@ When installing `openc3-cosmos-cfdp`, set these variables (assuming the target i
 | `source_entity_id` | `100`, the COSMOS entity (CfdpManager's `FileInDefaultDestEntityId`) |
 | `destination_entity_id` | `42`, CfdpManager's `LocalEid` |
 
-Then edit the MIB options in plugin.txt so they match what CfdpManager supports:
+MIB settings are `OPTION` lines in the CFDP plugin's plugin.txt, not install variables, and most of them
+are not in the shipped file. While installing (or upgrading) the CFDP plugin, open the plugin.txt editor.
+Replace the four `OPTION source_entity_id` / `tlm_info` / `destination_entity_id` / `cmd_info` lines with the
+block below, and leave the `root_path` and later lines as they are. Each option applies to the entity ID
+declared most recently above it, so the order matters.
 
 ```
   OPTION source_entity_id <%= source_entity_id %>

@@ -40,6 +40,21 @@ if headers is None:
         # Fprime Framing
         headers = "FPRIME"
 
+# Annotations become quoted descriptions in cmd.txt/tlm.txt, so they can't hold
+# newlines or double quotes
+def clean_annotations(node):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "annotation" and isinstance(value, str):
+                node[key] = value.replace('\r', '').replace('\n', ' ').replace('"', "'")
+            else:
+                clean_annotations(value)
+    elif isinstance(node, list):
+        for value in node:
+            clean_annotations(value)
+
+clean_annotations(data)
+
 types = {}
 
 for type in data["typeDefinitions"]:

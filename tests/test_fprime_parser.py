@@ -1074,3 +1074,15 @@ class TestCfdpPackets:
     def test_legacy_file_packet_is_not_cfdp(self, cfdp_config):
         raw = _space_packet(3, b"\x00\x03" + b"\x00" + b"\x00\x00\x00\x00")
         assert not cfdp_config.telemetry[TARGET]["CFDP_PDU"].identify(raw)
+
+
+class TestAnnotations:
+    def test_double_quotes_in_annotations_load(self, tmp_path):
+        d = _build_dictionary()
+        d["commands"][0]["annotation"] = 'Run "this"\nnow'
+        d["commands"][1]["formalParams"][0]["annotation"] = 'a "quoted" param'
+        d["telemetryChannels"][0]["annotation"] = 'a "quoted" channel'
+        assert _run(tmp_path, dictionary=d).returncode == 0
+        config = _load_config(tmp_path)
+        assert config.warnings == []
+        assert _cmd(config, "NO_ARGS").description == "Run 'this' now"

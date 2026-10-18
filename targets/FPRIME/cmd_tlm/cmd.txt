@@ -58,6 +58,7 @@ COMMAND <%= target_name %> CdhCore.cmdDisp.CMD_NO_OP_STRING BIG_ENDIAN "No-op st
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 16777217 16777217 16777217
   APPEND_PARAMETER arg1_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER arg1 0 STRING "" "The String command argument"
     VARIABLE_BIT_SIZE arg1_LENGTH 8 0
 
@@ -158,6 +159,7 @@ COMMAND <%= target_name %> CdhCore.health.HLTH_PING_ENABLE BIG_ENDIAN "Ignore a 
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 16785409 16785409 16785409
   APPEND_PARAMETER entry_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER entry 0 STRING "" "The entry to enable/disable"
     VARIABLE_BIT_SIZE entry_LENGTH 8 0
   APPEND_PARAMETER enable 8 UINT MIN MAX 0 "whether or not a port is pinged"
@@ -175,6 +177,7 @@ COMMAND <%= target_name %> CdhCore.health.HLTH_CHNG_PING BIG_ENDIAN "Change ping
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 16785410 16785410 16785410
   APPEND_PARAMETER entry_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER entry 0 STRING "" "The entry to modify"
     VARIABLE_BIT_SIZE entry_LENGTH 8 0
   APPEND_PARAMETER warningValue 32 UINT MIN MAX 0 "Ping warning threshold"
@@ -374,9 +377,11 @@ COMMAND <%= target_name %> FileHandlingCfdp.cfdpManager.SendFile BIG_ENDIAN "Com
     STATE KEEP 1
   APPEND_PARAMETER priority 8 UINT MIN MAX 0 "Priority: 0=highest priority"
   APPEND_PARAMETER sourceFileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER sourceFileName 0 STRING "" "The name of the on-board file to send"
     VARIABLE_BIT_SIZE sourceFileName_LENGTH 8 0
   APPEND_PARAMETER destFileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER destFileName 0 STRING "" "The name of the destination file on the ground"
     VARIABLE_BIT_SIZE destFileName_LENGTH 8 0
 
@@ -400,9 +405,11 @@ COMMAND <%= target_name %> FileHandlingCfdp.cfdpManager.PlaybackDirectory BIG_EN
     STATE KEEP 1
   APPEND_PARAMETER priority 8 UINT MIN MAX 0 "Priority: 0=highest priority"
   APPEND_PARAMETER sourceDirectory_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER sourceDirectory 0 STRING "" "The name of the on-board directory to send"
     VARIABLE_BIT_SIZE sourceDirectory_LENGTH 8 0
   APPEND_PARAMETER destDirectory_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER destDirectory 0 STRING "" "The name of the destination directory on the ground"
     VARIABLE_BIT_SIZE destDirectory_LENGTH 8 0
 
@@ -425,9 +432,11 @@ COMMAND <%= target_name %> FileHandlingCfdp.cfdpManager.PollDirectory BIG_ENDIAN
   APPEND_PARAMETER priority 8 UINT MIN MAX 0 "Priority: 0=highest priority"
   APPEND_PARAMETER interval 32 UINT MIN MAX 0 "Interval to poll the directory in seconds"
   APPEND_PARAMETER sourceDirectory_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER sourceDirectory 0 STRING "" "The name of the on-board directory to send"
     VARIABLE_BIT_SIZE sourceDirectory_LENGTH 8 0
   APPEND_PARAMETER destDirectory_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER destDirectory 0 STRING "" "The name of the destination directory on the ground"
     VARIABLE_BIT_SIZE destDirectory_LENGTH 8 0
 
@@ -745,13 +754,16 @@ COMMAND <%= target_name %> FileHandlingCfdp.cfdpManager.CHANNELCONFIG_PRM_SET BI
     STATE DISABLED 0
     STATE ENABLED 1
   APPEND_PARAMETER val_0_move_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_0_move_dir 0 STRING "" "Move directory if not empty"
     VARIABLE_BIT_SIZE val_0_move_dir_LENGTH 8 0
   APPEND_PARAMETER val_0_max_outgoing_pdus_per_cycle 32 UINT MIN MAX 0 "Maximum number of PDUs to send per cycle per channel for throttling"
   APPEND_PARAMETER val_0_tmp_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_0_tmp_dir 0 STRING "" "Temporary directory for uplink file reception"
     VARIABLE_BIT_SIZE val_0_tmp_dir_LENGTH 8 0
   APPEND_PARAMETER val_0_fail_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_0_fail_dir 0 STRING "" "Directory for failed poll files"
     VARIABLE_BIT_SIZE val_0_fail_dir_LENGTH 8 0
   APPEND_PARAMETER val_1_ack_limit 8 UINT MIN MAX 0 "number of times to retry ACK (for ex, send FIN and wait for fin-ack)"
@@ -762,13 +774,16 @@ COMMAND <%= target_name %> FileHandlingCfdp.cfdpManager.CHANNELCONFIG_PRM_SET BI
     STATE DISABLED 0
     STATE ENABLED 1
   APPEND_PARAMETER val_1_move_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_1_move_dir 0 STRING "" "Move directory if not empty"
     VARIABLE_BIT_SIZE val_1_move_dir_LENGTH 8 0
   APPEND_PARAMETER val_1_max_outgoing_pdus_per_cycle 32 UINT MIN MAX 0 "Maximum number of PDUs to send per cycle per channel for throttling"
   APPEND_PARAMETER val_1_tmp_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_1_tmp_dir 0 STRING "" "Temporary directory for uplink file reception"
     VARIABLE_BIT_SIZE val_1_tmp_dir_LENGTH 8 0
   APPEND_PARAMETER val_1_fail_dir_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val_1_fail_dir 0 STRING "" "Directory for failed poll files"
     VARIABLE_BIT_SIZE val_1_fail_dir_LENGTH 8 0
 
@@ -794,6 +809,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.CreateDirectory BIG_ENDI
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444608 117444608 117444608
   APPEND_PARAMETER dirName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER dirName 0 STRING "" "The directory to create"
     VARIABLE_BIT_SIZE dirName_LENGTH 8 0
 
@@ -808,9 +824,11 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.MoveFile BIG_ENDIAN "Mov
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444609 117444609 117444609
   APPEND_PARAMETER sourceFileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER sourceFileName 0 STRING "" "The source file name"
     VARIABLE_BIT_SIZE sourceFileName_LENGTH 8 0
   APPEND_PARAMETER destFileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER destFileName 0 STRING "" "The destination file name"
     VARIABLE_BIT_SIZE destFileName_LENGTH 8 0
 
@@ -825,6 +843,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.RemoveDirectory BIG_ENDI
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444610 117444610 117444610
   APPEND_PARAMETER dirName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER dirName 0 STRING "" "The directory to remove"
     VARIABLE_BIT_SIZE dirName_LENGTH 8 0
 
@@ -839,6 +858,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.RemoveFile BIG_ENDIAN "R
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444611 117444611 117444611
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The file to remove"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER ignoreErrors 8 UINT 0 0xFF 0 "Ignore nonexistent files"
@@ -856,9 +876,11 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.AppendFile BIG_ENDIAN "A
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444613 117444613 117444613
   APPEND_PARAMETER source_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER source 0 STRING "" "The name of the file to take content from"
     VARIABLE_BIT_SIZE source_LENGTH 8 0
   APPEND_PARAMETER target_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER target 0 STRING "" "The name of the file to append to"
     VARIABLE_BIT_SIZE target_LENGTH 8 0
 
@@ -873,6 +895,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.FileSize BIG_ENDIAN "Get
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444614 117444614 117444614
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The file to get the size of"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
 
@@ -887,6 +910,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.ListDirectory BIG_ENDIAN
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444615 117444615 117444615
   APPEND_PARAMETER dirName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER dirName 0 STRING "" "The directory to list"
     VARIABLE_BIT_SIZE dirName_LENGTH 8 0
 
@@ -901,6 +925,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.CalculateCrc BIG_ENDIAN 
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444616 117444616 117444616
   APPEND_PARAMETER filename_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER filename 0 STRING "" "The file to CRC"
     VARIABLE_BIT_SIZE filename_LENGTH 8 0
 
@@ -915,6 +940,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.fileManager.GenerateDp BIG_ENDIAN "G
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117444617 117444617 117444617
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The file to package as a data product"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER chunkSize 32 UINT MIN MAX 0 "The maximum number of file bytes per chunk"
@@ -947,6 +973,7 @@ COMMAND <%= target_name %> FileHandlingCfdp.prmDb.PRM_LOAD_FILE BIG_ENDIAN "Load
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 117448705 117448705 117448705
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The name of the on-board file to set parameters from"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER merge 8 UINT MIN MAX 0 "Whether to merge or fully reset the parameter database from the file contents"
@@ -1474,6 +1501,7 @@ COMMAND <%= target_name %> Ref.cmdSeq.CS_RUN BIG_ENDIAN "Run a command sequence 
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268460032 268460032 268460032
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The name of the sequence file"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER block 8 UINT MIN MAX 0 "Return command status when complete or not"
@@ -1491,6 +1519,7 @@ COMMAND <%= target_name %> Ref.cmdSeq.CS_VALIDATE BIG_ENDIAN "Validate a command
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268460033 268460033 268460033
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The name of the sequence file"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
 
@@ -1571,6 +1600,7 @@ COMMAND <%= target_name %> Ref.wasmSeq.RUN BIG_ENDIAN "Run a Wasm module main fu
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464128 268464128 268464128
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The name of the sequence file"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER block 8 UINT MIN MAX 0 "Block until sequence has finished running"
@@ -1588,9 +1618,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.LOAD BIG_ENDIAN "Loads and validates a We
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464129 268464129 268464129
   APPEND_PARAMETER fileName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER fileName 0 STRING "" "The name of the sequence file"
     VARIABLE_BIT_SIZE fileName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "WebAssembly module name (empty for a single unnamed module)"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
 
@@ -1605,6 +1637,7 @@ COMMAND <%= target_name %> Ref.wasmSeq.INVOKE BIG_ENDIAN "Invoke a main function
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464130 268464130 268464130
   APPEND_PARAMETER module_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER module 0 STRING "" "Name of the module to invoke a function from"
     VARIABLE_BIT_SIZE module_LENGTH 8 0
   APPEND_PARAMETER block 8 UINT MIN MAX 0 "Block until sequence has finished running"
@@ -1666,9 +1699,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.GLOBAL_SET_I32 BIG_ENDIAN "Set a global v
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464135 268464135 268464135
   APPEND_PARAMETER moduleName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER moduleName 0 STRING "" "Name of the module to set global for"
     VARIABLE_BIT_SIZE moduleName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "Name of the global"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
   APPEND_PARAMETER value 32 INT MIN MAX 0 "Value to set global to"
@@ -1684,9 +1719,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.GLOBAL_SET_I64 BIG_ENDIAN "Set a global v
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464136 268464136 268464136
   APPEND_PARAMETER moduleName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER moduleName 0 STRING "" "Name of the module to set global for"
     VARIABLE_BIT_SIZE moduleName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "Name of the global"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
   APPEND_PARAMETER value 64 INT MIN MAX 0 "Value to set global to"
@@ -1702,9 +1739,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.GLOBAL_SET_F32 BIG_ENDIAN "Set a global v
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464137 268464137 268464137
   APPEND_PARAMETER moduleName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER moduleName 0 STRING "" "Name of the module to set global for"
     VARIABLE_BIT_SIZE moduleName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "Name of the global"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
   APPEND_PARAMETER value 32 FLOAT MIN MAX 0 "Value to set global to"
@@ -1720,9 +1759,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.GLOBAL_SET_F64 BIG_ENDIAN "Set a global v
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464138 268464138 268464138
   APPEND_PARAMETER moduleName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER moduleName 0 STRING "" "Name of the module to set global for"
     VARIABLE_BIT_SIZE moduleName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "Name of the global"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
   APPEND_PARAMETER value 64 FLOAT MIN MAX 0 "Value to set global to"
@@ -1738,9 +1779,11 @@ COMMAND <%= target_name %> Ref.wasmSeq.GLOBAL_GET BIG_ENDIAN "Get the current va
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464139 268464139 268464139
   APPEND_PARAMETER moduleName_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER moduleName 0 STRING "" "Name of the module to get global for"
     VARIABLE_BIT_SIZE moduleName_LENGTH 8 0
   APPEND_PARAMETER name_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER name 0 STRING "" "Name of the global"
     VARIABLE_BIT_SIZE name_LENGTH 8 0
 
@@ -1801,6 +1844,7 @@ COMMAND <%= target_name %> Ref.wasmSeq.SEQ_BASE_DIR_PRM_SET BIG_ENDIAN "A litera
   APPEND_PARAMETER FPRIME_APID 16 UINT 0 0 0
   APPEND_ID_PARAMETER FPRIME_OPCODE 32 UINT 268464144 268464144 268464144
   APPEND_PARAMETER val_LENGTH 64 UINT MIN MAX 0
+    HIDDEN
   APPEND_PARAMETER val 0 STRING "" ""
     VARIABLE_BIT_SIZE val_LENGTH 8 0
 

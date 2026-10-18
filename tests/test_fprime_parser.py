@@ -619,6 +619,12 @@ class TestCommands:
         assert packet.get_item("VAL_LENGTH").bit_size == 16
         assert packet.get_item("VAL").variable_bit_size["length_item_name"] == "VAL_LENGTH"
 
+    def test_string_param_length_is_hidden(self, config):
+        # COSMOS fills the length when the string is written; Command Sender skips hidden parameters
+        packet = _cmd(config, "CMD_STR")
+        assert packet.get_item("VAL_LENGTH").hidden
+        assert not packet.get_item("VAL").hidden
+
     def test_string_param_length_follows_size_store(self, generated_v44):
         packet = _cmd(_load_config(generated_v44), "CMD_STR")
         assert packet.get_item("VAL_LENGTH").bit_size == 64

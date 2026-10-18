@@ -41,6 +41,11 @@ def odd():
     return bytes((i * 7) % 256 for i in range(5_003))
 
 
+def fprime_crc32(data):
+    # FileManager.CalculateCrc reports CRC-32 without the final XOR, i.e. ~zlib.crc32
+    return zlib.crc32(data) ^ 0xFFFFFFFF
+
+
 def unique(name):
     # The CFDP plugin renames received files that already exist, so never reuse a name
     stem, ext = name.rsplit(".", 1)
@@ -97,7 +102,7 @@ class CfdpManagerGroup(Group):
         # Class 1 completes when EOF is sent, so give F Prime a moment to close the file
         wait(2)
         cmd(f"{TARGET} FILEHANDLINGCFDP.FILEMANAGER.CALCULATECRC with FILENAME '{destination}'")
-        wait_for_event(events, f"{destination} has CRC value 0x{zlib.crc32(medium()):x}")
+        wait_for_event(events, f"{destination} has CRC value 0x{fprime_crc32(medium()):x}")
 
     def _pull(self, cfdp_class):
         destination = unique("odd.bin")

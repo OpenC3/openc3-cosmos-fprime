@@ -31,6 +31,12 @@ def frame(headers, descriptor, payload):
     return struct.pack(">HHH", descriptor & 0x07FF, 0xC000, len(body) - 1) + body
 
 
+def is_cfdp_pdu(payload):
+    """True if a FW_PACKET_FILE payload is a CFDP PDU (version 1 in the top 3 bits)
+    rather than a legacy Fw::FilePacket (type byte 0-4)."""
+    return len(payload) >= 1 and payload[0] >> 5 == 1
+
+
 def unframe(headers, data):
     """Return (descriptor, payload) or None if data is too short to be a packet."""
     if headers == "FPRIME":

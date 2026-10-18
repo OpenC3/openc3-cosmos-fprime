@@ -298,3 +298,31 @@ def test_queued_packet_precedes_its_synthesized_packets():
     assert buffers[3:3 + len(second)] == second
     assert [unframe("FPRIME", packet)[0] for packet in buffers[3 + len(second):]] == [5, 5, 5]
     assert [extra for _, extra in emitted[3:3 + len(second)]] == ["upstream"] * len(second)
+
+
+CFDP_PDU = b"\x24\x00\x05\x00\x2a\x01\x64" + bytes(5)
+
+
+def test_cfdp_pdu_passes_through_without_assembly():
+    p = Recording("SPACE_PACKET", "FSW", allow_empty_data=False)
+    packets = [frame("SPACE_PACKET", 3, raw) for raw in fx.file_transfer("/dst/log.txt", b"legacy contents")]
+    cfdp = frame("SPACE_PACKET", 3, CFDP_PDU)
+    with patch("fprime_file_downlink_protocol.Logger") as logger:
+        # A CFDP PDU arriving mid-transfer must not reach the legacy assembler
+        assert p.read_data(packets[0]) == (packets[0], None)
+        assert p.read_data(cfdp) == (cfdp, None)
+        for data in packets[1:]:
+            assert p.read_data(data) == (data, None)
+    logger.error.assert_not_called()
+    assert p.stored == {"log.txt": b"legacy contents"}
+
+
+@pytest.mark.parametrize("payload", [b"", b"\x24"])
+def test_empty_and_one_byte_file_payload_pass_through(payload):
+    p = Recording("SPACE_PACKET", "FSW", allow_empty_data=False)
+    data = frame("SPACE_PACKET", 3, payload)
+    with patch("fprime_file_downlink_protocol.Logger") as logger:
+        assert p.read_data(data) == (data, None)
+    if payload:
+        logger.error.assert_not_called()
+    assert p.stored == {}

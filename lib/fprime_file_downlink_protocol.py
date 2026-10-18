@@ -31,7 +31,7 @@ from openc3.utilities.logger import Logger
 from fprime_dp_decoder import decode_dp, decoded_to_json
 from fprime_dp_packets import build_dp_packets
 from fprime_file_assembler import FileAssembler, parse_file_packet, safe_file_name
-from fprime_framing import FW_PACKET_FILE, unframe
+from fprime_framing import FW_PACKET_FILE, is_cfdp_pdu, unframe
 
 DP_EXTENSION = ".fdp"
 
@@ -81,6 +81,9 @@ class FprimeFileDownlinkProtocol(Protocol):
     def _handle(self, data):
         unframed = unframe(self.headers, data)
         if unframed is None or unframed[0] != FW_PACKET_FILE:
+            return
+        # CfdpManager shares FW_PACKET_FILE; its PDUs go to the CFDP plugin, not here
+        if is_cfdp_pdu(unframed[1]):
             return
         completed = self.assembler.feed(parse_file_packet(unframed[1]))
         if completed is not None:

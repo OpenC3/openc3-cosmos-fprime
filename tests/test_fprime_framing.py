@@ -11,7 +11,7 @@ import zlib
 
 import pytest
 
-from fprime_framing import frame, unframe
+from fprime_framing import frame, is_cfdp_pdu, unframe
 
 
 @pytest.mark.parametrize("headers", ["SPACE_PACKET", "FPRIME"])
@@ -48,3 +48,20 @@ def test_space_packet_too_large_raises_value_error():
     frame("SPACE_PACKET", 5, bytes(65534))  # largest body CCSDS can describe: 2 + 65534 bytes
     with pytest.raises(ValueError, match="too large"):
         frame("SPACE_PACKET", 5, bytes(65535))
+
+
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        (b"", False),
+        (b"\x00", False),
+        (b"\x04\x00", False),  # legacy FilePacket types are 0-4
+        (b"\x20", True),
+        (b"\x24\x00\x05", True),
+        (b"\x3f", True),
+        (b"\x40", False),
+        (b"\xff", False),
+    ],
+)
+def test_is_cfdp_pdu(payload, expected):
+    assert is_cfdp_pdu(payload) is expected

@@ -77,10 +77,12 @@ block below, and leave the `root_path` and later lines as they are. Each option 
 declared most recently above it, so the order matters.
 
 ```
+  # Local (COSMOS) entity: accept PDUs without a CRC, never ask for Class 1 closure
   OPTION source_entity_id <%= source_entity_id %>
   OPTION tlm_info <%= cfdp_tlm_target_name %> <%= cfdp_tlm_packet_name %> <%= cfdp_tlm_item_name %>
   OPTION crcs_required false
   OPTION transaction_closure_requested CLOSURE_NOT_REQUESTED
+  # Remote (F Prime CfdpManager) entity: send PDUs without a CRC
   OPTION destination_entity_id <%= destination_entity_id %>
   OPTION cmd_info <%= cfdp_cmd_target_name %> <%= cfdp_cmd_packet_name %> <%= cfdp_cmd_item_name %>
   OPTION crcs_required false
@@ -97,7 +99,9 @@ declared most recently above it, so the order matters.
 
 Why these options:
 
-- **No PDU CRC:** CfdpManager does not support PDU CRCs.
+- **No PDU CRC:** CfdpManager does not support PDU CRCs. `crcs_required false` appears twice on purpose:
+  on the local entity it stops COSMOS rejecting received PDUs that have no CRC, and on the remote entity it
+  stops COSMOS adding CRCs to the PDUs it sends.
 - **Modular checksum:** it only does the modular file checksum (type 0).
 - **No closure:** it never sends a Finished PDU for Class 1, so closure must not be requested.
 - **Segment length:** `maximum_file_segment_length` keeps a File Data PDU, plus its space packet header,

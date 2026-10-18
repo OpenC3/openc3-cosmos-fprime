@@ -83,6 +83,19 @@ def wait_for_receive(continuation, destination_file_name, timeout=TIMEOUT):
     raise AssertionError(f"Receive of {destination_file_name} did not finish within {timeout}s")
 
 
+def wait_for_finished(continuation, transaction_id, timeout=TIMEOUT):
+    end = time.time() + timeout
+    while time.time() < end:
+        indications, continuation = cfdp_indications(continuation=continuation)
+        for indication in indications:
+            if indication.get("transaction_id") == transaction_id and (
+                indication.get("indication_type") == "Transaction-Finished"
+            ):
+                return indication
+        wait(0.5)
+    raise AssertionError(f"Transaction {transaction_id} did not finish within {timeout}s")
+
+
 class CfdpManagerGroup(Group):
     def setup(self):
         set_line_delay(0)
@@ -128,15 +141,19 @@ class CfdpManagerGroup(Group):
         self._pull("CLASS_2")
 
     def test_telemetry_still_flows(self):
-        cfdp_put(
+        continuation = cfdp_subscribe()
+        transaction_id = cfdp_put(
             destination_entity_id=FPRIME_ENTITY,
             source_file_name="medium.bin",
             destination_file_name=f"/files/uplink/{unique('medium.bin')}",
             transmission_mode="ACKNOWLEDGED",
             timeout=None,
         )
-        wait_packet(TARGET, "EVENT", 1, 30)
-        wait_packet(TARGET, "REF.SYSTEMRESOURCES.CPU", 1, 30)
+        # wait_packet returns False on timeout rather than raising
+        assert wait_packet(TARGET, "EVENT", 1, 10), "No events while a CFDP transfer was running"
+        assert wait_packet(TARGET, "REF.SYSTEMRESOURCES.CPU", 1, 10), "No channels while a CFDP transfer was running"
+        indication = wait_for_finished(continuation, transaction_id)
+        assert indication["condition_code"] == "NO_ERROR", indication
 
 
 class CfdpManagerSuite(Suite):

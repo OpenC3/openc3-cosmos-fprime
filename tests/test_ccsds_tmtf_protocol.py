@@ -407,3 +407,32 @@ class TestCcsdsTmtfProtocol:
         result, extra = protocol.read_data(b"")
         assert result == "STOP"
         assert extra is None
+
+    def test_spanned_packet_completed_exactly_leaves_no_stale_data(self):
+        """A frame that finishes a spanned packet and ends on a packet boundary must not
+        leave the spanned packet's start behind for the next frame (F Prime packet spanning)."""
+        from unittest.mock import patch
+        import struct
+
+        randomizer = CcsdsRandomizer(CcsdsRandomizer.TM_MODE)
+        protocol = CcsdsTmtfProtocol(31, allow_empty_data=False)
+        packet_a = b"\x00\x00\xc0\x00\x00\x01\x01\x02"
+        packet_b = b"\x00\x00\xc0\x00" + struct.pack(">H", 3000 - 7) + (b"\x42" * (3000 - 6))
+        packet_c = b"\x00\x00\xc0\x00\x00\x01\x03\x04"
+        rest = len(packet_b) - (2042 - len(packet_a))
+        idle = b"\x07\xff\xc0\x00" + struct.pack(">H", (2042 - rest) - 7) + bytes((2042 - rest) - 6)
+
+        frames = [
+            b"\x01\xf0\x00\x00\x18\x00" + packet_a + packet_b[: 2042 - len(packet_a)],
+            b"\x01\xf0\x01\x01" + struct.pack(">H", 0x1800 | rest) + packet_b[2042 - len(packet_a):] + idle,
+            b"\x01\xf0\x02\x02\x18\x00" + packet_c + (b"\xe0" * (2042 - len(packet_c))),
+        ]
+        results = []
+        with patch("ccsds_tmtf_protocol.Logger") as logger:
+            for frame in frames:
+                result, _ = protocol.read_data(b"\x1a\xcf\xfc\x1d" + randomizer.apply(frame))
+                while result != "STOP":
+                    results.append(result)
+                    result, _ = protocol.read_data(b"")
+        logger.error.assert_not_called()
+        assert results == [packet_a, packet_b, packet_c]

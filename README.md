@@ -23,6 +23,26 @@ Note that this plugin expects your topology should be setup as a TCP/IP Server s
 1. Fill out plugin parameters
 1. Click Install
 
+## Telemetry
+
+`fprime_parser.py` generates definitions for both of F Prime's telemetry components, so the target works
+whichever one your topology uses.
+
+- **TlmChan** (APID 1): each downlinked channel becomes its own packet. The packet is named after the full
+  channel name (`Ref.typeDemo.ScalarU8Ch`) and its item after the short name (`ScalarU8Ch`).
+- **TlmPacketizer** (APID 4): each packet in the dictionary's `telemetryPacketSets` (the topology's
+  `telemetry packets` block) becomes a packet with that name, such as `CDH`. It is identified by its packet
+  ID. Each member channel is an item named after the full channel name, with dots replaced by underscores
+  (`Ref_typeDemo_ScalarU8Ch`), because channels from different components can share a short name.
+  - **Strings:** TlmPacketizer gives every channel its maximum serialized size, so each string is followed
+    by a `<item>_PAD` item that holds its unused bytes.
+  - **Multiple packet sets:** if the dictionary has more than one, packet names get the set name as a
+    prefix (`RefPackets.CDH`). The parser warns, because their packet IDs can overlap.
+  - **Name clashes:** a packet name that clashes with another generated packet stops the parser with an
+    error.
+  - **What COSMOS ignores:** packet groups and send levels only control when packets are sent, so they
+    don't affect the definitions. Channels in the `omit` list are never sent in packets.
+
 ## File Downlink and Data Products
 
 Every file downlinked by the FPrime `FileDownlink` component (e.g. `SendFile`, or `DpCatalog` transmitting

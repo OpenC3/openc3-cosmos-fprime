@@ -65,6 +65,7 @@ events = data["events"]
 channels = data["telemetryChannels"]
 records = data.get("records", [])
 containers = data.get("containers", [])
+packet_sets = data.get("telemetryPacketSets", [])
 
 # Widths (bits) of the framework types that appear on the wire. v4 dictionaries
 # carry them as alias/enum typeDefinitions; v3 dictionaries don't, so fall back
@@ -97,6 +98,8 @@ widths = {
     "dp_state": framework_width("Fw.DpState", 8),
     "user_data_size": constant_value("Fw.DpCfg.CONTAINER_USER_DATA_SIZE", 32),
 }
+# Telemetry packets only; kept out of widths, which is written into the data product dictionary
+tlm_packet_id_bits = framework_width("FwTlmPacketizeIdType", 16)
 
 def flatten_type(t, types):
     kind = t["kind"]
@@ -242,6 +245,7 @@ def emit_variable_string_param(f, name, length_bits, annotation=""):
     print(f"    VARIABLE_BIT_SIZE {name}_LENGTH 8 0", file=f)
 
 FW_PACKET_FILE = 3
+FW_PACKET_PACKETIZED_TLM = 4
 FW_PACKET_DP = 5
 
 def clean_annotation(text):
@@ -316,13 +320,17 @@ def emit_record_value(f, record):
     else:
         print(f"  APPEND_ITEM VALUE {rest_of_packet_bits()} BLOCK \"{annotation} (raw elements; decoded values are in the .json file)\"", file=f)
 
-def emit_channel_value(f, name, t, types, annotation):
+def emit_channel_value(f, name, t, types, annotation, pads=None):
+    """pads, when given, collects (item name, max length) for each string so the caller can account for
+    the unused string bytes at the end of a fixed size telemetry packet slot."""
     kind = t["kind"]
     if kind == "qualifiedIdentifier":
         resolved = types[t["name"]]
         rkind = resolved["kind"]
+        def emit_element(f, name, t, types, annotation):
+            emit_channel_value(f, name, t, types, annotation, pads)
         if rkind == "alias":
-            emit_channel_value(f, name, resolved["underlyingType"], types, annotation)
+            emit_channel_value(f, name, resolved["underlyingType"], types, annotation, pads)
             return
         if rkind == "struct":
             for mname, m in sorted(resolved["members"].items(), key=lambda kv: kv[1]["index"]):
@@ -330,9 +338,9 @@ def emit_channel_value(f, name, t, types, annotation):
                 if "size" in m:
                     # FPP member array, e.g. `vals: [3] U32`
                     member_array = {"size": m["size"], "elementType": m["type"]}
-                    _emit_array_line(f, "APPEND_ARRAY_ITEM", member_name, member_array, types, m.get("annotation", ""), emit_channel_value)
+                    _emit_array_line(f, "APPEND_ARRAY_ITEM", member_name, member_array, types, m.get("annotation", ""), emit_element)
                 else:
-                    emit_channel_value(f, member_name, m["type"], types, m.get("annotation", ""))
+                    emit_channel_value(f, member_name, m["type"], types, m.get("annotation", ""), pads)
             return
         if rkind == "enum":
             states = {c["name"]: c["value"] for c in resolved["enumeratedConstants"]}
@@ -343,11 +351,13 @@ def emit_channel_value(f, name, t, types, annotation):
                 print(f"    STATE {key} {value}", file=f)
             return
         if rkind == "array":
-            _emit_array_line(f, "APPEND_ARRAY_ITEM", name, resolved, types, annotation, emit_channel_value)
+            _emit_array_line(f, "APPEND_ARRAY_ITEM", name, resolved, types, annotation, emit_element)
             return
         raise RuntimeError(f"Unhandled typeDefinition kind {rkind}")
     if kind == "string":
         emit_variable_string(f, name, widths["size_store"], annotation)
+        if pads is not None:
+            pads.append((name, t["size"]))
         return
     if kind == "integer":
         ts = "INT" if t["signed"] else "UINT"
@@ -362,6 +372,40 @@ def emit_channel_value(f, name, t, types, annotation):
         print(f"    STATE TRUE 0xFF", file=f)
         return
     raise RuntimeError(f"Unhandled type kind {kind}")
+
+def emit_channel(f, item_name, channel, pads=None):
+    emit_channel_value(f, item_name, channel["type"], types, channel.get("annotation", ""), pads)
+    value_type = resolve_value_type(channel["type"], types)
+    if value_type is not None and "format" in channel:
+        print(f"    FORMAT_STRING \"{convert_fprime_format(channel['format'], value_type['kind'])}\"", file=f)
+    if value_type is not None and value_type["kind"] in ("integer", "float") and "limits" in channel:
+        print(f"    {format_limits_line(channel['limits'], value_type)}", file=f)
+
+def emit_string_pads(f, pads):
+    # Svc::TlmPacketizer gives each channel its maximum serialized size, so a string shorter
+    # than its maximum leaves unused bytes at the end of the channel's slot
+    for name, max_length in pads:
+        print(f"  APPEND_ITEM {name}_PAD 0 BLOCK \"Unused bytes of {name}\"", file=f)
+        print(f"    VARIABLE_BIT_SIZE {name}_LENGTH -8 {max_length * 8}", file=f)
+
+def tlm_packet_names():
+    """[(COSMOS packet name, packet set name, packet)] for every Svc::TlmPacketizer packet."""
+    prefix = len(packet_sets) > 1
+    if prefix:
+        print("Warning: the dictionary has more than one telemetry packet set; their packet IDs can "
+              "overlap, so a packet may be identified as the wrong set's packet", file=sys.stderr)
+    reserved = {"TELEMETRY", "EVENT", "FILE_START", "FILE_DATA", "FILE_END", "FILE_CANCEL", "CFDP_PDU", "DP_HEADER"}
+    reserved |= {c["name"].upper() for c in channels}
+    reserved |= {f"DP.{r['name']}".upper() for r in records}
+    result = []
+    for packet_set in packet_sets:
+        for packet in sorted(packet_set["members"], key=lambda p: p["id"]):
+            name = f"{packet_set['name']}.{packet['name']}" if prefix else packet["name"]
+            if name.upper() in reserved:
+                raise RuntimeError(f"Telemetry packet {name} clashes with the generated packet {name.upper()}")
+            reserved.add(name.upper())
+            result.append((name, packet_set["name"], packet))
+    return result
 
 def convert_event_format(fmt):
     def replace(m):
@@ -494,14 +538,25 @@ with open(tlm_path, 'w') as f:
         print(f"  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT {channel['id']}", file=f)
         emit_time_items(f)
 
-        channel_name = channel["name"].split(".")[-1]
-        emit_channel_value(f, channel_name, channel["type"], types, channel.get("annotation", ""))
-        value_type = resolve_value_type(channel["type"], types)
-        if value_type is not None and "format" in channel:
-            print(f"    FORMAT_STRING \"{convert_fprime_format(channel['format'], value_type['kind'])}\"", file=f)
-        if value_type is not None and value_type["kind"] in ("integer", "float") and "limits" in channel:
-            print(f"    {format_limits_line(channel['limits'], value_type)}", file=f)
+        emit_channel(f, channel["name"].split(".")[-1], channel)
         emit_packet_time(f)
+
+    channels_by_name = {c["name"]: c for c in channels}
+    for name, set_name, packet in tlm_packet_names():
+        print(file=f)
+        print(f"TELEMETRY <%= target_name %> {name} BIG_ENDIAN \"Telemetry packet {packet['id']}, group {packet['group']} ({set_name})\"", file=f)
+        emit_tlm_header(f, FW_PACKET_PACKETIZED_TLM)
+        print(f"  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID {tlm_packet_id_bits} UINT {packet['id']}", file=f)
+        emit_time_items(f)
+        for member in packet["members"]:
+            if member not in channels_by_name:
+                raise RuntimeError(f"Telemetry packet {name} lists unknown channel {member}")
+            # Channels from different components can share a short name, so use the full name
+            pads = []
+            emit_channel(f, member.replace(".", "_"), channels_by_name[member], pads)
+            emit_string_pads(f, pads)
+        emit_packet_time(f)
+        emit_tlm_trailer(f)
 
     file_packets = [
         ("FILE_START", 0, "F Prime file downlink START packet"),

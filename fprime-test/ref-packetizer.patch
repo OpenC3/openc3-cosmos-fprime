@@ -1,0 +1,71 @@
+--- a/Svc/Subtopologies/CdhCore/CdhCoreConfig/CdhCoreTlmConfig.fpp
++++ b/Svc/Subtopologies/CdhCore/CdhCoreConfig/CdhCoreTlmConfig.fpp
+@@ -1,26 +1,22 @@
+ module CdhCore{
+ 
+-    instance tlmSend: Svc.TlmChan base id CdhCoreConfig.BASE_ID + 0x06000 \
+-        queue size CdhCoreConfig.QueueSizes.tlmSend \
+-        stack size CdhCoreConfig.StackSizes.tlmSend \
+-        priority CdhCoreConfig.Priorities.tlmSend \
+-        cpu CdhCoreConfig.CpuAffinities.tlmSend
++    # fprime-test TLM_SEND=packetizer: TlmPacketizer replaces the TlmChan instance
+ 
+     # Uncomment the following block and comment the above block to use TlmPacketizer instead of TlmChan
+-    # instance tlmSend: Svc.TlmPacketizer base id CdhCoreConfig.BASE_ID + 0x06000 \
+-    #    queue size CdhCoreConfig.QueueSizes.tlmSend \
+-    #    stack size CdhCoreConfig.StackSizes.tlmSend \
+-    #    priority CdhCoreConfig.Priorities.tlmSend \
+-    #    cpu CdhCoreConfig.CpuAffinities.tlmSend \
+-    # {
+-    #    # NOTE: The Name Ref is specific to the Reference deployment, Ref
+-    #    # This name will need to be updated if wishing to use this in a custom deployment
+-    #    phase Fpp.ToCpp.Phases.configComponents """
+-    #    CdhCore::tlmSend.setPacketList(
+-    #        Ref::Ref_RefPacketsTlmPackets::packetList, 
+-    #        Ref::Ref_RefPacketsTlmPackets::omittedChannels, 
+-    #        1
+-    #    );
+-    #    """
+-    # }
++    instance tlmSend: Svc.TlmPacketizer base id CdhCoreConfig.BASE_ID + 0x06000 \
++       queue size CdhCoreConfig.QueueSizes.tlmSend \
++       stack size CdhCoreConfig.StackSizes.tlmSend \
++       priority CdhCoreConfig.Priorities.tlmSend \
++       cpu CdhCoreConfig.CpuAffinities.tlmSend \
++    {
++       # NOTE: The Name Ref is specific to the Reference deployment, Ref
++       # This name will need to be updated if wishing to use this in a custom deployment
++       phase Fpp.ToCpp.Phases.configComponents """
++       CdhCore::tlmSend.setPacketList(
++           Ref::Ref_RefPacketsTlmPackets::packetList, 
++           Ref::Ref_RefPacketsTlmPackets::omittedChannels, 
++           1
++       );
++       """
++    }
+ }
+--- a/TestDeploymentsProject/Ref/Top/RefPackets.fppi
++++ b/TestDeploymentsProject/Ref/Top/RefPackets.fppi
+@@ -18,8 +18,8 @@
+     ComCcsds.commsBufferManager.TotalBuffs
+     ComCcsds.commsBufferManager.CurrBuffs
+     ComCcsds.commsBufferManager.HiBuffs
+-    #CdhCore.tlmSend.GroupConfigs
+-    #CdhCore.tlmSend.SectionEnabled
++    CdhCore.tlmSend.GroupConfigs
++    CdhCore.tlmSend.SectionEnabled
+ 
+     rateGroup1Comp.RgMaxTime
+     rateGroup2Comp.RgMaxTime
+--- a/default/config/CommandDispatcherImplCfg.hpp
++++ b/default/config/CommandDispatcherImplCfg.hpp
+@@ -13,7 +13,8 @@
+ // Define configuration values for dispatcher
+ 
+ enum {
+-    CMD_DISPATCHER_DISPATCH_TABLE_SIZE = 150,  // !< The size of the table holding opcodes to dispatch
++    // fprime-test TLM_SEND=packetizer: TlmPacketizer's commands take Ref past 150 opcodes
++    CMD_DISPATCHER_DISPATCH_TABLE_SIZE = 200,  // !< The size of the table holding opcodes to dispatch
+     CMD_DISPATCHER_SEQUENCER_TABLE_SIZE = 25,  // !< The size of the table holding commands in progress
+ };
+ 

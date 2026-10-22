@@ -94,6 +94,16 @@ TYPE_DEFINITIONS = [
             "name": {"type": STRING20, "index": 1},
         },
     },
+    {
+        # A string that isn't the last member: in a telemetry packet the members after
+        # it move with the string's actual length
+        "kind": "struct",
+        "qualifiedName": "Ns.Labeled",
+        "members": {
+            "label": {"type": STRING20, "index": 0},
+            "value": {"type": u(32), "index": 1},
+        },
+    },
     {"kind": "array", "qualifiedName": "Ns.U32Arr", "size": 3, "elementType": u(32)},
     {"kind": "array", "qualifiedName": "Ns.I8Arr", "size": 2, "elementType": i(8)},
     {"kind": "array", "qualifiedName": "Ns.F64Arr", "size": 2, "elementType": f(64)},
@@ -240,6 +250,24 @@ RECORDS_JSON = [
     {"name": "Ns.comp.StrRecord", "type": STRING20, "array": False, "id": 0x704},
 ]
 CONTAINERS_JSON = [{"name": "Ns.comp.Container", "id": 0x800, "defaultPriority": 10, "annotation": "c"}]
+PACKET_SETS_JSON = [
+    {
+        "name": "NsPackets",
+        "members": [
+            # Listed out of ID order, as the dictionary writer does
+            {"name": "Arrays", "id": 2, "group": 2, "members": ["Ns.comp.TlmENUM_ARR", "Ns.comp.TlmBOOL"]},
+            {
+                "name": "Status",
+                "id": 1,
+                "group": 1,
+                "members": ["Ns.comp.TlmU8", "Ns.comp.TlmSTR", "Ns.comp.TlmSTRUCT", "Ns.comp.Limited"],
+            },
+            {"name": "Labels", "id": 3, "group": 1, "members": ["Ns.comp.Labeled", "Ns.comp.TlmU8"]},
+            {"name": "Empty", "id": 4, "group": 3, "members": []},
+        ],
+        "omitted": ["Ns.comp.Formatted"],
+    }
+]
 
 
 def _build_dictionary(framework_version="v4.2.2"):
@@ -293,6 +321,7 @@ def _build_dictionary(framework_version="v4.2.2"):
         }
     )
     channels.append({"name": "Ns.comp.Formatted", "id": 0x501, "type": u(16), "format": "{x}"})
+    channels.append({"name": "Ns.comp.Labeled", "id": 0x502, "type": ref("Ns.Labeled")})
     events = [
         {"name": "Ns.comp.NoArgs", "id": 0x600, "severity": "ACTIVITY_HI", "formalParams": [], "format": "Hello"},
         {
@@ -328,6 +357,7 @@ def _build_dictionary(framework_version="v4.2.2"):
         "telemetryChannels": channels,
         "records": copy.deepcopy(RECORDS_JSON),
         "containers": copy.deepcopy(CONTAINERS_JSON),
+        "telemetryPacketSets": copy.deepcopy(PACKET_SETS_JSON),
     }
 
 
@@ -981,6 +1011,138 @@ class TestDpTelemetry:
                               lambda w: fx.record(w, 0x701, fx.uint(w["size_store"], 2) + b"\x05\x06"))
         assert _read(config, "DP.NS.COMP.U8ARRAYRECORD", packets[1]).read("VALUE") == [5, 6]
         assert _read(config, "DP_HEADER", packets[0]).read("FILE_NAME") == "Dp_00002048_1_2.fdp"
+
+
+TLM_TIME = struct.pack(">HBII", 2, 0, 1700000000, 500000)
+
+
+def _fixed_string(text, max_size=20, size_bits=16):
+    """A string channel inside a telemetry packet: length, characters, zero fill to the maximum."""
+    raw = text.encode()
+    return fx.uint(size_bits, len(raw)) + raw + bytes(max_size - len(raw))
+
+
+def _tlm_packet(packet_id, values, headers="SPACE_PACKET", id_bits=16):
+    return frame(headers, 4, fx.uint(id_bits, packet_id) + TLM_TIME + values)
+
+
+def _status_values(text="hi", size_bits=16):
+    return struct.pack(">B", 7) + _fixed_string(text, size_bits=size_bits) + struct.pack(">fff", 1.5, -2.0, 3.25)
+
+
+def _item_names(packet):
+    return [name for name in packet.items if not name.startswith(("CCSDS_", "FPRIME_", "PACKET_", "RECEIVED_"))]
+
+
+class TestPacketizedTelemetry:
+    """Svc::TlmPacketizer packets: descriptor 4, packet ID, time tag, then each member channel at its
+    maximum serialized size. Items are named after the full channel name."""
+
+    def test_packets_generated(self, config):
+        assert {"STATUS", "ARRAYS", "LABELS", "EMPTY"} <= set(config.telemetry[TARGET].keys())
+
+    def test_identified_by_descriptor_and_packet_id(self, config):
+        packet = config.telemetry[TARGET]["STATUS"]
+        assert packet.get_item("CCSDS_APID").id_value == 4
+        assert packet.get_item("FPRIME_TLM_PACKET_ID").id_value == 1
+        assert packet.identify(_tlm_packet(1, _status_values()))
+        assert not packet.identify(_tlm_packet(2, _status_values()))
+        assert not config.telemetry[TARGET]["TELEMETRY"].identify(_tlm_packet(1, _status_values()))
+
+    def test_items_in_member_order(self, config):
+        assert _item_names(config.telemetry[TARGET]["STATUS"]) == [
+            "NS_COMP_TLMU8",
+            "NS_COMP_TLMSTR_LENGTH",
+            "NS_COMP_TLMSTR",
+            "NS_COMP_TLMSTR_PAD",
+            "NS_COMP_TLMSTRUCT_X",
+            "NS_COMP_TLMSTRUCT_Y",
+            "NS_COMP_LIMITED",
+        ]
+
+    @pytest.mark.parametrize("text", ["", "hi", "x" * 20])
+    def test_decodes_any_string_length(self, config, text):
+        p = _read(config, "STATUS", _tlm_packet(1, _status_values(text)))
+        assert p.read("NS_COMP_TLMU8") == 7
+        assert p.read("NS_COMP_TLMSTR") == text
+        assert (p.read("NS_COMP_TLMSTRUCT_X"), p.read("NS_COMP_TLMSTRUCT_Y")) == (1.5, -2.0)
+        assert p.read("NS_COMP_LIMITED") == 3.25
+        assert (p.read("FPRIME_TIME_SEC"), p.read("FPRIME_TIME_USEC")) == (1700000000, 500000)
+
+    def test_string_inside_struct_moves_following_members(self, config):
+        # label "ab" + value, then the 18 unused label bytes, then the next channel
+        values = _fixed_string("ab")[:4] + struct.pack(">I", 0xDEADBEEF) + bytes(18) + struct.pack(">B", 9)
+        p = _read(config, "LABELS", _tlm_packet(3, values))
+        assert (p.read("NS_COMP_LABELED_LABEL"), p.read("NS_COMP_LABELED_VALUE")) == ("ab", 0xDEADBEEF)
+        assert p.read("NS_COMP_TLMU8") == 9
+
+    def test_enum_array_and_bool_channels(self, config):
+        p = _read(config, "ARRAYS", _tlm_packet(2, bytes([1, 0, 0xFF])))
+        assert (p.read("NS_COMP_TLMENUM_ARR_0"), p.read("NS_COMP_TLMENUM_ARR_1")) == ("ON", "OFF")
+        assert p.read("NS_COMP_TLMBOOL") == "TRUE"
+
+    def test_format_and_limits_carried_over(self, config):
+        item = config.telemetry[TARGET]["STATUS"].get_item("NS_COMP_LIMITED")
+        assert item.format_string == "%.2f"
+        assert item.limits.values["DEFAULT"] == [-20, -10, 10, 20]
+
+    def test_empty_packet(self, config):
+        _read(config, "EMPTY", _tlm_packet(4, b""))
+
+    def test_description_has_id_and_group(self, config):
+        assert config.telemetry[TARGET]["ARRAYS"].description == "Telemetry packet 2, group 2 (NsPackets)"
+
+    def test_omitted_channel_stays_channelized(self, config):
+        assert "NS.COMP.FORMATTED" in config.telemetry[TARGET]
+
+    def test_no_packets_without_packet_sets(self, tmp_path):
+        d = _build_dictionary()
+        del d["telemetryPacketSets"]
+        assert _run(tmp_path, dictionary=d).returncode == 0
+        assert "STATUS" not in _load_config(tmp_path).telemetry[TARGET]
+
+    def test_v44_widths_from_dictionary(self, tmp_path):
+        d = _v44_dictionary()
+        d["typeDefinitions"].append(
+            {"kind": "alias", "qualifiedName": "FwTlmPacketizeIdType", "type": u(32), "underlyingType": u(32)}
+        )
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode == 0, result.stderr
+        config = _load_config(tmp_path)
+        assert config.warnings == []
+        p = _read(config, "STATUS", _tlm_packet(1, _status_values("hey", size_bits=64), id_bits=32))
+        assert (p.read("NS_COMP_TLMSTR"), p.read("NS_COMP_LIMITED")) == ("hey", 3.25)
+
+    def test_fprime_headers(self, generated_fprime):
+        config = _load_config(generated_fprime)
+        p = _read(config, "STATUS", _tlm_packet(1, _status_values(), headers="FPRIME"))
+        assert (p.read("NS_COMP_TLMSTR"), p.read("NS_COMP_LIMITED")) == ("hi", 3.25)
+
+    def test_name_clash_fails(self, tmp_path):
+        d = _build_dictionary()
+        d["telemetryPacketSets"][0]["members"][0]["name"] = "Event"
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode != 0
+        assert "EVENT" in result.stderr
+
+    def test_unknown_member_fails(self, tmp_path):
+        d = _build_dictionary()
+        d["telemetryPacketSets"][0]["members"][0]["members"].append("Ns.comp.Missing")
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode != 0
+        assert "Ns.comp.Missing" in result.stderr
+
+    def test_multiple_sets_are_prefixed(self, tmp_path):
+        d = _build_dictionary()
+        d["telemetryPacketSets"].append(
+            {"name": "Other", "members": [{"name": "Status", "id": 1, "group": 1, "members": ["Ns.comp.TlmU8"]}]}
+        )
+        result = _run(tmp_path, dictionary=d)
+        assert result.returncode == 0, result.stderr
+        assert "packet IDs" in result.stderr
+        names = set(_load_config(tmp_path).telemetry[TARGET].keys())
+        assert {"NSPACKETS.STATUS", "OTHER.STATUS"} <= names
+        assert "STATUS" not in names
 
 
 STRING200 = {"name": "string", "kind": "string", "size": 200}

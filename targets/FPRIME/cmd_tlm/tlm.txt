@@ -624,6 +624,144 @@ TELEMETRY <%= target_name %> CdhCore.version.LibraryVersion10 BIG_ENDIAN ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 
+TELEMETRY <%= target_name %> CdhCore.tlmSend.GroupConfigs BIG_ENDIAN "Telemetry send level"
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 16801792
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM GroupConfigs_0_0_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_0_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_0_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_0_0_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_0_0_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_0_1_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_1_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_1_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_0_1_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_0_1_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_0_2_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_2_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_2_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_0_2_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_0_2_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_0_3_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_3_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_0_3_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_0_3_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_0_3_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_1_0_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_0_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_0_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_1_0_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_1_0_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_1_1_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_1_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_1_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_1_1_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_1_1_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_1_2_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_2_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_2_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_1_2_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_1_2_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM GroupConfigs_1_3_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_3_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM GroupConfigs_1_3_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM GroupConfigs_1_3_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM GroupConfigs_1_3_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> CdhCore.tlmSend.SectionEnabled BIG_ENDIAN ""
+  SUBPACKET
+  APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 16801793
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM SectionEnabled_0 8 UINT ""
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM SectionEnabled_1 8 UINT ""
+    STATE DISABLED 0
+    STATE ENABLED 1
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
 TELEMETRY <%= target_name %> ComCcsds.comQueue.comQueueDepth BIG_ENDIAN "Depth of queues of Fw::ComBuffer type"
   SUBPACKET
   APPEND_ID_ITEM FPRIME_CHANNEL_ID 32 UINT 33554432
@@ -3272,6 +3410,1561 @@ TELEMETRY <%= target_name %> Ref.systemResources.CPU_15 BIG_ENDIAN "System's CPU
   APPEND_ITEM FPRIME_TIME_USEC 32 UINT
   APPEND_ITEM CPU_15 32 FLOAT "System's CPU Percentage"
     FORMAT_STRING "%.2f percent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> CDH BIG_ENDIAN "Telemetry packet 1, group 1 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 1
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_cmdDisp_CommandsDispatched 32 UINT "Number of commands dispatched"
+  APPEND_ITEM FileHandlingCfdp_fileManager_CommandsExecuted 32 UINT "The total number of commands successfully executed"
+  APPEND_ITEM Ref_cmdSeq_CS_LoadCommands 32 UINT "The number of Load commands executed"
+  APPEND_ITEM Ref_cmdSeq_CS_CancelCommands 32 UINT "The number of Cancel commands executed"
+  APPEND_ITEM Ref_cmdSeq_CS_CommandsExecuted 32 UINT "The number of commands executed across all sequences."
+  APPEND_ITEM Ref_cmdSeq_CS_SequencesCompleted 32 UINT "The number of sequences completed."
+  APPEND_ITEM Ref_wasmSeq_ControllerState 8 UINT "Current executing state of the sequencer controller"
+    STATE __FPRIME_UNINITIALIZED 0
+    STATE IDLE 1
+    STATE INVOKING 2
+    STATE LOADING_TO_READY 3
+    STATE LOADING_TO_RUN 4
+    STATE LOAD_RUNNING_START 5
+    STATE READY 6
+    STATE RUNNING_MAIN 7
+    STATE RUNNING_START_PENDING_MAIN 8
+  APPEND_ITEM Ref_wasmSeq_InterpreterState 8 UINT "Current executing state of the WebAssembly interpreter engine"
+    STATE __FPRIME_UNINITIALIZED 0
+    STATE IDLE 1
+    STATE RUNNING_AWAITING_RESPONSE_SLEEPING 2
+    STATE RUNNING_AWAITING_RESPONSE_WAITING 3
+    STATE RUNNING_PAUSED 4
+    STATE RUNNING_SPINNING 5
+  APPEND_ITEM Ref_wasmSeq_SequencesSucceeded 64 UINT "Sequences successfully completed"
+  APPEND_ITEM Ref_wasmSeq_CommandsDispatched 64 UINT "Commands dispatched total"
+  APPEND_ARRAY_ITEM ComCcsds_comQueue_comQueueDepth 32 UINT 64 "Depth of queues of Fw::ComBuffer type"
+  APPEND_ARRAY_ITEM ComCcsds_comQueue_buffQueueDepth 32 UINT 32 "Depth of queues of Fw::Buffer type"
+  APPEND_ITEM ComCcsds_commsBufferManager_TotalBuffs 32 UINT "The total buffers allocated"
+  APPEND_ITEM ComCcsds_commsBufferManager_CurrBuffs 32 UINT "The current number of allocated buffers"
+  APPEND_ITEM ComCcsds_commsBufferManager_HiBuffs 32 UINT "The high water mark of allocated buffers"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_0_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_0_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_0_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_0_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_0_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_1_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_1_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_1_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_1_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_1_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_2_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_2_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_2_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_2_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_2_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_3_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_3_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_3_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_3_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_0_3_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_0_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_0_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_0_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_0_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_0_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_1_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_1_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_1_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_1_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_1_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_2_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_2_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_2_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_2_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_2_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_3_enabled 8 UINT "Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_3_forceEnabled 8 UINT "Force Enable / Disable Telemetry Output"
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_3_rateLogic 32 INT "Rate Logic Configuration"
+    STATE SILENCED 0
+    STATE EVERY_MAX 1
+    STATE ON_CHANGE_MIN 2
+    STATE ON_CHANGE_MIN_OR_EVERY_MAX 3
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_3_min 32 UINT "Minimum Sched Ticks when in ON_CHANGE_MIN"
+  APPEND_ITEM CdhCore_tlmSend_GroupConfigs_1_3_max 32 UINT "Maximum Sched Ticks when in EVERY_MAX"
+  APPEND_ITEM CdhCore_tlmSend_SectionEnabled_0 8 UINT ""
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM CdhCore_tlmSend_SectionEnabled_1 8 UINT ""
+    STATE DISABLED 0
+    STATE ENABLED 1
+  APPEND_ITEM Ref_rateGroup1Comp_RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
+  APPEND_ITEM Ref_rateGroup2Comp_RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
+  APPEND_ITEM Ref_rateGroup3Comp_RgMaxTime 32 UINT "Max execution time rate group"
+    FORMAT_STRING "%d us"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> CDHErrors BIG_ENDIAN "Telemetry packet 2, group 1 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 2
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_health_PingLateWarnings 32 UINT "Number of overrun warnings"
+  APPEND_ITEM CdhCore_cmdDisp_CommandsDropped 32 UINT "Number of commands drooped due to buffer overflow"
+  APPEND_ITEM CdhCore_events_EventsDropped 64 UINT "Number of events dropped due to queue full"
+  APPEND_ITEM FileHandlingCfdp_fileManager_Errors 32 UINT "The total number of errors"
+  APPEND_ITEM Ref_cmdSeq_CS_Errors 32 UINT "The number of errors that have occurred"
+  APPEND_ITEM Ref_wasmSeq_SequencesFailed 64 UINT "Sequences that failed to validate or execute"
+  APPEND_ITEM Ref_wasmSeq_SequencesCancelled 64 UINT "Sequences that were cancelled"
+  APPEND_ITEM Ref_wasmSeq_CommandsFailed 64 UINT "Number of commands that failed"
+  APPEND_ITEM Ref_wasmSeq_LastTrapReason 32 INT "Reason last sequence trapped"
+    STATE NONE -1
+    STATE UNREACHABLE 0
+    STATE HOST 1
+    STATE DIVIDE_BY_ZERO 2
+    STATE INVALID_TABLE_INDEX 3
+    STATE INVALID_TABLE_FUNCTION_TYPE 4
+    STATE UNINITIALIZED_TABLE_ELEMENT 5
+    STATE GLOBAL_GET_FAILED 6
+    STATE GLOBAL_SET_FAILED 7
+    STATE OUT_OF_MEMORY 8
+    STATE MEMORY_REF_NOT_UNIQUE 9
+    STATE MEMORY_OUT_OF_BOUNDS 10
+    STATE STACK_OVERFLOW 11
+    STATE UNREPRESENTABLE_RESULT 12
+    STATE INTEGER_OVERFLOW 13
+    STATE BAD_CONVERSION_TO_INTEGER 14
+    STATE MALFORMED_IR 15
+  APPEND_ITEM ComCcsds_commsBufferManager_NoBuffs 32 UINT "The number of requests that couldn't return a buffer"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
+  APPEND_ITEM ComCcsds_commsBufferManager_EmptyBuffs 32 UINT "The number of empty buffers returned"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
+  APPEND_ITEM Ref_rateGroup1Comp_RgCycleSlips 32 UINT "Cycle slips for rate group"
+  APPEND_ITEM Ref_rateGroup2Comp_RgCycleSlips 32 UINT "Cycle slips for rate group"
+  APPEND_ITEM Ref_rateGroup3Comp_RgCycleSlips 32 UINT "Cycle slips for rate group"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DriveTlm BIG_ENDIAN "Telemetry packet 3, group 1 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 3
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_pingRcvr_PR_NumPings 32 UINT "Number of pings received"
+  APPEND_ITEM Ref_sendBuffComp_PacketsSent 64 UINT "Number of packets sent"
+  APPEND_ITEM Ref_sendBuffComp_NumErrorsInjected 32 UINT "Number of errors injected"
+  APPEND_ITEM Ref_sendBuffComp_Parameter3 8 UINT "Readback of Parameter3"
+  APPEND_ITEM Ref_sendBuffComp_Parameter4 32 FLOAT "Readback of Parameter4"
+  APPEND_ITEM Ref_sendBuffComp_SendState 32 INT "Readback of Parameter4"
+    STATE SEND_IDLE 0
+    STATE SEND_ACTIVE 1
+  APPEND_ITEM Ref_recvBuffComp_PktState_BuffRecv 32 UINT "Number of buffers received"
+  APPEND_ITEM Ref_recvBuffComp_PktState_BuffErr 32 UINT "Number of buffers received with errors"
+  APPEND_ITEM Ref_recvBuffComp_PktState_PacketStatus 32 INT "Packet Status"
+    STATE PACKET_STATE_NO_PACKETS 0
+    STATE PACKET_STATE_OK 1
+    STATE PACKET_STATE_ERRORS 3
+  APPEND_ITEM Ref_recvBuffComp_Sensor1 32 FLOAT "Value of Sensor1"
+    FORMAT_STRING "%.2fV"
+  APPEND_ITEM Ref_recvBuffComp_Sensor2 32 FLOAT "Value of Sensor3"
+  APPEND_ITEM Ref_recvBuffComp_Parameter1 32 UINT "Readback of Parameter1"
+  APPEND_ITEM Ref_recvBuffComp_Parameter2 16 INT "Readback of Parameter2"
+    LIMITS DEFAULT 1 ENABLED -3 -1 1 3
+  APPEND_ITEM Ref_blockDrv_BD_Cycles 32 UINT "Driver cycle count"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGenSum BIG_ENDIAN "Telemetry packet 4, group 1 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 4
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG1_Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  APPEND_ITEM Ref_SG1_Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ITEM Ref_SG2_Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  APPEND_ITEM Ref_SG2_Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ITEM Ref_SG3_Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  APPEND_ITEM Ref_SG3_Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ITEM Ref_SG4_Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  APPEND_ITEM Ref_SG4_Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ITEM Ref_SG5_Output 32 FLOAT "Single Y value of the output"
+    FORMAT_STRING "%.4f"
+  APPEND_ITEM Ref_SG5_Type 32 INT "Type of the output signal: SINE, TRIANGLE, etc."
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SystemRes1 BIG_ENDIAN "Telemetry packet 5, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 5
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_systemResources_MEMORY_TOTAL 64 UINT "Total system memory in KB"
+    FORMAT_STRING "%d KB"
+  APPEND_ITEM Ref_systemResources_MEMORY_USED 64 UINT "System memory used in KB"
+    FORMAT_STRING "%d KB"
+  APPEND_ITEM Ref_systemResources_NON_VOLATILE_TOTAL 64 UINT "System non-volatile available in KB"
+    FORMAT_STRING "%d KB"
+  APPEND_ITEM Ref_systemResources_NON_VOLATILE_FREE 64 UINT "System non-volatile available in KB"
+    FORMAT_STRING "%d KB"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SystemRes3 BIG_ENDIAN "Telemetry packet 6, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 6
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_systemResources_CPU 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_00 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_01 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_02 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_03 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_04 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_05 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_06 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_07 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_08 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_09 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_10 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_11 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_12 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_13 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_14 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  APPEND_ITEM Ref_systemResources_CPU_15 32 FLOAT "System's CPU Percentage"
+    FORMAT_STRING "%.2f percent"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen1Info BIG_ENDIAN "Telemetry packet 10, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 10
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG1_Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Ref_SG1_Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen2Info BIG_ENDIAN "Telemetry packet 11, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 11
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG2_Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Ref_SG2_Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen3Info BIG_ENDIAN "Telemetry packet 12, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 12
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG3_Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Ref_SG3_Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen4Info BIG_ENDIAN "Telemetry packet 13, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 13
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG4_Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Ref_SG4_Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen5Info BIG_ENDIAN "Telemetry packet 14, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 14
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG5_Info_type 32 INT ""
+    STATE TRIANGLE 0
+    STATE SQUARE 1
+    STATE SINE 2
+    STATE NOISE 3
+  APPEND_ARRAY_ITEM Ref_SG5_Info_history 32 FLOAT 128 ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_Info_pairHistory_3_value 32 FLOAT ""
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen1 BIG_ENDIAN "Telemetry packet 15, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 15
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG1_PairOutput_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairOutput_value 32 FLOAT ""
+  APPEND_ARRAY_ITEM Ref_SG1_History 32 FLOAT 128 "Last 10 Y values of the signal"
+  APPEND_ITEM Ref_SG1_PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_PairHistory_3_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG1_DpBytes 32 UINT "DP bytes written"
+  APPEND_ITEM Ref_SG1_DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen2 BIG_ENDIAN "Telemetry packet 16, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 16
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG2_PairOutput_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairOutput_value 32 FLOAT ""
+  APPEND_ARRAY_ITEM Ref_SG2_History 32 FLOAT 128 "Last 10 Y values of the signal"
+  APPEND_ITEM Ref_SG2_PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_PairHistory_3_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG2_DpBytes 32 UINT "DP bytes written"
+  APPEND_ITEM Ref_SG2_DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen3 BIG_ENDIAN "Telemetry packet 17, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 17
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG3_PairOutput_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairOutput_value 32 FLOAT ""
+  APPEND_ARRAY_ITEM Ref_SG3_History 32 FLOAT 128 "Last 10 Y values of the signal"
+  APPEND_ITEM Ref_SG3_PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_PairHistory_3_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG3_DpBytes 32 UINT "DP bytes written"
+  APPEND_ITEM Ref_SG3_DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen4 BIG_ENDIAN "Telemetry packet 18, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 18
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG4_PairOutput_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairOutput_value 32 FLOAT ""
+  APPEND_ARRAY_ITEM Ref_SG4_History 32 FLOAT 128 "Last 10 Y values of the signal"
+  APPEND_ITEM Ref_SG4_PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_PairHistory_3_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG4_DpBytes 32 UINT "DP bytes written"
+  APPEND_ITEM Ref_SG4_DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> SigGen5 BIG_ENDIAN "Telemetry packet 19, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 19
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_SG5_PairOutput_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairOutput_value 32 FLOAT ""
+  APPEND_ARRAY_ITEM Ref_SG5_History 32 FLOAT 128 "Last 10 Y values of the signal"
+  APPEND_ITEM Ref_SG5_PairHistory_0_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_0_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_1_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_1_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_2_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_2_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_3_time 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_PairHistory_3_value 32 FLOAT ""
+  APPEND_ITEM Ref_SG5_DpBytes 32 UINT "DP bytes written"
+  APPEND_ITEM Ref_SG5_DpRecords 32 UINT "DP records written"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> TypeDemo BIG_ENDIAN "Telemetry packet 20, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 20
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM Ref_typeDemo_ChoiceCh 32 INT "Single choice channel"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoicesCh_0 32 INT "Multiple choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoicesCh_1 32 INT "Multiple choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ExtraChoicesCh_0_0 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ExtraChoicesCh_0_1 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ExtraChoicesCh_1_0 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ExtraChoicesCh_1_1 32 INT "Too many choice channel via Array"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoicePairCh_firstChoice 32 INT "The first choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoicePairCh_secondChoice 32 INT "The second choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_tooManyChoices_0_0 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_tooManyChoices_0_1 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_tooManyChoices_1_0 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_tooManyChoices_1_1 32 INT "A large set of disorganized choices"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_separateChoice 32 INT "A singular choice"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_choicePair_firstChoice 32 INT "The first choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ITEM Ref_typeDemo_ChoiceSlurryCh_choicePair_secondChoice 32 INT "The second choice to make"
+    STATE ONE 0
+    STATE TWO 1
+    STATE RED 2
+    STATE BLUE 3
+  APPEND_ARRAY_ITEM Ref_typeDemo_ChoiceSlurryCh_choiceAsMemberArray 8 UINT 16 "An array of choices defined as member array"
+  APPEND_ITEM Ref_typeDemo_Float1Ch 32 FLOAT "Float output channel 1"
+  APPEND_ITEM Ref_typeDemo_Float2Ch 32 FLOAT "Float output channel 2"
+  APPEND_ITEM Ref_typeDemo_Float3Ch 32 FLOAT "Float output channel 3"
+  APPEND_ARRAY_ITEM Ref_typeDemo_FloatSet 32 FLOAT 96 "Float set output channel"
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_i8 8 INT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_i16 16 INT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_i32 32 INT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_i64 64 INT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_u8 8 UINT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_u16 16 UINT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_u32 32 UINT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_u64 64 UINT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_f32 32 FLOAT ""
+  APPEND_ITEM Ref_typeDemo_ScalarStructCh_f64 64 FLOAT ""
+  APPEND_ITEM Ref_typeDemo_ScalarU8Ch 8 UINT "Scalar U8 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarU16Ch 16 UINT "Scalar U16 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarU32Ch 32 UINT "Scalar U32 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarU64Ch 64 UINT "Scalar U64 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarI8Ch 8 INT "Scalar I8 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarI16Ch 16 INT "Scalar I16 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarI32Ch 32 INT "Scalar I32 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarI64Ch 64 INT "Scalar I64 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarF32Ch 32 FLOAT "Scalar F32 channel"
+  APPEND_ITEM Ref_typeDemo_ScalarF64Ch 64 FLOAT "Scalar F64 channel"
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> DataProducts BIG_ENDIAN "Telemetry packet 21, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 21
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM DataProducts_dpCat_CatalogDps 32 UINT "Number of data products in catalog"
+  APPEND_ITEM DataProducts_dpCat_DpsSent 32 UINT "Number of data products sent"
+  APPEND_ITEM DataProducts_dpMgr_NumSuccessfulAllocations 32 UINT "The number of successful buffer allocations"
+  APPEND_ITEM DataProducts_dpMgr_NumFailedAllocations 32 UINT "The number of failed buffer allocations"
+  APPEND_ITEM DataProducts_dpMgr_NumDataProducts 32 UINT "Number of data products handled"
+  APPEND_ITEM DataProducts_dpMgr_NumBytes 64 UINT "Number of bytes handled"
+  APPEND_ITEM DataProducts_dpWriter_NumBuffersReceived 32 UINT "The number of buffers received"
+  APPEND_ITEM DataProducts_dpWriter_NumBytesWritten 64 UINT "The number of bytes written"
+  APPEND_ITEM DataProducts_dpWriter_NumSuccessfulWrites 32 UINT "The number of successful writes"
+  APPEND_ITEM DataProducts_dpWriter_NumFailedWrites 32 UINT "The number of failed writes"
+  APPEND_ITEM DataProducts_dpWriter_NumErrors 32 UINT "The number of errors"
+  APPEND_ITEM DataProducts_dpBufferAccumulator_BA_NumQueuedBuffers 32 UINT "The number of buffers queued"
+  APPEND_ITEM DataProducts_dpBufferManager_TotalBuffs 32 UINT "The total buffers allocated"
+  APPEND_ITEM DataProducts_dpBufferManager_CurrBuffs 32 UINT "The current number of allocated buffers"
+  APPEND_ITEM DataProducts_dpBufferManager_HiBuffs 32 UINT "The high water mark of allocated buffers"
+  APPEND_ITEM DataProducts_dpBufferManager_NoBuffs 32 UINT "The number of requests that couldn't return a buffer"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
+  APPEND_ITEM DataProducts_dpBufferManager_EmptyBuffs 32 UINT "The number of empty buffers returned"
+    LIMITS DEFAULT 1 ENABLED 0 0 1 1
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version1 BIG_ENDIAN "Telemetry packet 22, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 22
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_FrameworkVersion_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_FrameworkVersion 0 STRING "Software framework version"
+    VARIABLE_BIT_SIZE CdhCore_version_FrameworkVersion_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_FrameworkVersion_PAD 0 BLOCK "Unused bytes of CdhCore_version_FrameworkVersion"
+    VARIABLE_BIT_SIZE CdhCore_version_FrameworkVersion_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_ProjectVersion_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_ProjectVersion 0 STRING "Software project version"
+    VARIABLE_BIT_SIZE CdhCore_version_ProjectVersion_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_ProjectVersion_PAD 0 BLOCK "Unused bytes of CdhCore_version_ProjectVersion"
+    VARIABLE_BIT_SIZE CdhCore_version_ProjectVersion_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Library1 BIG_ENDIAN "Telemetry packet 23, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 23
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion01_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion01 0 STRING "Library Versions"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion01_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion01_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion01"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion01_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_LibraryVersion02_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion02 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion02_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion02_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion02"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion02_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Library2 BIG_ENDIAN "Telemetry packet 24, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 24
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion03_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion03 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion03_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion03_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion03"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion03_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_LibraryVersion04_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion04 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion04_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion04_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion04"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion04_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Library3 BIG_ENDIAN "Telemetry packet 25, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 25
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion05_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion05 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion05_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion05_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion05"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion05_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_LibraryVersion06_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion06 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion06_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion06_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion06"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion06_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Library4 BIG_ENDIAN "Telemetry packet 26, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 26
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion07_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion07 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion07_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion07_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion07"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion07_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_LibraryVersion08_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion08 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion08_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion08_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion08"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion08_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Library5 BIG_ENDIAN "Telemetry packet 27, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 27
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion09_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion09 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion09_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion09_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion09"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion09_LENGTH -8 320
+  APPEND_ITEM CdhCore_version_LibraryVersion10_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_LibraryVersion10 0 STRING ""
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion10_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_LibraryVersion10_PAD 0 BLOCK "Unused bytes of CdhCore_version_LibraryVersion10"
+    VARIABLE_BIT_SIZE CdhCore_version_LibraryVersion10_LENGTH -8 320
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom1 BIG_ENDIAN "Telemetry packet 28, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 28
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion01_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion01_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion01_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion01_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion01_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion01_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion01_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion01_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom2 BIG_ENDIAN "Telemetry packet 29, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 29
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion02_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion02_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion02_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion02_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion02_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion02_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion02_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion02_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom3 BIG_ENDIAN "Telemetry packet 30, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 30
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion03_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion03_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion03_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion03_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion03_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion03_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion03_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion03_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom4 BIG_ENDIAN "Telemetry packet 31, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 31
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion04_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion04_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion04_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion04_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion04_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion04_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion04_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion04_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom5 BIG_ENDIAN "Telemetry packet 32, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 32
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion05_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion05_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion05_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion05_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion05_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion05_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion05_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion05_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom6 BIG_ENDIAN "Telemetry packet 33, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 33
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion06_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion06_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion06_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion06_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion06_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion06_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion06_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion06_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom7 BIG_ENDIAN "Telemetry packet 34, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 34
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion07_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion07_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion07_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion07_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion07_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion07_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion07_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion07_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom8 BIG_ENDIAN "Telemetry packet 35, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 35
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion08_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion08_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion08_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion08_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion08_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion08_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion08_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion08_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom9 BIG_ENDIAN "Telemetry packet 36, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 36
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion09_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion09_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion09_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion09_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion09_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion09_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion09_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion09_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Version_Custom10 BIG_ENDIAN "Telemetry packet 37, group 2 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 37
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion10_version_enum 32 UINT "enumeration/name of the custom version"
+    STATE PROJECT_VERSION_00 0
+    STATE PROJECT_VERSION_01 1
+    STATE PROJECT_VERSION_02 2
+    STATE PROJECT_VERSION_03 3
+    STATE PROJECT_VERSION_04 4
+    STATE PROJECT_VERSION_05 5
+    STATE PROJECT_VERSION_06 6
+    STATE PROJECT_VERSION_07 7
+    STATE PROJECT_VERSION_08 8
+    STATE PROJECT_VERSION_09 9
+  APPEND_ITEM CdhCore_version_CustomVersion10_version_value_LENGTH 64 UINT
+  APPEND_ITEM CdhCore_version_CustomVersion10_version_value 0 STRING "string containing custom version"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion10_version_value_LENGTH 8 0
+  APPEND_ITEM CdhCore_version_CustomVersion10_version_status 8 UINT "status of the custom version"
+    STATE OK 0
+    STATE FAILURE 1
+  APPEND_ITEM CdhCore_version_CustomVersion10_version_value_PAD 0 BLOCK "Unused bytes of CdhCore_version_CustomVersion10_version_value"
+    VARIABLE_BIT_SIZE CdhCore_version_CustomVersion10_version_value_LENGTH -8 640
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> Empty BIG_ENDIAN "Telemetry packet 39, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 39
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
+    READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
+
+TELEMETRY <%= target_name %> CfdpParams BIG_ENDIAN "Telemetry packet 41, group 3 (RefPackets)"
+  APPEND_ITEM CCSDS_VERSION 3 UINT
+  APPEND_ITEM CCSDS_TYPE 1 UINT
+  APPEND_ITEM CCSDS_SHF 1 UINT
+  APPEND_ID_ITEM CCSDS_APID 11 UINT 4
+  APPEND_ITEM CCSDS_SEQ_FLAGS 2 UINT
+  APPEND_ITEM CCSDS_SEQ_CNT 14 UINT
+  APPEND_ITEM CCSDS_LENGTH 16 UINT
+  APPEND_ITEM FPRIME_APID 16 UINT
+  APPEND_ID_ITEM FPRIME_TLM_PACKET_ID 16 UINT 41
+  APPEND_ITEM FPRIME_TIMEBASE 16 UINT
+    STATE TB_NONE 0 # No time base has been established
+    STATE TB_PROC_TIME 1 # Indicates time is processor cycle time. Not tied to external time
+    STATE TB_WORKSTATION_TIME 2 # Time as reported on workstation where software is running
+    STATE TB_DONT_CARE 0xFFFF
+  APPEND_ITEM FPRIME_CONTEXT 8 UINT
+  APPEND_ITEM FPRIME_TIME_SEC 32 UINT
+  APPEND_ITEM FPRIME_TIME_USEC 32 UINT
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_LOCAL_EID 32 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_OUTGOING_FILE_CHUNK_SIZE 32 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_RX_CRC_CALC_BYTES_PER_CYCLE 32 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_POST_INACTIVITY_SEND_RETRIES 8 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_FILE_IN_DEFAULT_CHANNEL 8 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_FILE_IN_DEFAULT_DEST_ENTITY_ID 32 UINT ""
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_FILE_IN_DEFAULT_CLASS 8 UINT ""
+    STATE CLASS_2 0
+    STATE CLASS_1 1
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_FILE_IN_DEFAULT_KEEP 8 UINT ""
+    STATE DELETE 0
+    STATE KEEP 1
+  APPEND_ITEM FileHandlingCfdp_cfdpManager_PRM_FILE_IN_DEFAULT_PRIORITY 8 UINT ""
   ITEM PACKET_TIME 0 0 DERIVED "Python time based on FPRIME_TIME_SEC and FPRIME_TIME_USEC"
     READ_CONVERSION openc3/conversions/unix_time_conversion.py FPRIME_TIME_SEC FPRIME_TIME_USEC
 

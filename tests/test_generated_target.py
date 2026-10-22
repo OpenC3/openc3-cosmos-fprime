@@ -43,6 +43,15 @@ def test_cfdp_packets_present(config):
     assert "CFDP_PDU" in config.telemetry["FPRIME"]
 
 
+def test_ref_telemetry_packets_present(config):
+    packet = config.telemetry["FPRIME"]["CDH"]
+    assert packet.get_item("CCSDS_APID").id_value == 4
+    assert packet.get_item("FPRIME_TLM_PACKET_ID").id_value == 1
+    assert "CDHCORE_TLMSEND_GROUPCONFIGS_0_3_ENABLED" in packet.items
+    version = config.telemetry["FPRIME"]["VERSION1"]
+    assert version.get_item("CDHCORE_VERSION_FRAMEWORKVERSION_PAD").variable_bit_size is not None
+
+
 def test_send_file_strings_use_v44_size_store(config):
     packet = config.commands["FPRIME"]["FILEHANDLINGCFDP.CFDPMANAGER.SENDFILE"]
     assert packet.get_item("SOURCEFILENAME_LENGTH").bit_size == 64

@@ -36,6 +36,43 @@ docker run --rm -p 50000:50000 openc3-fprime-cfdp
 
 The first build compiles F Prime and takes a while.
 
+### TlmChan or TlmPacketizer
+
+Ref downlinks telemetry through `TlmChan` by default: one channelized packet per channel on APID 1.
+To get `TlmPacketizer` instead, build with `TLM_SEND=packetizer`. It sends the `RefPackets` telemetry
+packets on APID 4.
+
+```bash
+docker build --build-arg TLM_SEND=packetizer -t openc3-fprime-packetizer fprime-test/
+docker run --rm -p 50000:50000 openc3-fprime-packetizer
+```
+
+`ref-packetizer.patch`, applied after `ref-cfdp.patch`, makes two changes:
+
+- **Telemetry component:** it switches `CdhCore.tlmSend` to `TlmPacketizer`, using the block F Prime ships
+  commented out in `CdhCoreTlmConfig.fpp`.
+- **Packet contents:** it puts `CdhCore.tlmSend.GroupConfigs` and `SectionEnabled` into the `CDH` packet.
+  Ref has those two lines commented out, and FPP rejects a packet set that leaves a channel out without
+  omitting it.
+
+Things that behave differently with TlmPacketizer:
+
+- **Omitted channels:** the channels in the packet set's `omit` list are never downlinked. These are the
+  CfdpManager's `ChannelTelemetry` and `PRM_CHANNEL_CONFIG`, plus Ref's own omissions.
+- **Packet groups:** packets are sent on change, and only for the enabled groups. Ref starts at level 1.
+  `CDHCORE.TLMSEND.SET_LEVEL 3` enables every group, and `SEND_PKT` forces out a single packet.
+- **CFDP procedure:** `cfdp_test.py`'s `test_telemetry_still_flows` waits for the channelized
+  `REF.SYSTEMRESOURCES.CPU` packet, so run the CFDP procedure against the TlmChan image.
+
+The FPRIME target is generated from the packetizer image's dictionary. The TlmChan build's dictionary is
+the same apart from the `CdhCore.tlmSend` component: it lacks the packetizer's commands, channels,
+parameters and events, and adds two TlmChan events. So the one target works against both images. The
+only difference is that those two TlmChan events show up as unknown event IDs.
+
+`targets/FPRIME/procedures/tlm_test.py` runs against either image. It detects the mode from which
+telemetry arrives, then checks command counters, version strings, and TypeDemo's scalar and enum structs.
+In packetizer mode it also checks a string inside a struct and the packetizer's group levels.
+
 When COSMOS runs in Docker on the same machine, the plugin's defaults (`host.docker.internal:50000`) connect to it.
 
 ## Files in the container
@@ -51,7 +88,7 @@ To regenerate the sample files, run `python fprime-test/make_files.py fprime-tes
 ## Regenerate the FPRIME target
 
 ```bash
-docker run --rm --entrypoint cat openc3-fprime-cfdp /RefTopologyDictionary.json > fprime-test/RefTopologyDictionary.json
+docker run --rm --entrypoint cat openc3-fprime-packetizer /RefTopologyDictionary.json > fprime-test/RefTopologyDictionary.json
 python lib/fprime_parser.py FPRIME fprime-test/RefTopologyDictionary.json
 ```
 

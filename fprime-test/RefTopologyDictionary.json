@@ -276,6 +276,40 @@
       }
     },
     {
+      "kind" : "enum",
+      "qualifiedName" : "Svc.RateLogic",
+      "representationType" : {
+        "name" : "I32",
+        "kind" : "integer",
+        "size" : 32,
+        "signed" : true
+      },
+      "enumeratedConstants" : [
+        {
+          "name" : "SILENCED",
+          "value" : 0,
+          "annotation" : "No logic applied. Does not send group and freezes counter."
+        },
+        {
+          "name" : "EVERY_MAX",
+          "value" : 1,
+          "annotation" : "Send every MAX ticks between sends."
+        },
+        {
+          "name" : "ON_CHANGE_MIN",
+          "value" : 2,
+          "annotation" : "Send on updates after MIN ticks since last send."
+        },
+        {
+          "name" : "ON_CHANGE_MIN_OR_EVERY_MAX",
+          "value" : 3,
+          "annotation" : "Send on updates after MIN ticks since last send OR at MAX ticks between sends."
+        }
+      ],
+      "default" : "Svc.RateLogic.SILENCED",
+      "annotation" : "Enumeration for rate logic types for telemetry groups"
+    },
+    {
       "kind" : "alias",
       "qualifiedName" : "FwPrmIdType",
       "type" : {
@@ -1229,21 +1263,6 @@
       }
     },
     {
-      "kind" : "array",
-      "qualifiedName" : "Svc.BuffQueueDepth",
-      "size" : 1,
-      "elementType" : {
-        "name" : "U32",
-        "kind" : "integer",
-        "size" : 32,
-        "signed" : false
-      },
-      "default" : [
-        0
-      ],
-      "annotation" : "Array of queue depths for Fw::Buffer types"
-    },
-    {
       "kind" : "enum",
       "qualifiedName" : "Svc.Ccsds.Cfdp.Flow",
       "representationType" : {
@@ -1265,6 +1284,78 @@
         }
       ],
       "default" : "Svc.Ccsds.Cfdp.Flow.NOT_FROZEN"
+    },
+    {
+      "kind" : "array",
+      "qualifiedName" : "Svc.BuffQueueDepth",
+      "size" : 1,
+      "elementType" : {
+        "name" : "U32",
+        "kind" : "integer",
+        "size" : 32,
+        "signed" : false
+      },
+      "default" : [
+        0
+      ],
+      "annotation" : "Array of queue depths for Fw::Buffer types"
+    },
+    {
+      "kind" : "struct",
+      "qualifiedName" : "Svc.TlmPacketizer.GroupConfig",
+      "members" : {
+        "enabled" : {
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "index" : 0,
+          "annotation" : "Enable / Disable Telemetry Output"
+        },
+        "min" : {
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "index" : 3,
+          "annotation" : "Minimum Sched Ticks when in ON_CHANGE_MIN"
+        },
+        "max" : {
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "index" : 4,
+          "annotation" : "Maximum Sched Ticks when in EVERY_MAX"
+        },
+        "rateLogic" : {
+          "type" : {
+            "name" : "Svc.RateLogic",
+            "kind" : "qualifiedIdentifier"
+          },
+          "index" : 2,
+          "annotation" : "Rate Logic Configuration"
+        },
+        "forceEnabled" : {
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "index" : 1,
+          "annotation" : "Force Enable / Disable Telemetry Output"
+        }
+      },
+      "default" : {
+        "enabled" : "Fw.Enabled.DISABLED",
+        "min" : 0,
+        "max" : 0,
+        "rateLogic" : "Svc.RateLogic.SILENCED",
+        "forceEnabled" : "Fw.Enabled.DISABLED"
+      }
     },
     {
       "kind" : "enum",
@@ -1617,6 +1708,77 @@
         0.0
       ],
       "annotation" : "Set of floating points to emit"
+    },
+    {
+      "kind" : "array",
+      "qualifiedName" : "Svc.TlmPacketizer.SectionConfigs",
+      "size" : 2,
+      "elementType" : {
+        "name" : "Svc.TlmPacketizer.GroupConfigs",
+        "kind" : "qualifiedIdentifier"
+      },
+      "default" : [
+        [
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          }
+        ],
+        [
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          }
+        ]
+      ]
     },
     {
       "kind" : "enum",
@@ -3260,6 +3422,19 @@
       }
     },
     {
+      "kind" : "array",
+      "qualifiedName" : "Svc.TlmPacketizer.SectionEnabled",
+      "size" : 2,
+      "elementType" : {
+        "name" : "Fw.Enabled",
+        "kind" : "qualifiedIdentifier"
+      },
+      "default" : [
+        "Fw.Enabled.ENABLED",
+        "Fw.Enabled.ENABLED"
+      ]
+    },
+    {
       "kind" : "alias",
       "qualifiedName" : "FwTlmPacketizeIdType",
       "type" : {
@@ -3275,6 +3450,35 @@
         "signed" : false
       },
       "annotation" : "The type of a telemetry packet identifier"
+    },
+    {
+      "kind" : "enum",
+      "qualifiedName" : "Svc.TelemetrySection",
+      "representationType" : {
+        "name" : "I32",
+        "kind" : "integer",
+        "size" : 32,
+        "signed" : true
+      },
+      "enumeratedConstants" : [
+        {
+          "name" : "REALTIME",
+          "value" : 0,
+          "annotation" : "OPTIONAL: realtime telemetry downlink through communication stack"
+        },
+        {
+          "name" : "RECORDED",
+          "value" : 1,
+          "annotation" : "OPTIONAL: recorded telemetry stored on disk for later retrieval"
+        },
+        {
+          "name" : "NUM_SECTIONS",
+          "value" : 2,
+          "annotation" : "REQUIRED: Counter, leave as last element."
+        }
+      ],
+      "default" : "Svc.TelemetrySection.REALTIME",
+      "annotation" : "Configurable enum supporting multiple resampled telemetry sections\nEach section creates output indices for each telemetry group"
     },
     {
       "kind" : "enum",
@@ -4345,6 +4549,45 @@
     },
     {
       "kind" : "array",
+      "qualifiedName" : "Svc.TlmPacketizer.GroupConfigs",
+      "size" : 4,
+      "elementType" : {
+        "name" : "Svc.TlmPacketizer.GroupConfig",
+        "kind" : "qualifiedIdentifier"
+      },
+      "default" : [
+        {
+          "enabled" : "Fw.Enabled.DISABLED",
+          "min" : 0,
+          "max" : 0,
+          "rateLogic" : "Svc.RateLogic.SILENCED",
+          "forceEnabled" : "Fw.Enabled.DISABLED"
+        },
+        {
+          "enabled" : "Fw.Enabled.DISABLED",
+          "min" : 0,
+          "max" : 0,
+          "rateLogic" : "Svc.RateLogic.SILENCED",
+          "forceEnabled" : "Fw.Enabled.DISABLED"
+        },
+        {
+          "enabled" : "Fw.Enabled.DISABLED",
+          "min" : 0,
+          "max" : 0,
+          "rateLogic" : "Svc.RateLogic.SILENCED",
+          "forceEnabled" : "Fw.Enabled.DISABLED"
+        },
+        {
+          "enabled" : "Fw.Enabled.DISABLED",
+          "min" : 0,
+          "max" : 0,
+          "rateLogic" : "Svc.RateLogic.SILENCED",
+          "forceEnabled" : "Fw.Enabled.DISABLED"
+        }
+      ]
+    },
+    {
+      "kind" : "array",
       "qualifiedName" : "Ref.TooManyChoices",
       "size" : 2,
       "elementType" : {
@@ -4656,17 +4899,6 @@
     },
     {
       "kind" : "constant",
-      "qualifiedName" : "Ref.DpDemo.stringSize",
-      "type" : {
-        "name" : "U64",
-        "kind" : "integer",
-        "size" : 64,
-        "signed" : false
-      },
-      "value" : 80
-    },
-    {
-      "kind" : "constant",
       "qualifiedName" : "FileNameStringSize",
       "type" : {
         "name" : "U64",
@@ -4712,6 +4944,17 @@
       },
       "value" : 16,
       "annotation" : "Buffer size (bytes) for a WebAssembly module name (LOAD/INVOKE and the\ncommands/events that reference a loaded module by name)"
+    },
+    {
+      "kind" : "constant",
+      "qualifiedName" : "Svc.NUM_CONFIGURABLE_TLMPACKETIZER_GROUPS",
+      "type" : {
+        "name" : "U64",
+        "kind" : "integer",
+        "size" : 64,
+        "signed" : false
+      },
+      "value" : 4
     },
     {
       "kind" : "constant",
@@ -4867,6 +5110,29 @@
       },
       "value" : 16,
       "annotation" : "The maximum number of arguments a sequence can have"
+    },
+    {
+      "kind" : "constant",
+      "qualifiedName" : "Ref.DpDemo.stringSize",
+      "type" : {
+        "name" : "U64",
+        "kind" : "integer",
+        "size" : 64,
+        "signed" : false
+      },
+      "value" : 80
+    },
+    {
+      "kind" : "constant",
+      "qualifiedName" : "Svc.MAX_CONFIGURABLE_TLMPACKETIZER_GROUP",
+      "type" : {
+        "name" : "U64",
+        "kind" : "integer",
+        "size" : 64,
+        "signed" : false
+      },
+      "value" : 3,
+      "annotation" : "Greatest packet group"
     },
     {
       "kind" : "constant",
@@ -5203,6 +5469,258 @@
         }
       ],
       "annotation" : "Report version as Event"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SET_LEVEL",
+      "commandKind" : "async",
+      "opcode" : 16801792,
+      "formalParams" : [
+        {
+          "name" : "level",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The I32 command argument"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Set telemetry send level"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SEND_PKT",
+      "commandKind" : "async",
+      "opcode" : 16801793,
+      "formalParams" : [
+        {
+          "name" : "id",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "The packet ID"
+        },
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section to emit packet"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Force a packet to be sent"
+    },
+    {
+      "name" : "CdhCore.tlmSend.ENABLE_SECTION",
+      "commandKind" : "async",
+      "opcode" : 16801794,
+      "formalParams" : [
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section grouping to configure"
+        },
+        {
+          "name" : "enable",
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section enabled or disabled"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Enable / disable a telemetry section"
+    },
+    {
+      "name" : "CdhCore.tlmSend.ENABLE_GROUP",
+      "commandKind" : "async",
+      "opcode" : 16801795,
+      "formalParams" : [
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section grouping to configure"
+        },
+        {
+          "name" : "tlmGroup",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Group Identifier"
+        },
+        {
+          "name" : "enable",
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section enabled or disabled"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Enable / disable telemetry of a group on a section"
+    },
+    {
+      "name" : "CdhCore.tlmSend.FORCE_GROUP",
+      "commandKind" : "async",
+      "opcode" : 16801796,
+      "formalParams" : [
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section grouping"
+        },
+        {
+          "name" : "tlmGroup",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Group Identifier"
+        },
+        {
+          "name" : "enable",
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section enabled or disabled"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Force telemetering a group on a section, even if disabled"
+    },
+    {
+      "name" : "CdhCore.tlmSend.CONFIGURE_GROUP_RATES",
+      "commandKind" : "async",
+      "opcode" : 16801797,
+      "formalParams" : [
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Section grouping"
+        },
+        {
+          "name" : "tlmGroup",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Group Identifier"
+        },
+        {
+          "name" : "rateLogic",
+          "type" : {
+            "name" : "Svc.RateLogic",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Rate Logic"
+        },
+        {
+          "name" : "minDelta",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "Minimum Sched Ticks to send packets on updates when using ON_CHANGE logic"
+        },
+        {
+          "name" : "maxDelta",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "Maximum Sched Ticks between packets to send when using EVERY_MAX logic"
+        }
+      ],
+      "queueFullBehavior" : "assert",
+      "annotation" : "Set Min and Max Deltas between successive packets"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SECTION_ENABLED_PRM_SET",
+      "commandKind" : "set",
+      "opcode" : 16801798,
+      "formalParams" : [
+        {
+          "name" : "val",
+          "type" : {
+            "name" : "Svc.TlmPacketizer.SectionEnabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false
+        }
+      ],
+      "annotation" : "Parameter to control section enable flags"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SECTION_ENABLED_PRM_SAVE",
+      "commandKind" : "save",
+      "opcode" : 16801799,
+      "formalParams" : [
+      ],
+      "annotation" : "Parameter to control section enable flags"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SECTION_CONFIGS_PRM_SET",
+      "commandKind" : "set",
+      "opcode" : 16801800,
+      "formalParams" : [
+        {
+          "name" : "val",
+          "type" : {
+            "name" : "Svc.TlmPacketizer.SectionConfigs",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false
+        }
+      ],
+      "annotation" : "Parameter to control section configuration"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SECTION_CONFIGS_PRM_SAVE",
+      "commandKind" : "save",
+      "opcode" : 16801801,
+      "formalParams" : [
+      ],
+      "annotation" : "Parameter to control section configuration"
     },
     {
       "name" : "ComCcsds.comQueue.FLUSH_QUEUE",
@@ -8035,6 +8553,90 @@
   ],
   "parameters" : [
     {
+      "name" : "CdhCore.tlmSend.SECTION_ENABLED",
+      "type" : {
+        "name" : "Svc.TlmPacketizer.SectionEnabled",
+        "kind" : "qualifiedIdentifier"
+      },
+      "id" : 16801792,
+      "default" : [
+        "Fw.Enabled.ENABLED",
+        "Fw.Enabled.ENABLED"
+      ],
+      "annotation" : "Parameter to control section enable flags"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SECTION_CONFIGS",
+      "type" : {
+        "name" : "Svc.TlmPacketizer.SectionConfigs",
+        "kind" : "qualifiedIdentifier"
+      },
+      "id" : 16801793,
+      "default" : [
+        [
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          }
+        ],
+        [
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          },
+          {
+            "enabled" : "Fw.Enabled.ENABLED",
+            "min" : 0,
+            "max" : 0,
+            "rateLogic" : "Svc.RateLogic.ON_CHANGE_MIN",
+            "forceEnabled" : "Fw.Enabled.DISABLED"
+          }
+        ]
+      ],
+      "annotation" : "Parameter to control section configuration"
+    },
+    {
       "name" : "FileHandlingCfdp.cfdpManager.LocalEid",
       "type" : {
         "name" : "Svc.Ccsds.Cfdp.EntityId",
@@ -9604,38 +10206,136 @@
       "annotation" : "An unexpected assert happened"
     },
     {
-      "name" : "CdhCore.tlmSend.TlmChanEpochProcessingCapReached",
-      "severity" : "WARNING_HI",
+      "name" : "CdhCore.tlmSend.NoChan",
+      "severity" : "WARNING_LO",
       "formalParams" : [
         {
-          "name" : "numDeferred",
+          "name" : "Id",
           "type" : {
-            "name" : "U32",
-            "kind" : "integer",
-            "size" : 32,
-            "signed" : false
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
           },
           "ref" : false,
-          "annotation" : "Entries skipped (dropped) this invocation"
-        },
-        {
-          "name" : "numTimesDeferredCountReached",
-          "type" : {
-            "name" : "U32",
-            "kind" : "integer",
-            "size" : 32,
-            "signed" : false
-          },
-          "ref" : false,
-          "annotation" : "Cumulative invocations where cap was reached"
+          "annotation" : "The telemetry ID"
         }
       ],
       "id" : 16801792,
-      "format" : "TlmChan epoch processing cap reached: {} entries deferred (cumulative: {})",
-      "annotation" : "Epoch Processing cap reached; one or more telemetry entries were deferred this cycle"
+      "format" : "Telemetry ID 0x{x} not packetized",
+      "annotation" : "Telemetry channel is not part of a telemetry packet."
     },
     {
-      "name" : "CdhCore.tlmSend.TlmChanBucketPoolExhausted",
+      "name" : "CdhCore.tlmSend.LevelSet",
+      "severity" : "ACTIVITY_HI",
+      "formalParams" : [
+        {
+          "name" : "level",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The level"
+        }
+      ],
+      "id" : 16801793,
+      "format" : "Telemetry send level to {}",
+      "annotation" : "Telemetry send level set"
+    },
+    {
+      "name" : "CdhCore.tlmSend.MaxLevelExceed",
+      "severity" : "WARNING_LO",
+      "formalParams" : [
+        {
+          "name" : "level",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The level"
+        },
+        {
+          "name" : "max",
+          "type" : {
+            "name" : "FwChanIdType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The max packet level"
+        }
+      ],
+      "id" : 16801794,
+      "format" : "Requested send level {} higher than max packet level of {}",
+      "annotation" : "Telemetry send level set"
+    },
+    {
+      "name" : "CdhCore.tlmSend.PacketSent",
+      "severity" : "ACTIVITY_LO",
+      "formalParams" : [
+        {
+          "name" : "packetId",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "The packet ID"
+        }
+      ],
+      "id" : 16801795,
+      "format" : "Sent packet ID {}",
+      "annotation" : "Packet manually sent"
+    },
+    {
+      "name" : "CdhCore.tlmSend.PacketNotFound",
+      "severity" : "WARNING_LO",
+      "formalParams" : [
+        {
+          "name" : "packetId",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "The packet ID"
+        }
+      ],
+      "id" : 16801796,
+      "format" : "Could not find packet ID {}",
+      "annotation" : "Couldn't find the packet to send"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SectionUnconfigurable",
+      "severity" : "WARNING_LO",
+      "formalParams" : [
+        {
+          "name" : "section",
+          "type" : {
+            "name" : "Svc.TelemetrySection",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The Section"
+        },
+        {
+          "name" : "enable",
+          "type" : {
+            "name" : "Fw.Enabled",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "Attempted Configuration"
+        }
+      ],
+      "id" : 16801797,
+      "format" : "Section {} is unconfigurable and cannot be set to {}"
+    },
+    {
+      "name" : "CdhCore.tlmSend.OversizedChannel",
       "severity" : "WARNING_HI",
       "formalParams" : [
         {
@@ -9645,12 +10345,30 @@
             "kind" : "qualifiedIdentifier"
           },
           "ref" : false,
-          "annotation" : "The telemetry ID that could not be stored"
+          "annotation" : "The telemetry ID"
+        },
+        {
+          "name" : "valSize",
+          "type" : {
+            "name" : "FwSizeType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The received value size"
+        },
+        {
+          "name" : "expected",
+          "type" : {
+            "name" : "FwSizeType",
+            "kind" : "qualifiedIdentifier"
+          },
+          "ref" : false,
+          "annotation" : "The configured channel size"
         }
       ],
-      "id" : 16801793,
-      "format" : "TlmChan bucket pool exhausted: dropping new telemetry ID 0x{x}",
-      "annotation" : "Hash bucket pool is exhausted; the new telemetry channel was dropped",
+      "id" : 16801798,
+      "format" : "Telemetry ID 0x{x} update of size {} exceeds configured size {}",
+      "annotation" : "Telemetry value larger than the configured channel size",
       "throttle" : {
         "count" : 10,
         "every" : null
@@ -19530,6 +20248,25 @@
       "telemetryUpdate" : "always"
     },
     {
+      "name" : "CdhCore.tlmSend.GroupConfigs",
+      "type" : {
+        "name" : "Svc.TlmPacketizer.SectionConfigs",
+        "kind" : "qualifiedIdentifier"
+      },
+      "id" : 16801792,
+      "telemetryUpdate" : "always",
+      "annotation" : "Telemetry send level"
+    },
+    {
+      "name" : "CdhCore.tlmSend.SectionEnabled",
+      "type" : {
+        "name" : "Svc.TlmPacketizer.SectionEnabled",
+        "kind" : "qualifiedIdentifier"
+      },
+      "id" : 16801793,
+      "telemetryUpdate" : "always"
+    },
+    {
       "name" : "ComCcsds.comQueue.comQueueDepth",
       "type" : {
         "name" : "Svc.ComQueueDepth",
@@ -21602,6 +22339,8 @@
             "ComCcsds.commsBufferManager.TotalBuffs",
             "ComCcsds.commsBufferManager.CurrBuffs",
             "ComCcsds.commsBufferManager.HiBuffs",
+            "CdhCore.tlmSend.GroupConfigs",
+            "CdhCore.tlmSend.SectionEnabled",
             "Ref.rateGroup1Comp.RgMaxTime",
             "Ref.rateGroup2Comp.RgMaxTime",
             "Ref.rateGroup3Comp.RgMaxTime"

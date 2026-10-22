@@ -1,0 +1,279 @@
+diff --git a/Svc/Subtopologies/ComCcsds/ComCcsdsConfig/ComCcsdsConfig.fpp b/Svc/Subtopologies/ComCcsds/ComCcsdsConfig/ComCcsdsConfig.fpp
+index a5cfd9a..557f07a 100644
+--- a/Svc/Subtopologies/ComCcsds/ComCcsdsConfig/ComCcsdsConfig.fpp
++++ b/Svc/Subtopologies/ComCcsds/ComCcsdsConfig/ComCcsdsConfig.fpp
+@@ -50,7 +50,8 @@ module ComCcsdsConfig {
+         @ Controls whether to span packets across transfer frames (see Svc.ComAggregator).
+         @ Requires Svc.Ccsds.TmFramer as the transfer frame layer (sole consumer of FrameContext.firstHeaderPointer)
+         @ and a ground deframer that reassembles spanned packets using the First Header Pointer.
+-        constant enablePacketSpanning = false
++        # CfdpManager's default 992-byte chunk makes 1011-byte packets, over the 1009 that fit unspanned
++        constant enablePacketSpanning = true
+     }
+ 
+     # Buffer management constants
+diff --git a/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdp.fpp b/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdp.fpp
+index 9509ce6..7c8174b 100644
+--- a/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdp.fpp
++++ b/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdp.fpp
+@@ -10,7 +10,8 @@ module FileHandlingCfdp {
+         cpu FileHandlingCfdpConfig.CpuAffinities.cfdpManager \
+     {
+         phase Fpp.ToCpp.Phases.configComponents """
+-        FileHandlingCfdp::cfdpManager.configure(FileHandlingCfdp::Allocation::memAllocator);
++        // v4.4.1 shipped without the fileQueueDepth argument CfdpManager::configure requires
++        FileHandlingCfdp::cfdpManager.configure(FileHandlingCfdp::Allocation::memAllocator, 10);
+         """
+         phase Fpp.ToCpp.Phases.tearDownComponents """
+         FileHandlingCfdp::cfdpManager.cleanup();
+diff --git a/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdpConfig/FileHandlingCfdpConfig.fpp b/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdpConfig/FileHandlingCfdpConfig.fpp
+index 367429b..46c5d4d 100644
+--- a/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdpConfig/FileHandlingCfdpConfig.fpp
++++ b/Svc/Subtopologies/FileHandlingCfdp/FileHandlingCfdpConfig/FileHandlingCfdpConfig.fpp
+@@ -3,7 +3,8 @@ module FileHandlingCfdpConfig {
+     constant BASE_ID = 0x07000000
+ 
+     module QueueSizes {
+-        constant cfdpManager   = 30
++        # Each uplinked PDU is a queued dataIn message; 30 overflows (and asserts) on a burst
++        constant cfdpManager   = 100
+         constant fileManager   = 10
+         constant prmDb         = 10
+     }
+diff --git a/TestDeploymentsProject/Ref/Top/RefPackets.fppi b/TestDeploymentsProject/Ref/Top/RefPackets.fppi
+index 44e0504..6cb99e2 100644
+--- a/TestDeploymentsProject/Ref/Top/RefPackets.fppi
++++ b/TestDeploymentsProject/Ref/Top/RefPackets.fppi
+@@ -3,12 +3,7 @@ telemetry packets RefPackets {
+   packet CDH id 1 group 1 {
+     CdhCore.cmdDisp.CommandsDispatched
+ 
+-    FileHandling.fileUplink.FilesReceived
+-    FileHandling.fileUplink.FilesReceivedFailed
+-    FileHandling.fileUplink.PacketsReceived
+-    FileHandling.fileDownlink.FilesSent
+-    FileHandling.fileDownlink.PacketsSent
+-    FileHandling.fileManager.CommandsExecuted
++    FileHandlingCfdp.fileManager.CommandsExecuted
+ 
+     cmdSeq.CS_LoadCommands
+     cmdSeq.CS_CancelCommands
+@@ -36,9 +31,7 @@ telemetry packets RefPackets {
+     CdhCore.cmdDisp.CommandsDropped
+     CdhCore.events.EventsDropped
+ 
+-    FileHandling.fileUplink.Warnings
+-    FileHandling.fileDownlink.Warnings
+-    FileHandling.fileManager.Errors
++    FileHandlingCfdp.fileManager.Errors
+ 
+     cmdSeq.CS_Errors
+     wasmSeq.SequencesFailed
+@@ -286,6 +279,18 @@ telemetry packets RefPackets {
+   }
+ 
+   # Empty packet: exercises a packet specification with no channels
++  packet CfdpParams id 41 group 3 {
++    FileHandlingCfdp.cfdpManager.PRM_LOCAL_EID
++    FileHandlingCfdp.cfdpManager.PRM_OUTGOING_FILE_CHUNK_SIZE
++    FileHandlingCfdp.cfdpManager.PRM_RX_CRC_CALC_BYTES_PER_CYCLE
++    FileHandlingCfdp.cfdpManager.PRM_POST_INACTIVITY_SEND_RETRIES
++    FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_CHANNEL
++    FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_DEST_ENTITY_ID
++    FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_CLASS
++    FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_KEEP
++    FileHandlingCfdp.cfdpManager.PRM_FILE_IN_DEFAULT_PRIORITY
++  }
++
+   packet Empty id 39 group 3 {
+   }
+ 
+@@ -299,6 +304,9 @@ telemetry packets RefPackets {
+   #}
+ 
+ } omit {
++  # Larger than a telemetry packet; TlmChan still downlinks them as channels
++  FileHandlingCfdp.cfdpManager.ChannelTelemetry
++  FileHandlingCfdp.cfdpManager.PRM_CHANNEL_CONFIG
+   CdhCore.cmdDisp.CommandErrors
+   cmdSeq.CS_CurrentSequence
+   wasmSeq.SeqName
+diff --git a/TestDeploymentsProject/Ref/Top/RefTopology.cpp b/TestDeploymentsProject/Ref/Top/RefTopology.cpp
+index 0428cfd..4d358fb 100644
+--- a/TestDeploymentsProject/Ref/Top/RefTopology.cpp
++++ b/TestDeploymentsProject/Ref/Top/RefTopology.cpp
+@@ -15,6 +15,7 @@
+ // Necessary project-specified types
+ #include <Fw/Types/MallocAllocator.hpp>
+ #include "Fw/Types/MemAllocator.hpp"
++#include <Fw/Logger/Logger.hpp>
+ 
+ // Allows easy reference to objects in FPP/autocoder required namespaces
+ using namespace Ref;
+@@ -59,10 +60,6 @@ void configureTopology() {
+     // Command sequencer needs to allocate memory to hold contents of command sequences
+     cmdSeq.allocateBuffer(0, mallocator, 5 * 1024);
+ 
+-    // Restrict file access to the working directory (where PrmDb.dat lives)
+-    FileHandling::fileUplink.configure(".");
+-    FileHandling::fileDownlink.configure(".");
+-    FileHandling::prmDb.configureSandbox(".");
+ }
+ 
+ // Public functions for use in main program are namespaced with deployment name Ref
+@@ -78,6 +75,10 @@ void setupTopology(const TopologyState& state) {
+     configComponents(state);
+     if (state.hostname != nullptr && state.port != 0) {
+         comDriver.configure(state.hostname, state.port);
++        // Listen for the ground system (e.g. COSMOS) to connect as a TCP client
++        if (comDriver.startup() != Drv::SOCK_SUCCESS) {
++            Fw::Logger::log("[ERROR] Failed to listen on %s:%hu\n", state.hostname, state.port);
++        }
+     }
+     // Project-specific component configuration. Function provided above. May be inlined, if desired.
+     configureTopology();
+@@ -89,7 +90,7 @@ void setupTopology(const TopologyState& state) {
+     loadParameters();
+     // Autocoded task kick-off (active components). Function provided by autocoder.
+     startTasks(state);
+-    // Initialize socket client communication if and only if there is a valid specification
++    // Initialize socket server communication if and only if there is a valid specification
+     if (state.hostname != nullptr && state.port != 0) {
+         Os::TaskString name("ReceiveTask");
+         comDriver.start(name, COMM_PRIORITY, Default::STACK_SIZE);
+@@ -114,7 +115,7 @@ void teardownTopology(const TopologyState& state) {
+     freeThreads(state);
+ 
+     // Stop the comDriver component, free thread
+-    comDriver.stop();
++    comDriver.terminate();
+     (void)comDriver.join();
+ 
+     // Resource deallocation
+diff --git a/TestDeploymentsProject/Ref/Top/RefTopologyDefs.hpp b/TestDeploymentsProject/Ref/Top/RefTopologyDefs.hpp
+index cbe654f..62ea691 100644
+--- a/TestDeploymentsProject/Ref/Top/RefTopologyDefs.hpp
++++ b/TestDeploymentsProject/Ref/Top/RefTopologyDefs.hpp
+@@ -18,13 +18,13 @@
+ #include "Svc/Subtopologies/CdhCore/PingEntries.hpp"
+ #include "Svc/Subtopologies/ComCcsds/PingEntries.hpp"
+ #include "Svc/Subtopologies/DataProducts/PingEntries.hpp"
+-#include "Svc/Subtopologies/FileHandling/PingEntries.hpp"
++#include "Svc/Subtopologies/FileHandlingCfdp/PingEntries.hpp"
+ 
+ // SubtopologyTopologyDefs includes
+ #include "Svc/Subtopologies/CdhCore/SubtopologyTopologyDefs.hpp"
+ #include "Svc/Subtopologies/ComCcsds/SubtopologyTopologyDefs.hpp"
+ #include "Svc/Subtopologies/DataProducts/SubtopologyTopologyDefs.hpp"
+-#include "Svc/Subtopologies/FileHandling/SubtopologyTopologyDefs.hpp"
++#include "Svc/Subtopologies/FileHandlingCfdp/SubtopologyTopologyDefs.hpp"
+ // #include "Svc/Subtopologies/DpCompression/SubtopologyTopologyDefs.hpp"
+ 
+ /**
+@@ -86,7 +86,7 @@ struct TopologyState {
+     CdhCore::SubtopologyState cdhCore;            //!< Subtopology state for CdhCore
+     ComCcsds::SubtopologyState comCcsds;          //!< Subtopology state for ComCcsds
+     DataProducts::SubtopologyState dataProducts;  //!< Subtopology state for DataProducts
+-    FileHandling::SubtopologyState fileHandling;  //!< Subtopology state for FileHandling
++    FileHandlingCfdp::SubtopologyState fileHandlingCfdp;  //!< Subtopology state for FileHandlingCfdp
+     // DpCompression::SubtopologyState dpCompression;//!< Subtopology state for DpCompression
+ };
+ 
+diff --git a/TestDeploymentsProject/Ref/Top/instances.fpp b/TestDeploymentsProject/Ref/Top/instances.fpp
+index ded8c22..d9f53ee 100644
+--- a/TestDeploymentsProject/Ref/Top/instances.fpp
++++ b/TestDeploymentsProject/Ref/Top/instances.fpp
+@@ -108,6 +108,6 @@ module Ref {
+ 
+   instance linuxTimer: Svc.LinuxTimer base id 0x10024000
+ 
+-  instance comDriver: Drv.TcpClient base id 0x10025000
++  instance comDriver: Drv.TcpServer base id 0x10025000
+ 
+ }
+diff --git a/TestDeploymentsProject/Ref/Top/topology.fpp b/TestDeploymentsProject/Ref/Top/topology.fpp
+index 55c6783..7caef3c 100644
+--- a/TestDeploymentsProject/Ref/Top/topology.fpp
++++ b/TestDeploymentsProject/Ref/Top/topology.fpp
+@@ -18,7 +18,7 @@ module Ref {
+     # ----------------------------------------------------------------------
+     instance CdhCore.Subtopology
+     instance ComCcsds.Subtopology
+-    instance FileHandling.Subtopology
++    instance FileHandlingCfdp.Subtopology
+     instance DataProducts.Subtopology
+     #instance DpCompression.Subtopology
+ 
+@@ -62,7 +62,7 @@ module Ref {
+ 
+     health connections instance CdhCore.$health
+ 
+-    param connections instance FileHandling.prmDb
++    param connections instance FileHandlingCfdp.prmDb
+ 
+     time connections instance posixTime
+ 
+@@ -86,7 +86,7 @@ module Ref {
+       rateGroup1Comp.RateGroupMemberOut[0] -> SG1.schedIn
+       rateGroup1Comp.RateGroupMemberOut[1] -> SG2.schedIn
+       rateGroup1Comp.RateGroupMemberOut[2] -> CdhCore.Subtopology.tlmSendRun
+-      rateGroup1Comp.RateGroupMemberOut[3] -> FileHandling.Subtopology.fileDownlinkRun
++      rateGroup1Comp.RateGroupMemberOut[3] -> FileHandlingCfdp.cfdpManager.run1Hz
+       rateGroup1Comp.RateGroupMemberOut[4] -> systemResources.run
+       rateGroup1Comp.RateGroupMemberOut[5] -> ComCcsds.Subtopology.comQueueRun
+       rateGroup1Comp.RateGroupMemberOut[6] -> CdhCore.Subtopology.cmdDispRun
+@@ -100,7 +100,7 @@ module Ref {
+       rateGroup2Comp.RateGroupMemberOut[3] -> SG4.schedIn
+       rateGroup2Comp.RateGroupMemberOut[4] -> dpDemo.run
+       #connection to FileManager listing feature command for sequencing
+-      rateGroup2Comp.RateGroupMemberOut[5] -> FileHandling.Subtopology.fileManagerSchedIn
++      rateGroup2Comp.RateGroupMemberOut[5] -> FileHandlingCfdp.fileManager.schedIn
+       rateGroup2Comp.RateGroupMemberOut[6] -> wasmSeq.checkTimers
+       rateGroup2Comp.RateGroupMemberOut[7] -> wasmSeq.writeTelemetry
+ 
+@@ -152,7 +152,7 @@ module Ref {
+       DataProducts.Subtopology.productResponseOut -> dpDemo.productRecvIn
+ 
+       wasmSeq.getTlmChan -> CdhCore.tlmSend.TlmGet
+-      wasmSeq.getParam ->   FileHandling.prmDb.getPrm
++      wasmSeq.getParam ->   FileHandlingCfdp.prmDb.getPrm
+     }
+ 
+     connections ComCcsds_CdhCore {
+@@ -169,23 +169,23 @@ module Ref {
+       CdhCore.Subtopology.seqCmdStatus       -> wasmSeq.cmdResponseIn
+     }
+ 
+-    connections ComCcsds_FileHandling {
+-      # File Downlink <-> ComQueue
+-      FileHandling.Subtopology.fileDownlinkBufferSendOut -> ComCcsds.Subtopology.bufferQueueIn[ComCcsds.Ports_ComBufferQueue.FILE]
+-      ComCcsds.Subtopology.bufferReturnOut[ComCcsds.Ports_ComBufferQueue.FILE] -> FileHandling.Subtopology.fileDownlinkBufferReturn
++    connections ComCcsds_FileHandlingCfdp {
++      # CFDP channel 0 downlink <-> ComQueue (PDUs go out on APID FW_PACKET_FILE)
++      FileHandlingCfdp.cfdpManager.dataOut[0] -> ComCcsds.Subtopology.bufferQueueIn[ComCcsds.Ports_ComBufferQueue.FILE]
++      ComCcsds.Subtopology.bufferReturnOut[ComCcsds.Ports_ComBufferQueue.FILE] -> FileHandlingCfdp.cfdpManager.dataReturnIn[0]
+ 
+-      # Router <-> FileUplink
+-      ComCcsds.Subtopology.fileUplinkOut                    -> FileHandling.Subtopology.fileUplinkBufferSendIn
+-      FileHandling.Subtopology.fileUplinkBufferSendOut     -> ComCcsds.Subtopology.fileUplinkReturnIn
+-    }
+-
+-    connections FileHandling_DataProducts {
+-      DataProducts.Subtopology.dpCatFileOut              -> FileHandling.Subtopology.fileDownlinkSendFile
+-      FileHandling.Subtopology.fileDownlinkFileComplete  -> DataProducts.Subtopology.dpCatFileDone
++      # Router <-> CFDP channel 0 uplink
++      ComCcsds.Subtopology.fileUplinkOut          -> FileHandlingCfdp.cfdpManager.dataIn[0]
++      FileHandlingCfdp.cfdpManager.dataInReturn[0] -> ComCcsds.Subtopology.fileUplinkReturnIn
+ 
+-      #DataProducts.Subtopology.dpWriterProcOut[0] -> DpCompression.Subtopology.dpCompressProcIn
++      # CFDP PDU buffers come from the comms buffer pool
++      FileHandlingCfdp.cfdpManager.bufferAllocate[0]   -> ComCcsds.Subtopology.commsBufferGetCallee
++      FileHandlingCfdp.cfdpManager.bufferDeallocate[0] -> ComCcsds.Subtopology.commsBufferSendIn
+     }
+ 
++    # DpCatalog is not connected to CfdpManager: in F Prime 4.4.1 fileDoneOut
++    # returns a constant context, which DpCatalog's per-file context can't use
++
+   }
+ 
+ }

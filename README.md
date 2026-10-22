@@ -5,7 +5,7 @@ See the [OpenC3](https://openc3.com) documentation for all things OpenC3.
 This plugin provides the code necessary to quickly get COSMOS talking with a FPrime based system.
 Note that this plugin must be copied from source and configured for your specific FPrime system before installing.
 
-This supports and has been tested against FPrime 3.6 and FPrime 4.2. It probably will work with other
+This supports and has been tested against FPrime 3.6, FPrime 4.2 and FPrime 4.4. It probably will work with other
 versions as well.
 
 Note that this plugin expects your topology should be setup as a TCP/IP Server so that COSMOS can connect to it.
@@ -22,6 +22,140 @@ Note that this plugin expects your topology should be setup as a TCP/IP Server s
 1. Click the install button and choose your plugin.gem file
 1. Fill out plugin parameters
 1. Click Install
+
+## File Downlink and Data Products
+
+Every file downlinked by the FPrime `FileDownlink` component (e.g. `SendFile`, or `DpCatalog` transmitting
+data products) is reassembled and written to the COSMOS logs bucket at
+`<SCOPE>/fprime_downlink/<TARGET>/<file name>`. Browse them with Bucket Explorer. The `FILE_START`,
+`FILE_DATA`, `FILE_END` and `FILE_CANCEL` packets are also available as telemetry.
+
+- Transfers with missing data are stored as `<file name>.incomplete`.
+- Data product files (`.fdp`) are decoded using the `records` and `containers` in your dictionary. A
+  `decoded/<file name>.json` with the decoded header and records is written under the same target folder,
+  keeping generated JSON separate from downlinked files, and a `DP_HEADER`
+  packet plus one `DP.<record name>` packet per record are emitted, timestamped with the container's time tag.
+  `DP_HEADER` reports `HEADER_CRC_OK`, `DATA_CRC_OK` and `DECODE_OK`.
+- Compressed data products (`DpCompressProc`, FPrime 4.4+) are decompressed before decoding.
+- Array records whose elements are structs, enums or strings appear in telemetry as a raw `VALUE` block;
+  the `.json` file has the decoded values.
+- Re-run `fprime_parser.py` whenever your flight dictionary changes. Record definitions and framework type
+  widths (notably `FwSizeStoreType`, which is U64 starting with FPrime 4.4) come from it.
+- Files are reassembled in memory, up to 100 MiB by default. To change this, append the bucket folder and
+  the size in bytes to the `fprime_file_downlink_protocol.py` lines in `plugin.txt`, e.g.
+  `... <%= fprime_target_name %> fprime_downlink 524288000`.
+  The same limit bounds the total decompressed record stream. Decoding a data product holds every value
+  in memory too (roughly 10x the product size for large
+  arrays), so keep very large products, such as images, to a few tens of MiB or lower `max_file_size`.
+- FPrime 4 `CfdpManager` transfers also use the file APID. They are passed through to the OpenC3 CFDP plugin
+  (see below) and are not reassembled here.
+
+## CFDP with CfdpManager
+
+FPrime 4.4's `Svc/Ccsds/CfdpManager` speaks CCSDS CFDP (Class 1 and Class 2). With a dictionary that
+contains a CfdpManager, `fprime_parser.py` also generates a `CFDP_PDU` command and telemetry packet. Each
+carries one raw CFDP PDU on APID 3 behind the `00 03` packet descriptor, which is what CfdpManager sends
+and expects. The [OpenC3 CFDP plugin](https://github.com/OpenC3/openc3-cosmos-cfdp) and the
+[CFDP tool](https://github.com/OpenC3/openc3-cosmos-tool-cfdp) then work unmodified.
+
+### Installing the CFDP plugin
+
+When installing `openc3-cosmos-cfdp`, set these variables (assuming the target is named `FPRIME`):
+
+| Variable | Value |
+|----------|-------|
+| `cfdp_cmd_target_name` / `cfdp_tlm_target_name` | `FPRIME` |
+| `cfdp_cmd_packet_name` / `cfdp_tlm_packet_name` | `CFDP_PDU` |
+| `cfdp_cmd_item_name` / `cfdp_tlm_item_name` | `PDU` |
+| `source_entity_id` | `100`, the COSMOS entity (CfdpManager's `FileInDefaultDestEntityId`) |
+| `destination_entity_id` | `42`, CfdpManager's `LocalEid` |
+
+MIB settings are `OPTION` lines in the CFDP plugin's plugin.txt, not install variables, and most of them
+are not in the shipped file. While installing (or upgrading) the CFDP plugin, open the plugin.txt editor.
+Replace the four `OPTION source_entity_id` / `tlm_info` / `destination_entity_id` / `cmd_info` lines with the
+block below, and leave the `root_path` and later lines as they are. Each option applies to the entity ID
+declared most recently above it, so the order matters.
+
+```
+  # Local (COSMOS) entity: accept PDUs without a CRC, never ask for Class 1 closure
+  OPTION source_entity_id <%= source_entity_id %>
+  OPTION tlm_info <%= cfdp_tlm_target_name %> <%= cfdp_tlm_packet_name %> <%= cfdp_tlm_item_name %>
+  OPTION crcs_required false
+  OPTION transaction_closure_requested CLOSURE_NOT_REQUESTED
+  # Remote (F Prime CfdpManager) entity: send PDUs without a CRC
+  OPTION destination_entity_id <%= destination_entity_id %>
+  OPTION cmd_info <%= cfdp_cmd_target_name %> <%= cfdp_cmd_packet_name %> <%= cfdp_cmd_item_name %>
+  OPTION crcs_required false
+  OPTION default_checksum_type 0
+  OPTION protocol_version_number 1
+  OPTION entity_id_length 0
+  OPTION sequence_number_length 3
+  OPTION maximum_file_segment_length 960
+  OPTION ack_timer_interval 5
+  OPTION nak_timer_interval 5
+  OPTION check_interval 5
+  OPTION cmd_delay 0.01
+```
+
+Why these options:
+
+- **No PDU CRC:** CfdpManager does not support PDU CRCs. `crcs_required false` appears twice on purpose:
+  on the local entity it stops COSMOS rejecting received PDUs that have no CRC, and on the remote entity it
+  stops COSMOS adding CRCs to the PDUs it sends.
+- **Modular checksum:** it only does the modular file checksum (type 0).
+- **No closure:** it never sends a Finished PDU for Class 1, so closure must not be requested.
+- **Segment length:** `maximum_file_segment_length` keeps a File Data PDU, plus its space packet header,
+  descriptor and TC frame overhead, within one 1024-byte TC frame. The overhead is 29 bytes, so the most
+  that fits is 995.
+- **Timers:** the defaults are 600 s, which is too slow for interactive use, so they are shortened.
+- **Rate limit:** `cmd_delay` paces outgoing PDUs. CfdpManager queues each uplinked PDU on its component queue and asserts
+  (FATAL) if that queue overflows. Over TCP nothing else limits the rate, so a fast burst can crash the flight software.
+  Size the delay and the CfdpManager queue depth for your link.
+
+### Pushing a file to FPrime
+
+Use the CFDP tool's Put dialog, or a script:
+
+```python
+from cfdp import cfdp_put
+cfdp_put(destination_entity_id=42, source_file_name="medium.bin",
+         destination_file_name="/files/uplink/medium.bin", transmission_mode="ACKNOWLEDGED")
+```
+
+`source_file_name` is relative to the CFDP plugin's `root_path`.
+
+### Pulling a file from FPrime
+
+CfdpManager doesn't support CFDP proxy put (the CFDP tool's "remote entity" get). Send its `SendFile`
+command instead:
+
+```python
+cmd("FPRIME FILEHANDLINGCFDP.CFDPMANAGER.SENDFILE with CHANNELID 0, DESTID 100, CFDPCLASS CLASS_2, "
+    "KEEP KEEP, PRIORITY 0, SOURCEFILENAME '/files/medium.bin', DESTFILENAME 'medium.bin'")
+```
+
+The transaction appears in the CFDP tool, and the file is written under the CFDP plugin's `root_path`.
+
+### Not supported by CfdpManager (FPrime 4.4.1)
+
+- Class 1 closure (Finished PDUs)
+- proxy put / remote get, directory listings, filestore requests and messages to user
+- PDU CRCs
+- non-modular checksums
+- files of 4 GiB or more
+
+Your deployment's TM aggregator must fit CfdpManager's packets. With the default ComCcsds configuration
+(1024-byte TM frames, no packet spanning), only space packets of 1009 bytes or less fit. CfdpManager's
+default `OutgoingFileChunkSize` of 992 makes 1011-byte packets, and FPrime asserts on the first full File
+Data PDU. Either enable `ComCcsdsConfig.Aggregator.enablePacketSpanning` (this plugin reassembles spanned
+packets), or set `OutgoingFileChunkSize` to 984 or less.
+
+A deployment also can't run FileUplink/FileDownlink alongside CfdpManager, because FPrime routes all of
+APID 3 to one component.
+
+`fprime-test/` builds an FPrime 4.4.1 Ref deployment with CfdpManager for testing; see
+[fprime-test/README.md](fprime-test/README.md). `targets/FPRIME/procedures/cfdp_test.py` is an end-to-end
+test against it.
 
 ## Contributions
 

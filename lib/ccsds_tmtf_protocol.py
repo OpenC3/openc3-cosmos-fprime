@@ -302,6 +302,8 @@ class CcsdsTmtfProtocol(BurstProtocol):
                 frame_data = frame_data[first_hdr_ptr:]
 
         frame_data = self.frame_data[vcid] + frame_data
+        # Consumed; _extract_packets_from_frame stores any new partial packet
+        self.frame_data[vcid] = b""
         return self._extract_packets_from_frame(frame_data, vcid, extra)
 
     def _extract_packets_from_frame(

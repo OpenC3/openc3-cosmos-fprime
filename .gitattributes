@@ -1,0 +1,6 @@
+# Collapsed in GitHub diffs. The dictionary is extracted from the fprime-test image; the rest are written by lib/fprime_parser.py, so regenerate them instead of editing.
+fprime-test/RefTopologyDictionary.json linguist-generated=true
+targets/FPRIME/cmd_tlm/cmd.txt linguist-generated=true
+targets/FPRIME/cmd_tlm/tlm.txt linguist-generated=true
+targets/FPRIME/lib/fprime_event_conversion.py linguist-generated=true
+targets/FPRIME/lib/fprime_dp_dictionary.py linguist-generated=true

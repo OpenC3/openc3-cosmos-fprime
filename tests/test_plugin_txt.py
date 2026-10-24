@@ -4,7 +4,7 @@
 # This file is licensed under the MIT license.
 # See LICENSE.md file in the project root for details.
 
-"""The file downlink protocol must be the last READ protocol in both header modes."""
+"""The file downlink protocol must be the last READ protocol in every header mode."""
 
 from pathlib import Path
 
@@ -22,10 +22,18 @@ def _read_protocols(lines):
 
 
 def test_fprime_branch():
-    lines = _read_protocols(_branch("if fprime_headers == 'FPRIME'", "else"))
+    lines = _read_protocols(_branch("if fprime_headers == 'FPRIME'", "elsif"))
     assert "fprime_file_downlink_protocol.py FPRIME" in lines[-1]
 
 
+def test_space_packet_only_branch():
+    lines = _read_protocols(_branch("elsif fprime_headers == 'SPACE_PACKET_ONLY'", "else"))
+    # The length protocol splits the bare packet stream, then idle packets are dropped
+    assert "length_protocol.py" in lines[0]
+    assert "ccsds_idle_filter_protocol.py" in lines[-2]
+    assert "fprime_file_downlink_protocol.py SPACE_PACKET" in lines[-1]
+
+
 def test_space_packet_branch():
-    lines = _read_protocols(_branch("else", "end"))
+    lines = _read_protocols(_branch("<% else %>", "end"))
     assert "fprime_file_downlink_protocol.py SPACE_PACKET" in lines[-1]

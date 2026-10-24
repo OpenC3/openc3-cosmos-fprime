@@ -42,6 +42,16 @@ Python (`LANGUAGE python`); `README.md` is the user-facing documentation.
   target's bucket folder, whatever path the spacecraft sends.
 - An unknown data product record keeps the records decoded so far and sets `DECODE_OK` false; it does not raise.
 
+## Packetized telemetry (APID 4, Svc::TlmPacketizer)
+
+- Layout: descriptor, `FwTlmPacketizeIdType` packet ID (from the dictionary), `Fw::Time`, then each member
+  channel at its **maximum** serialized size, with no per-channel ID or time.
+- A string inside a channel is serialized at its actual length, so the members after it move, and the
+  unused bytes all come at the end of the channel's slot. Each string gets a trailing `<item>_PAD` with
+  `VARIABLE_BIT_SIZE <item>_LENGTH -8 <max * 8>`; COSMOS accepts the negative multiplier.
+- The shipped target comes from the `TLM_SEND=packetizer` fprime-test build. `tlm_test.py` runs against
+  either build and detects the mode.
+
 ## Packet descriptor 3 (APID 3) carries two different things
 
 - Legacy `Fw::FilePacket` (FileUplink/FileDownlink): first byte after the descriptor is a type 0–3.

@@ -9,6 +9,9 @@
 #   TLM_SEND=packetizer  TlmPacketizer: the RefPackets telemetry packets (APID 4)
 # The mode is detected at startup. Each test sets values with Ref commands and checks
 # them in whichever packet carries the channel in that mode.
+#
+# Script Runner continues after an error by default, so a raise inside a polling loop would not
+# leave the loop: every loop here ends on its own deadline and the raise comes after it.
 
 import time
 
@@ -18,6 +21,7 @@ from openc3.script.suite import Group, Suite
 
 TARGET = "FPRIME"
 TIMEOUT = 10
+CONNECT_TIMEOUT = 60
 
 # RefPackets packet IDs, from Ref/Top/RefPackets.fppi
 PACKET_IDS = {"CDH": 1, "TYPEDEMO": 20, "VERSION1": 22, "VERSION_CUSTOM1": 28}
@@ -29,19 +33,29 @@ mode = None
 
 
 def detect_mode():
-    """'chan' if channelized TELEMETRY packets arrive, 'packet' if RefPackets packets do."""
-    chan = get_tlm_cnt(TARGET, "TELEMETRY")
-    packet = get_tlm_cnt(TARGET, "CDH")
-    # Changes CommandsDispatched, which both TlmChan and TlmPacketizer (CDH, group 1) send
-    cmd(f"{TARGET} CDHCORE.CMDDISP.CMD_NO_OP")
-    end = time.time() + TIMEOUT
+    """'chan' if channelized TELEMETRY packets arrive, 'packet' if RefPackets packets do.
+
+    Retries for CONNECT_TIMEOUT so the suite can start while the interface is still (re)connecting,
+    e.g. straight after the plugin is installed or upgraded."""
+    end = time.time() + CONNECT_TIMEOUT
     while time.time() < end:
-        if get_tlm_cnt(TARGET, "CDH") > packet:
-            return "packet"
-        if get_tlm_cnt(TARGET, "TELEMETRY") > chan:
-            return "chan"
-        wait(0.2)
-    raise AssertionError(f"No {TARGET} telemetry within {TIMEOUT}s; is the fprime-test container connected?")
+        chan = get_tlm_cnt(TARGET, "TELEMETRY")
+        packet = get_tlm_cnt(TARGET, "CDH")
+        try:
+            # Changes CommandsDispatched, which both TlmChan and TlmPacketizer (CDH, group 1) send
+            cmd(f"{TARGET} CDHCORE.CMDDISP.CMD_NO_OP")
+        except Exception as error:  # Interface not connected yet; errors arrive as various types over JSON-RPC
+            print(f"Waiting for {TARGET}: {error}")
+            wait(2)
+            continue
+        attempt_end = min(end, time.time() + TIMEOUT)
+        while time.time() < attempt_end:
+            if get_tlm_cnt(TARGET, "CDH") > packet:
+                return "packet"
+            if get_tlm_cnt(TARGET, "TELEMETRY") > chan:
+                return "chan"
+            wait(0.2)
+    raise AssertionError(f"No {TARGET} telemetry within {CONNECT_TIMEOUT}s; is the fprime-test container connected?")
 
 
 class Channel:
@@ -66,10 +80,10 @@ class Channel:
         if mode == "packet":
             cmd(f"{TARGET} CDHCORE.TLMSEND.SEND_PKT with ID {PACKET_IDS[self.packet]}, SECTION REALTIME")
         end = time.time() + TIMEOUT
-        while get_tlm_cnt(TARGET, self.packet_name()) <= count:
-            if time.time() > end:
-                raise AssertionError(f"{self.packet_name()} not received within {TIMEOUT}s")
+        while get_tlm_cnt(TARGET, self.packet_name()) <= count and time.time() < end:
             wait(0.1)
+        if get_tlm_cnt(TARGET, self.packet_name()) <= count:
+            raise AssertionError(f"{self.packet_name()} not received within {TIMEOUT}s")
 
 
 COMMANDS_DISPATCHED = Channel("CdhCore.cmdDisp.CommandsDispatched", "CDH")
@@ -94,10 +108,18 @@ class TlmGroup(Group):
             print("Telemetry mode: TlmChan (channelized telemetry, APID 1)")
 
     def test_command_counter(self):
-        COMMANDS_DISPATCHED.update(f"{TARGET} CDHCORE.CMDDISP.CMD_NO_OP")
-        before = tlm(COMMANDS_DISPATCHED.item())
-        COMMANDS_DISPATCHED.update(f"{TARGET} CDHCORE.CMDDISP.CMD_NO_OP")
-        assert tlm(COMMANDS_DISPATCHED.item()) > before
+        # Wait on the value, not a packet count: telemetry lags commands by a TlmChan tick plus an
+        # aggregator flush, and the packet count and current value don't update together.
+        # Right after the plugin is installed the value is None until detect_mode's NO_OP lands.
+        end = time.time() + TIMEOUT
+        while (before := tlm(COMMANDS_DISPATCHED.item())) is None and time.time() < end:
+            wait(0.2)
+        if before is None:
+            raise AssertionError(f"No {COMMANDS_DISPATCHED.item()} value within {TIMEOUT}s")
+        cmd(f"{TARGET} CDHCORE.CMDDISP.CMD_NO_OP")
+        if mode == "packet":
+            cmd(f"{TARGET} CDHCORE.TLMSEND.SEND_PKT with ID {PACKET_IDS['CDH']}, SECTION REALTIME")
+        wait_check(f"{COMMANDS_DISPATCHED.item()} > {before}", TIMEOUT)
 
     def test_version_strings(self):
         FRAMEWORK_VERSION.update(f"{TARGET} CDHCORE.VERSION.VERSION with VERSION_TYPE ALL")

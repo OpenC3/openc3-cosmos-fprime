@@ -1,6 +1,7 @@
 # F Prime v4.4.1 Ref deployment with CfdpManager (FileHandlingCfdp) in place of
 # FileUplink/FileDownlink, listening as a TCP server for COSMOS on port 50000.
 # --build-arg TLM_SEND=packetizer builds it with TlmPacketizer instead of TlmChan.
+# --build-arg COM=spacepacket sends bare Space Packets instead of TC/TM frames.
 FROM ubuntu:24.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -23,6 +24,15 @@ RUN case "$TLM_SEND" in \
       chan) ;; \
       packetizer) cd /fprime && git apply /tmp/ref-packetizer.patch ;; \
       *) echo "TLM_SEND must be chan or packetizer" >&2; exit 1 ;; \
+    esac
+# frames: Ref's default ComCcsds.Subtopology (Space Packets in TC/TM frames)
+# spacepacket: ComCcsds.SpacePacket (bare Space Packets, no transfer frames); it exposes the same ports
+ARG COM=frames
+RUN case "$COM" in \
+      frames) ;; \
+      spacepacket) sed -i 's/ComCcsds\.Subtopology/ComCcsds.SpacePacket/g' \
+          /fprime/TestDeploymentsProject/Ref/Top/topology.fpp ;; \
+      *) echo "COM must be frames or spacepacket" >&2; exit 1 ;; \
     esac
 
 WORKDIR /fprime/TestDeploymentsProject

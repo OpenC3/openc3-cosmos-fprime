@@ -73,7 +73,47 @@ only difference is that those two TlmChan events show up as unknown event IDs.
 telemetry arrives, then checks command counters, version strings, and TypeDemo's scalar and enum structs.
 In packetizer mode it also checks a string inside a struct and the packetizer's group levels.
 
+### Frames or bare Space Packets
+
+Ref uses the `ComCcsds.Subtopology` stack by default: Space Packets in TC/TM frames. To get the frameless
+`ComCcsds.SpacePacket` stack instead, build with `COM=spacepacket`, and install the plugin with
+`fprime_headers` set to `SPACE_PACKET_ONLY`. The Dockerfile swaps the subtopology in Ref's `topology.fpp`
+(both expose the same ports). It can be combined with `TLM_SEND`.
+
+```bash
+docker build --build-arg COM=spacepacket -t openc3-fprime-spacepacket fprime-test/
+docker run --rm -p 50000:50000 openc3-fprime-spacepacket
+```
+
+Run the CFDP procedure against a framed image. Frameless uplink has no frame accumulator, so a burst of
+uplinked PDUs can coalesce in TCP, and FPrime then drops all but the first packet of each read.
+
 When COSMOS runs in Docker on the same machine, the plugin's defaults (`host.docker.internal:50000`) connect to it.
+
+## End-to-end tests
+
+`e2e.sh` installs the plugin into a fresh COSMOS Core and runs a test procedure through the COSMOS CLI
+(`openc3cli script run --suite ...`). It fails unless the suite ran at least one test and
+none failed. The `F Prime End-to-End Tests` GitHub workflow (`.github/workflows/fprime-e2e.yml`) runs
+`tlm_test.py` against three builds:
+- framed with TlmPacketizer;
+- framed with TlmChan;
+- frameless with TlmChan.
+
+Packet spanning is on in all of them.
+
+To run it locally, start an fprime-test container on port 50000, then run:
+
+```bash
+rake build VERSION=0.0.0 && mkdir -p build && mv openc3-cosmos-fprime-0.0.0.gem build/
+fprime-test/e2e.sh build/openc3-cosmos-fprime-0.0.0.gem SPACE_PACKET FPRIME/procedures/tlm_test.py TlmSuite
+```
+
+- **Where COSMOS comes from:** the script clones `OpenC3/cosmos-project` into `./cosmos-project`, starts it,
+  and sets the COSMOS password (`OPENC3_API_PASSWORD`, default `fprime-e2e-password`).
+- **Running beside another COSMOS:** set `COSMOS_PORT` (for example 2950) and only the API is published on the host.
+- **Results:** the suite report goes to `e2e-results/script-output.txt`.
+- **Cleanup:** remove the stack with `cd cosmos-project && docker compose down -v`.
 
 ## Files in the container
 

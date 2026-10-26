@@ -21,9 +21,13 @@ Python (`LANGUAGE python`); `README.md` is the user-facing documentation.
   Keep them that way and standard-library only.
 - COSMOS protocols: `fprime_file_downlink_protocol.py`, `fprime_subpacketizer.py`, and the `ccsds_*` protocols.
 - `plugin.txt` picks the protocol chain by `fprime_headers`: `SPACE_PACKET` (F Prime 4.x, CCSDS space packets in
-  TC/TM frames) or `FPRIME` (F Prime 3.x framing).
-- `fprime-test/` builds a real F Prime 4.4.1 deployment in Docker for manual end-to-end testing
-  (`targets/FPRIME/procedures/cfdp_test.py`); see `fprime-test/README.md`. Not run in CI.
+  TC/TM frames), `SPACE_PACKET_ONLY` (F Prime 4.x `ComCcsds.SpacePacket`, bare space packets idle-filled with
+  APID 0x7FF, dropped by `ccsds_idle_filter_protocol.py`) or `FPRIME` (F Prime 3.x framing). The generated
+  target is the same for both space packet modes.
+- `fprime-test/` builds a real F Prime 4.4.1 deployment in Docker (`TLM_SEND`, `COM` build args); see
+  `fprime-test/README.md`. `fprime-test/e2e.sh` installs the plugin into a fresh COSMOS Core and runs a procedure
+  suite through `openc3cli script run --suite`; `.github/workflows/fprime-e2e.yml` runs `tlm_test.py`
+  on three builds. `cfdp_test.py` needs the CFDP plugin and is still run by hand.
 
 ## Rules that are easy to break
 
@@ -58,6 +62,15 @@ Python (`LANGUAGE python`); `README.md` is the user-facing documentation.
 - CfdpManager CFDP PDUs: `00 03` descriptor then the raw PDU, whose first byte has version bits
   `(b >> 5) == 1`. These pass through as `CFDP_PDU` telemetry and must **never** reach `FileAssembler`.
 - A deployment runs one or the other; F Prime routes all of APID 3 to a single component.
+
+## TM packet spanning
+
+- ComAggregator (4.4) can split packets across TM frames; `fprime-test` has it on (CfdpManager needs it). The TM
+  frame protocol handles spanning unconditionally: no plugin setting.
+- Joining a virtual channel mid-packet is silent until the first packet start; a VC frame count gap drops the
+  partial packet. Idle packets can span frames too.
+- SDLS and AOS are deliberately not implemented here: they are in the private Enterprise CCSDS protocols plugin.
+  Copy nothing from it into this public repo.
 
 ## CFDP
 

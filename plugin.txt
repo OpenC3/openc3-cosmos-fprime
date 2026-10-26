@@ -2,8 +2,9 @@ VARIABLE fprime_target_name FPRIME
 VARIABLE fprime_hostname host.docker.internal
 VARIABLE fprime_port 50000
 VARIABLE fprime_headers SPACE_PACKET
-  VARIABLE_DESCRIPTION "SPACE_PACKET = FPRIME 4.x CCSDS Space Packets and TC/TM Framing. FPRIME = FPRIME 3.x headers and framing"
+  VARIABLE_DESCRIPTION "SPACE_PACKET = FPRIME 4.x CCSDS Space Packets and TC/TM Framing. SPACE_PACKET_ONLY = FPRIME 4.x CCSDS Space Packets without framing (ComCcsds.SpacePacket). FPRIME = FPRIME 3.x headers and framing"
   VARIABLE_STATE SPACE_PACKET SPACE_PACKET
+  VARIABLE_STATE SPACE_PACKET_ONLY SPACE_PACKET_ONLY
   VARIABLE_STATE FPRIME FPRIME
 VARIABLE fprime_scid 0x44
 
@@ -15,6 +16,11 @@ INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface
   PROTOCOL READ_WRITE openc3/interfaces/protocols/length_protocol.py 32 32 12 1 BIG_ENDIAN 0 0xDEADBEEF None True
   PROTOCOL READ openc3/interfaces/protocols/crc_protocol.py FPRIME_CRC32 false ERROR -32 32 BIG_ENDIAN
   PROTOCOL READ fprime_file_downlink_protocol.py FPRIME <%= fprime_target_name %>
+<% elsif fprime_headers == 'SPACE_PACKET_ONLY' %>
+  PROTOCOL WRITE ccsds_seqcnt_protocol.py
+  PROTOCOL READ_WRITE openc3/interfaces/protocols/length_protocol.py 32 16 7 1 BIG_ENDIAN 0 None None True
+  PROTOCOL READ ccsds_idle_filter_protocol.py
+  PROTOCOL READ fprime_file_downlink_protocol.py SPACE_PACKET <%= fprime_target_name %>
 <% else %>
   PROTOCOL WRITE ccsds_tctf_protocol.py False True 1 <%= fprime_scid %> 0x1
   PROTOCOL WRITE ccsds_seqcnt_protocol.py

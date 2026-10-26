@@ -124,6 +124,9 @@ class CcsdsTmtfProtocol(BurstProtocol):
         self.packet_datas: list[tuple[bytes, dict]] = []
         self.mc_frm_cnt = -1
         self.vc_frm_cnt = [-1] * self.NUM_VIRTUAL_CHANNELS
+        # False until a packet start is seen after connecting or a lost frame, so joining a
+        # virtual channel mid-packet skips to the First Header Pointer without complaint
+        self.vc_in_sync = [False] * self.NUM_VIRTUAL_CHANNELS
 
     def handle_sync_pattern(self) -> Literal["STOP"] | None:
         """Only look for next sync pattern after returning all packets."""
@@ -274,6 +277,9 @@ class CcsdsTmtfProtocol(BurstProtocol):
                     f"{self.interface_name}: Virtual Channel {vcid} Frame Count Out of Order! "
                     f"Expected {expected_vc_frm_cnt} vs found {vc_frm_cnt}"
                 )
+                # A partial packet cannot be continued across a lost frame
+                self.frame_data[vcid] = b""
+                self.vc_in_sync[vcid] = False
 
         self.mc_frm_cnt = mc_frm_cnt
         self.vc_frm_cnt[vcid] = vc_frm_cnt
@@ -290,7 +296,8 @@ class CcsdsTmtfProtocol(BurstProtocol):
             return ("RESYNC", None)
         elif first_hdr_ptr == self.NO_FIRST_HEADER:
             if len(self.frame_data[vcid]) <= 0:
-                Logger.error(f"{self.interface_name}: Expected Previous Data for VCID {vcid} but had none!")
+                if self.vc_in_sync[vcid]:
+                    Logger.error(f"{self.interface_name}: Expected Previous Data for VCID {vcid} but had none!")
                 return ("RESYNC", None)
         elif first_hdr_ptr == 0:
             if len(self.frame_data[vcid]) > 0:
@@ -298,8 +305,11 @@ class CcsdsTmtfProtocol(BurstProtocol):
                 self.frame_data[vcid] = b""
         else:
             if len(self.frame_data[vcid]) <= 0:
-                Logger.warn(f"{self.interface_name}: No Previous Data for VCID {vcid}!")
+                if self.vc_in_sync[vcid]:
+                    Logger.warn(f"{self.interface_name}: No Previous Data for VCID {vcid}!")
                 frame_data = frame_data[first_hdr_ptr:]
+        if first_hdr_ptr != self.NO_FIRST_HEADER:
+            self.vc_in_sync[vcid] = True
 
         frame_data = self.frame_data[vcid] + frame_data
         # Consumed; _extract_packets_from_frame stores any new partial packet

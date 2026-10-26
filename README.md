@@ -23,6 +23,34 @@ Note that this plugin expects your topology should be setup as a TCP/IP Server s
 1. Fill out plugin parameters
 1. Click Install
 
+## Communication Stacks
+
+The `fprime_headers` plugin variable selects the protocol chain to match your topology's communication
+subtopology:
+
+| `fprime_headers` | FPrime subtopology | On the wire |
+|------------------|--------------------|-------------|
+| `SPACE_PACKET` (default) | `ComCcsds.Subtopology` (FPrime 4.x) | CCSDS Space Packets in TC (uplink) and TM (downlink) transfer frames |
+| `SPACE_PACKET_ONLY` | `ComCcsds.SpacePacket` (FPrime 4.x) | Bare CCSDS Space Packets, no transfer frames |
+| `FPRIME` | `ComFprime.Subtopology` (FPrime 3.x and 4.x) | FPrime's own framing |
+
+The FPrime-side defaults the plugin assumes are SCID 0x44, TC VCID 1, and 1024-byte TM frames with a CRC
+and no randomization.
+
+- **TM packet spanning** (FPrime 4.4, `ComCcsdsConfig.Aggregator.enablePacketSpanning`) is supported
+  with no plugin setting. The TM frame protocol reassembles packets split across frames using the First
+  Header Pointer, whether spanning is on or off. When COSMOS connects partway through a spanned packet, it
+  skips quietly to the next packet start. A lost frame (a gap in the virtual channel frame count) discards
+  the partial packet rather than joining it to unrelated data.
+- **`SPACE_PACKET_ONLY`:** FPrime pads every send to the TM data field size with idle packets
+  (APID 0x7FF), and the plugin drops them. FPrime's frameless uplink has no frame accumulator, so each
+  TCP read must hold exactly one Space Packet. Commands sent one at a time work, but a fast burst such
+  as a CFDP uplink can coalesce in TCP, and FPrime drops all but the first packet of each read. Use
+  `SPACE_PACKET` for CFDP uplink.
+- **SDLS and AOS:** FPrime 4.4's SDLS components (`ComCcsdsSdls`, clear text or AES-256-GCM) and its AOS
+  framer and deframer are not supported by this plugin. The OpenC3 CCSDS protocols plugin, available to
+  COSMOS Enterprise customers, implements SDLS and AOS framing.
+
 ## Telemetry
 
 `fprime_parser.py` generates definitions for both of F Prime's telemetry components, so the target works

@@ -19,7 +19,7 @@ from openc3.script import cmd, get_tlm_cnt, set_line_delay, tlm, wait, wait_chec
 from openc3.script.exceptions import SkipScript
 from openc3.script.suite import Group, Suite
 
-TARGET = "FPRIME"
+TARGET = "<%= fprime_target_name %>"
 TIMEOUT = 10
 CONNECT_TIMEOUT = 60
 

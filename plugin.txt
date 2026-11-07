@@ -1,4 +1,5 @@
 VARIABLE fprime_target_name FPRIME
+VARIABLE_FILE fprime_data_dictionary targets/FPRIME/data/Dictionary.json
 VARIABLE fprime_hostname host.docker.internal
 VARIABLE fprime_port 50000
 VARIABLE fprime_headers SPACE_PACKET
@@ -7,6 +8,8 @@ VARIABLE fprime_headers SPACE_PACKET
   VARIABLE_STATE SPACE_PACKET_ONLY SPACE_PACKET_ONLY
   VARIABLE_STATE FPRIME FPRIME
 VARIABLE fprime_scid 0x44
+
+PRE_INSTALL_SCRIPT lib/fprime_parser.py FPRIME <%= fprime_data_dictionary %>
 
 TARGET FPRIME <%= fprime_target_name %>
 INTERFACE <%= fprime_target_name %>_INT openc3/interfaces/tcpip_client_interface.py <%= fprime_hostname %> <%= fprime_port %> <%= fprime_port %> 10.0 None None

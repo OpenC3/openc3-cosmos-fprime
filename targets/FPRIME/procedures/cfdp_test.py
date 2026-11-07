@@ -26,7 +26,7 @@ from openc3.script.suite import Group, Suite
 
 FPRIME_ENTITY = 42
 COSMOS_ENTITY = 100
-TARGET = "FPRIME"
+TARGET = "<%= fprime_target_name %>"
 CFDP_DIR = "CFDP/tmp"  # The CFDP plugin's default root_path within targets_modified
 SEND_FILE = "FILEHANDLINGCFDP.CFDPMANAGER.SENDFILE"
 TIMEOUT = 120

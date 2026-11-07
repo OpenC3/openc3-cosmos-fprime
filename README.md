@@ -3,7 +3,9 @@
 See the [OpenC3](https://openc3.com) documentation for all things OpenC3.
 
 This plugin provides the code necessary to quickly get COSMOS talking with a FPrime based system.
-Note that this plugin must be copied from source and configured for your specific FPrime system before installing.
+This plugin can be directly installed with the user prompted to pick their FPrime Data Dictionary File.
+
+Note that users may still want to copy this plugin from source and configure for your specific FPrime system before installing to add additional functionality such as program specific dashboards. If you do this, remove the PRE_INSTALL_SCRIPT from plugin.txt and include your already built cmd/tlm files directly in the plugin.
 
 This supports and has been tested against FPrime 3.6, FPrime 4.2 and FPrime 4.4. It probably will work with other
 versions as well.
@@ -13,7 +15,8 @@ Note that this plugin expects your topology should be setup as a TCP/IP Server s
 ## Getting Started
 
 1. Locate the .json data dictionary from your FPrime project. It should be under the build-artifacts folder.
-2. From the root folder of the plugin, run: python lib/fprime_parser.py FPRIME /path/to/your/Dictionary.json
+  1. If using this plugin as-is, you will choose this file as fprime_data_dictionary on install
+  2. If building an program optimized plugin, from the root folder of the plugin, run: python lib/fprime_parser.py FPRIME /path/to/your/Dictionary.json
 3. Build the plugin: rake build VERSION=1.0.0
 
 ## Installing into OpenC3 COSMOS
